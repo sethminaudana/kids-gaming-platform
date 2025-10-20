@@ -1,0 +1,55 @@
+/* 1. Import Google Font (MUST be at the top) */
+@import url("https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap");
+
+/* 2. Set global styles */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Set a light, friendly background for the whole page */
+  background-color: #f8f9fa;
+}
+
+/* 3. Helper class for our special font */
+.font-fredoka {
+  font-family: "Fredoka One", cursive;
+}
+
+/* 4. Animation for game cards */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  /* We'll apply this class to our cards */
+  animation: fadeInUp 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+/* 5. Custom class for our game icons */
+.game-icon-wrapper {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.game-icon {
+  width: 50px;
+  height: 50px;
+  color: white;
+}
