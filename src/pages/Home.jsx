@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import "./Home.css";
+import { Link } from "react-router-dom";
 import { ButtonGroup, Button, Row, Col, Card } from "react-bootstrap";
 
 // --- SVG Icon Components (No change needed) ---
@@ -153,6 +155,32 @@ export default function Home() {
           </Col>
         ))}
       </Row>
+
+      <div className="home-container">
+        <h1 className="home-title font-fredoka">Cognitive Games</h1>
+        <p className="home-subtitle">Select a game to begin your session.</p>
+
+        <div className="game-card-container">
+          {/* This is the card that links to your game */}
+          <Link to="/game" className="game-card fade-in-up">
+            <div className="game-icon-wrapper">
+              {/* Simple SVG icon for the gem game */}
+              <svg
+                className="game-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M12 2.25l-7.89 7.89a5.25 5.25 0 000 7.425l7.89 7.89a5.25 5.25 0 007.425 0l7.89-7.89a5.25 5.25 0 000-7.425L19.425 2.25a5.25 5.25 0 00-7.425 0z" />
+              </svg>
+            </div>
+            <h2 className="card-title font-fredoka">Magic Gems</h2>
+            <p className="card-description">
+              Test your visuo-spatial working memory.
+            </p>
+          </Link>
+        </div>
+      </div>
     </>
   );
 }
