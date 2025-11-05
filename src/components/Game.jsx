@@ -1,8 +1,7 @@
-// src/Game.jsx
-
 import React, { useState, useEffect, useRef } from "react";
 import "./Game.css";
-import Header from "./Header";
+import axios from "axios";
+import Header from "./Header"; // <-- You imported this
 
 // --- Game Configuration ---
 const NUM_GEMS = 6; // Total number of gems on screen
@@ -11,24 +10,25 @@ const MISTAKES_ALLOWED = 1; // Tries per level (1 mistake means 2 tries total)
 
 const Game = () => {
   // --- Game State Management ---
-  // FIX: Added state variable and setter names
   const [gameState, setGameState] = useState("start"); // 'start', 'watching', 'playing', 'feedback', 'gameover'
   const [level, setLevel] = useState(STARTING_LEVEL);
-  // FIX: Added state variable and setter names, with initial value
   const [sequence, setSequence] = useState([]);
-  // FIX: Added state variable and setter names, with initial value
   const [playerSequence, setPlayerSequence] = useState([]);
   const [activeGem, setActiveGem] = useState(null);
   const [mistakes, setMistakes] = useState(0);
   const [feedbackMessage, setFeedbackMessage] = useState("");
 
+  // --- ADD NEW STATE for Player ID ---
+  const [playerId, setPlayerId] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [totalMistakes, setTotalMistakes] = useState(0);
+
   // --- Data Collection State ---
-  // FIX: Added state variable and setter names, with initial value
   const [sessionData, setSessionData] = useState([]);
   const roundStartTime = useRef(null);
 
   // --- Core Data Logging Function ---
-  // This function is essential for your research. It captures every event.
   const logData = (eventType, eventDetails) => {
     const event = {
       timestamp: new Date().toISOString(),
@@ -36,49 +36,50 @@ const Game = () => {
       level,
       ...eventDetails,
     };
-    // FIX: Completed the setter function to add the new event to the array
     setSessionData((prevData) => [...prevData, event]);
   };
 
   // --- Game Logic Functions ---
   const startNewRound = () => {
     setGameState("watching");
-    // FIX: Provided an empty array to reset the player sequence
     setPlayerSequence([]);
-
     const newSequence = Array.from({ length: level }, () =>
       Math.floor(Math.random() * NUM_GEMS)
     );
     setSequence(newSequence);
-
     logData("round_start", { sequence: newSequence });
   };
 
   const handleStartGame = () => {
-    // FIX: Provided an empty array to clear previous session data
+    if (!playerId.trim()) {
+      setFeedbackMessage("Please enter a name or ID to start.");
+      return;
+    }
+
     setSessionData([]);
-    logData("game_start", {});
+    logData("game_start", { playerId: playerId });
     setLevel(STARTING_LEVEL);
     setMistakes(0);
+    setTotalMistakes(0);
     startNewRound();
   };
 
   // Effect to display the sequence to the player
   useEffect(() => {
     if (gameState === "watching") {
-      const displayInterval = 800; // Time each gem is lit
-      const pauseInterval = 400; // Pause between gems
+      const displayInterval = 800;
+      const pauseInterval = 400;
 
       let i = 0;
       const interval = setInterval(() => {
         setActiveGem(sequence[i]);
-        setTimeout(() => setActiveGem(null), displayInterval); // Turn off after display time
+        setTimeout(() => setActiveGem(null), displayInterval);
         i++;
         if (i >= sequence.length) {
           clearInterval(interval);
           setTimeout(() => {
             setGameState("playing");
-            roundStartTime.current = Date.now(); // Start timer for player response
+            roundStartTime.current = Date.now();
             logData("sequence_displayed", { sequence });
           }, displayInterval + pauseInterval);
         }
@@ -86,32 +87,72 @@ const Game = () => {
 
       return () => clearInterval(interval);
     }
-    // FIX: Added dependency array. Effect runs when gameState or sequence changes.
   }, [gameState, sequence]);
+
+  // *** CORRECTION 1: Moved this function to the component's main scope ***
+  // *** CORRECTION 2: Using the robust version with .finally and error logging ***
+  const sendDataToBackend = async (data) => {
+    setIsSubmitting(true);
+    setFeedbackMessage("Saving results...");
+
+    const payload = {
+      playerId: playerId,
+      events: data,
+    };
+
+    console.log("Attempting to send data to backend...", payload);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/sessions",
+        payload
+      );
+
+      // --- Success ---
+      console.log("Session data saved successfully:", response.data);
+      setFeedbackMessage("Results saved!");
+    } catch (error) {
+      // --- Failure ---
+      console.error("--- ERROR SAVING SESSION DATA ---");
+      if (error.response) {
+        console.error("Data:", error.response.data);
+        console.error("Status:", error.response.status);
+      } else if (error.request) {
+        console.error(
+          "Request Error: No response received. Check backend server and CORS."
+        );
+      } else {
+        console.error("Axios Error:", error.message);
+      }
+      setFeedbackMessage("Error saving results. Data logged to console.");
+      console.log("--- FAILED BACKUP DATA (Manual Log) ---");
+      console.log(JSON.stringify(payload, null, 2));
+    } finally {
+      // --- Always runs ---
+      // This is the crucial fix for the "empty page"
+      console.log("Setting isSubmitting to false.");
+      setIsSubmitting(false);
+    }
+  };
 
   // Handle player's click on a gem
   const handleGemClick = (gemIndex) => {
-    // FIX: Corrected typo '!=='
     if (gameState !== "playing") return;
 
     const responseTime = Date.now() - roundStartTime.current;
-
-    // LOGIC FIX: Check if the clicked gem (gemIndex) matches the
-    // correct gem in the sequence at the player's current position.
     const isCorrect = sequence[playerSequence.length] === gemIndex;
-
-    // FIX: Completed the array update
     const newPlayerSequence = [...playerSequence, gemIndex];
     setPlayerSequence(newPlayerSequence);
 
     logData("player_tap", {
       tappedGem: gemIndex,
       isCorrect,
-      sequencePosition: playerSequence.length, // Note: this is the *old* length (0-indexed position)
+      sequencePosition: playerSequence.length,
       responseTime,
     });
 
-    // Check if the entire sequence is now complete
+    // --- The sendDataToBackend function was REMOVED from here ---
+
     if (newPlayerSequence.length === sequence.length) {
       setGameState("feedback");
       if (isCorrect) {
@@ -140,35 +181,54 @@ const Game = () => {
       mistakesMade: mistakes + 1,
     });
 
-    if (mistakes < MISTAKES_ALLOWED) {
-      setMistakes(mistakes + 1);
-      setFeedbackMessage("Oops! Watch again.");
-      setTimeout(() => {
-        // FIX: Provided an empty array to reset player sequence for the retry
-        setPlayerSequence([]);
-        setGameState("watching"); // Re-watch the same sequence
-      }, 2000);
-    } else {
-      setFeedbackMessage("Game Over");
-      setGameState("gameover");
-      logData("game_over", { finalScore: level - 1 });
-      // In a real application, you would send the data to your server here.
-      // For now, we log it to the console to show the collected data.
-      console.log("--- FINAL RESEARCH DATA ---");
-      console.log(JSON.stringify(sessionData, null, 2));
-    }
+    // *** ADD THIS LINE to count total mistakes ***
+    setTotalMistakes((prevTotal) => prevTotal + 1);
+
+    // This block is now simpler. We REMOVED the 'else'
+    // part that caused a game over. The game never ends on a mistake now.
+
+    setMistakes(mistakes + 1); // Tracks mistakes for this level
+    setFeedbackMessage("Oops! Watch again.");
+    setTimeout(() => {
+      setPlayerSequence([]);
+      setGameState("watching"); // Re-watch the same sequence
+    }, 2000);
   };
 
+  // --- NEW useEffect: To handle 'gameover' data sending ---
+  useEffect(() => {
+    if (gameState === "gameover" && sessionData.length > 0) {
+      const lastEvent = sessionData[sessionData.length - 1];
+      if (lastEvent && lastEvent.eventType === "game_over") {
+        // This can now correctly find the function
+        sendDataToBackend(sessionData);
+      }
+    }
+    // This dependency array is correct
+  }, [gameState, sessionData]);
+
+  // *** ADD THIS ENTIRE NEW FUNCTION ***
+  const handleEndGame = () => {
+    setFeedbackMessage("Game Over");
+    setGameState("gameover");
+
+    // Log the final event with the new totalMistakes count
+    logData("game_over", {
+      finalScore: level - 1,
+      totalMistakes: totalMistakes, // Add total mistakes here
+    });
+  };
   // --- Render Logic ---
   return (
     <>
+      {/* // *** CORRECTION 4: Added the Header component *** */}
+      <Header />
       <div className="game-container">
         <h1>Magic Gems</h1>
         <div className="game-board">
           {Array.from({ length: NUM_GEMS }).map((_, index) => (
             <div
               key={index}
-              // FIX: Corrected typo '!==' and cleaned up spacing
               className={`gem gem-${index} ${
                 activeGem === index ? "active" : ""
               } ${gameState !== "playing" ? "disabled" : ""}`}
@@ -179,9 +239,21 @@ const Game = () => {
 
         <div className="status-container">
           {gameState === "start" && (
-            <button className="start-button" onClick={handleStartGame}>
-              Start Game
-            </button>
+            <div className="start-screen">
+              <input
+                type="text"
+                placeholder="Enter Your Name/ID"
+                className="player-id-input"
+                value={playerId}
+                onChange={(e) => setPlayerId(e.target.value)}
+              />
+              <button className="start-button" onClick={handleStartGame}>
+                Start Game
+              </button>
+              {feedbackMessage && (
+                <p className="status-text feedback">{feedbackMessage}</p>
+              )}
+            </div>
           )}
 
           {gameState === "watching" && (
@@ -193,13 +265,27 @@ const Game = () => {
             <p className="status-text feedback">{feedbackMessage}</p>
           )}
 
+          {/* *** ADD THIS BLOCK *** */}
+          {/* This button will show during the game and let the user quit */}
+          {(gameState === "playing" || gameState === "watching") && (
+            <button className="end-game-button" onClick={handleEndGame}>
+              End Game
+            </button>
+          )}
+
           {gameState === "gameover" && (
             <div className="gameover-screen">
               <h2>Game Over</h2>
               <p>You reached level {level - 1}!</p>
-              <button className="start-button" onClick={handleStartGame}>
-                Play Again
-              </button>
+              {isSubmitting && (
+                <p className="status-text">Saving your score...</p>
+              )}
+              {/* This logic is correct */}
+              {!isSubmitting && (
+                <button className="start-button" onClick={handleStartGame}>
+                  Play Again
+                </button>
+              )}
             </div>
           )}
         </div>
