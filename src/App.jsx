@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import { Container } from "react-bootstrap"; // Import Container
 import Header from "./components/Header";
@@ -6,6 +6,8 @@ import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import About from "./pages/About";
 import Game from "./components/Game";
+import GemMatchGame from "./components/GemMatchGame";
+import BlueprintGame from "./components/BlueprintGame";
 
 // This is our main layout component
 function Layout() {
@@ -31,6 +33,8 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="game" element={<Game />} />
+        <Route path="gem-match" element={<GemMatchGame />} />
+        <Route path="blueprint-builder" element={<BlueprintGame />} />
       </Route>
       {/* <Route path="/magic-gems" element={<Game />} /> */}
     </Routes>
