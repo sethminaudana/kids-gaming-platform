@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./Home.css";
 import { Link } from "react-router-dom";
 import { ButtonGroup, Button, Row, Col, Card } from "react-bootstrap";
+import { PhaserGame } from "../components/PhaserGame";
 
 // --- SVG Icon Components (No change needed) ---
 const PuzzleIcon = ({ className }) => (
@@ -181,6 +182,7 @@ export default function Home() {
           </Link>
         </div>
       </div>
+      <PhaserGame />
     </>
   );
 }
