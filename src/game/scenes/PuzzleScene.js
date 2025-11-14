@@ -182,15 +182,10 @@ export class PuzzleScene extends Phaser.Scene {
       // this.sound.play('correct-sound');
       this.statusText.setText("Great Job! Circuits Powered!");
 
+      // --- (!!! THIS IS THE UPDATE !!!) ---
       this.time.delayedCall(1500, () => {
-        // (This will be our next step)
+        // Start the EngineRoomScene!
         this.scene.start("EngineRoomScene");
-        this.add
-          .text(400, 550, "Loading EngineRoomScene...", {
-            fontSize: "16px",
-            fill: "#ff0000",
-          })
-          .setOrigin(0.5);
       });
     }
     // If they are correct but not finished, we just wait for the next click.

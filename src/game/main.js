@@ -4,6 +4,8 @@ import { MainMenuScene } from "./scenes/MainMenuScene";
 // import { ControlRoomScene } from './scenes/ControlRoomScene';
 import { ControlRoomScene } from "./scenes/ControlRoomScene";
 import { PuzzleScene } from "./scenes/PuzzleScene";
+import { EngineRoomScene } from "./scenes/EngineRoomScene";
+import { WinScene } from "./scenes/WinScene";
 
 /**
  * This function launches the Phaser game.
@@ -24,6 +26,8 @@ export const launchGame = (containerId) => {
       MainMenuScene,
       ControlRoomScene,
       PuzzleScene,
+      EngineRoomScene,
+      WinScene,
       // ControlRoomScene,
       // ... other scenes
     ],
