@@ -8,6 +8,8 @@ import About from "./pages/About";
 import Game from "./components/Game";
 import GemMatchGame from "./components/GemMatchGame";
 import BlueprintGame from "./components/BlueprintGame";
+import MemoryGame from "./MemoryGame/MemoryGame";
+
 
 // This is our main layout component
 function Layout() {
@@ -35,6 +37,7 @@ export default function App() {
         <Route path="game" element={<Game />} />
         <Route path="gem-match" element={<GemMatchGame />} />
         <Route path="blueprint-builder" element={<BlueprintGame />} />
+        <Route path='memorygame' element = {<MemoryGame/>} />
       </Route>
       {/* <Route path="/magic-gems" element={<Game />} /> */}
     </Routes>
