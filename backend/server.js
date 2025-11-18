@@ -1,271 +1,168 @@
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
-// const e = require('cors'); // <-- REMOVED (unused variable)
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-app.use(cors()); // This is fine to keep
-app.use(express.json());
+// --- Middleware ---
+app.use(cors()); // Enable CORS
+app.use(express.json()); // Body parser
 
-const dataFilePath = path.join(__dirname, 'data.json');
-var username_logged = ""; // WARNING: See note below code
+// Logger to see requests
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
+});
 
-// A simple middleware to check if user is logged in
+// --- Database Connection ---
+mongoose
+  .connect(process.env.MONGO_URI) // Removed deprecated options (useNewUrlParser/useUnifiedTopology are default in new Mongoose)
+  .then(() => console.log("MongoDB connected successfully."))
+  .catch((err) => console.error("MongoDB connection error:", err));
+
+// --- Mongoose User Schema (Replaces data.json) ---
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true }, // In production, you should hash this!
+  age: { type: Number },
+  score: { type: Number, default: 0 },
+  // Memory Game Specific Stats
+  memoryright: { type: Number, default: 0 },
+  memorywrong: { type: Number, default: 0 },
+  memorytime: { type: Number, default: 0 },
+});
+
+const User = mongoose.model("User", userSchema);
+
+// --- Global State for "Session" (Matches your old logic) ---
+// Note: Ideally use tokens (JWT) for this, but keeping it simple as requested.
+let username_logged = "";
+
+// --- Helper Middleware ---
 function isAuthenticated(req, res, next) {
-    if (username_logged !== "") {
-        next(); // User is logged in, continue
-    } else {
-        // User is not logged in
-        res.status(401).json({ success: false, message: "Unauthorized: No user is logged in." });
-    }
+  if (username_logged !== "") {
+    next();
+  } else {
+    res.status(401).json({ success: false, message: "Unauthorized: Please login first." });
+  }
 }
 
-app.get('/', (req, res) => {
-    res.json({ message: "New Explorer!" });
+// --- API Routes ---
+
+// 1. Test Route
+app.get("/", (req, res) => {
+  res.json({ message: "Memory Game Backend Running!" });
 });
 
-app.post('/login', (req, res) => {
-    const { username, password } = req.body;
+// 2. Register
+app.post("/register", async (req, res) => {
+  const { username, password, age } = req.body;
+
+  try {
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: "Username Already Exists" });
+    }
+
+    const newUser = new User({ username, password, age });
+    await newUser.save();
+
+    res.json({ success: true, message: "User Registered Successfully!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+});
+
+// 3. Login
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    const user = await User.findOne({ username });
     
-    fs.readFile(dataFilePath, (err, data) => {
-        if (err) {
-            console.error("Error reading data file:", err);
-            return res.status(500).json({ success: false, message: "Internal Server Error" });
-        }
+    if (!user) {
+      return res.status(401).json({ success: false, message: "Invalid Username" });
+    }
+    if (user.password !== password) {
+      return res.status(401).json({ success: false, message: "Invalid Password" });
+    }
 
-        const userData = JSON.parse(data);
+    username_logged = username; // Set global session
+    res.json({ success: true, message: "Authentication Successful!" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+});
 
-        if (!userData[username]) {
-            return res.status(401).json({ success: false, message: "Invalid Username" });
-        }
+// 4. Logout
+app.get("/logout", (req, res) => {
+    if (username_logged !== '') {
+         res.json({success: true,  message: "Still Logged In."})
+    } else {
+         res.json({ success: false, message: "Logout Successful!" });
+    }
+});
 
-        if (userData[username].password !== password) {
-            return res.status(401).json({ success: false, message: "Invalid Password" });
-        }
+app.post("/logout", (req, res) => {
+  username_logged = "";
+  res.json({ success: true, message: "Logout Successful!" });
+});
 
-        username_logged = username; // User is now logged in
-        res.json({ success: true, message: "Authentication Successful!" });
+// 5. Get Profile
+app.get("/profile", isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findOne({ username: username_logged });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    res.json({
+      message: "Why fit in when you were born to stand out!",
+      username: user.username,
+      age: user.age,
+      score: user.score,
+      memoryright: user.memoryright,
+      memorywrong: user.memorywrong,
+      memorytime: user.memorytime,
     });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
 });
 
+// 6. Save Memory Game Data (The route your frontend calls)
+// We changed the route to /api/memorygame to match the vite config fix
+app.post("/api/memorygame", isAuthenticated, async (req, res) => {
+  const { rightMatches, wrongMatches, timetaken } = req.body;
 
-app.post('/register', (req, res) => {
-    const { username, password, age } = req.body;
+  try {
+    // Find user and update specific memory game fields
+    const user = await User.findOneAndUpdate(
+      { username: username_logged },
+      {
+        memoryright: rightMatches,
+        memorywrong: wrongMatches,
+        memorytime: timetaken,
+      },
+      { new: true } // Return the updated document
+    );
 
-    fs.readFile(dataFilePath, (err, data) => {
-        if (err) {
-            console.error("Error reading data file:", err);
-            return res.status(500).json({ success: false, message: "Internal Server Error" });
-        }
+    if (!user) {
+      return res.status(404).send({ error: "User not found" });
+    }
 
-        let userData = {};
-        try {
-            userData = JSON.parse(data);
-        } catch (error) {
-            console.error("Error parsing JSON data:", error);
-            return res.status(500).json({ success: false, message: "Internal Server Error" });
-        }
-
-        if (userData[username]) {
-            return res.status(400).json({ success: false, message: "Username Already Exists" });
-        }
-
-        userData[username] = { password, age, score:0 };
-
-        fs.writeFile(dataFilePath, JSON.stringify(userData, null, 2), (err) => {
-            if (err) {
-                console.error("Error writing data to file:", err);
-                return res.status(500).json({ success: false, message: "Internal Server Error" });
-            }
-            res.json({ success: true, message: "User Registered Successfully!" });
-        });
-    });
+    console.log(`Score updated for ${username_logged}`);
+    res.status(200).send({ score: user.score }); // Sending back generic score or whatever frontend expects
+  } catch (err) {
+    console.error("Error saving game data:", err);
+    res.status(500).send({ error: "Internal server error" });
+  }
 });
 
-app.get('/logout', isAuthenticated, (req, res) => {
-    // This route is now protected by isAuthenticated
-    // It will only run if username_logged is not empty
-    res.json({success: true,  message: "Still Logged In."})
-});
-
-app.post('/logout', (req, res) => {
-    // This route should log the user out
-    username_logged = '';
-    res.json({ success: true, message: "Logout Successful!" });
-});
-
-app.get('/profile', isAuthenticated, (req, res) => {
-    // ADDED: isAuthenticated middleware
-    fs.readFile(dataFilePath, (err, data) => {
-        if (err) {
-            console.error("Error reading data file:", err);
-            return res.status(500).json({ success: false, message: "Internal Server Error" });
-        }
-
-        const userData = JSON.parse(data);
-        const user = userData[username_logged];
-
-        if (!user) {
-            // This case should be rare now but good to keep
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
-
-        const { age, score, hanoimoves, hanoitime, eightqueen, numberpuzzlemoves, numberpuzzletime, memoryright, memorywrong, memorytime} = user;
-        res.json({ message: "Why fit in when you were born to stand out!", username: username_logged, age: age, score:score, 
-                                                                                hanoimoves:hanoimoves, hanoitime:hanoitime, eightqueen:eightqueen,
-                                                                                numberpuzzlemoves:numberpuzzlemoves, numberpuzzletime:numberpuzzletime,
-                                                                                memoryright:memoryright, memorywrong:memorywrong, memorytime:memorytime});
-    });
-});
-
-app.post('/profile', isAuthenticated, (req, res) => {
-    // ADDED: isAuthenticated middleware
-    const { totalPoints } = req.body;
-
-    fs.readFile(dataFilePath, (err, data) => {
-        if (err) {
-            console.error("Error reading data file:", err);
-            return res.status(500).json({ success: false, message: "Internal Server Error" });
-        }
-
-        let userData = {};
-        try {
-            userData = JSON.parse(data);
-        } catch (error) {
-            console.error("Error parsing JSON data:", error);
-            return res.status(500).json({ success: false, message: "Internal Server Error" });
-        }
-
-        if (userData[username_logged]) {
-            userData[username_logged].score = totalPoints;
-        } else {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
-
-        fs.writeFile(dataFilePath, JSON.stringify(userData, null, 2), (err) => {
-            if (err) {
-                console.error("Error writing data to file:", err);
-                return res.status(500).json({ success: false, message: "Internal Server Error" });
-            }
-            res.json({ success: true, message: "User score updated successfully" });
-        });
-    });
-});
-
-
-
-app.post('/memorygame', isAuthenticated, (req, res) => {
-    // ADDED: isAuthenticated middleware
-    const { rightMatches, wrongMatches, timetaken } = req.body;
-    const username = username_logged; 
-    
-    fs.readFile(dataFilePath, (err, data) => {
-        if (err) {
-            console.error('Error reading file:', err);
-            return res.status(500).send({ error: 'Internal server error' });
-        }
-        let users = JSON.parse(data);
-        if (users[username]) {
-            users[username].memoryright = rightMatches;
-            users[username].memorywrong = wrongMatches;
-            users[username].memorytime = timetaken;
-        } else {
-             // This else block should technically not be reachable due to isAuthenticated
-            return res.status(404).send({ error: 'User not found' });
-        }
-        fs.writeFile(dataFilePath, JSON.stringify(users, null, 2), (err) => {
-            if (err) {
-                console.error('Error writing file:', err);
-                return res.status(500).send({ error: 'Internal server error' });
-            }
-            res.status(200).send({ score: users[username].score });
-        });
-    });
-});
-
-app.post('/numberpuzzle', isAuthenticated, (req, res) => {
-    // ADDED: isAuthenticated middleware
-    const { moves, timeTaken } = req.body;
-    const username = username_logged; 
-    
-    fs.readFile(dataFilePath, (err, data) => {
-        if (err) {
-            console.error('Error reading file:', err);
-            return res.status(500).send({ error: 'Internal server error' });
-        }
-        let users = JSON.parse(data);
-        if (users[username]) {
-            users[username].numberpuzzlemoves = moves; // <-- FIXED: was 'score'
-            users[username].numberpuzzletime = timeTaken;
-        } else {
-            return res.status(404).send({ error: 'User not found' });
-        }
-        fs.writeFile(dataFilePath, JSON.stringify(users, null, 2), (err) => {
-            if (err) {
-                console.error('Error writing file:', err);
-                return res.status(500).send({ error: 'Internal server error' });
-            }
-            res.status(200).send({ score: users[username].score });
-        });
-    });
-});
-
-app.post('/hanoi', isAuthenticated, (req, res) => {
-    // ADDED: isAuthenticated middleware
-    const { moves, timeTaken } = req.body;
-    const username = username_logged; 
-    
-    fs.readFile(dataFilePath, (err, data) => {
-        if (err) {
-            console.error('Error reading file:', err);
-            return res.status(500).send({ error: 'Internal server error' });
-        }
-        let users = JSON.parse(data);
-        if (users[username]) {
-            users[username].hanoimoves = moves;
-            users[username].hanoitime = timeTaken;
-        } else {
-            return res.status(404).send({ error: 'User not found' });
-        }
-        fs.writeFile(dataFilePath, JSON.stringify(users, null, 2), (err) => {
-            if (err) {
-                console.error('Error writing file:', err);
-                return res.status(500).send({ error: 'Internal server error' });
-            }
-            res.status(200).send({ score: users[username].score });
-        });
-    });
-});
-
-app.post('/EightQueen', isAuthenticated, (req, res) => {
-    // ADDED: isAuthenticated middleware
-    const { queensPlaced } = req.body;
-    const username = username_logged; 
-    
-    fs.readFile(dataFilePath, (err, data) => {
-        if (err) {
-            console.error('Error reading file:', err);
-            return res.status(500).send({ error: 'Internal server error' });
-        }
-        let users = JSON.parse(data);
-        if (users[username]) {
-            users[username].eightqueen = queensPlaced;
-        } else {
-            return res.status(404).send({ error: 'User not found' });
-        }
-        fs.writeFile(dataFilePath, JSON.stringify(users, null, 2), (err) => {
-            if (err) {
-                console.error('Error writing file:', err);
-                return res.status(500).send({ error: 'Internal server error' });
-            }
-            res.status(200).send({ score: users[username].score });
-        });
-    });
-});
-
-
-app.listen(8000, () => {
-    console.log(`Server is running on port 8000.`);
+// --- Start Server ---
+app.listen(PORT, () => {
+  console.log(`Backend server running on http://localhost:${PORT}`);
 });

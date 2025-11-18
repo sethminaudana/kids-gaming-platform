@@ -140,7 +140,7 @@ const MemoryGame = () => {
         const sendData = async () => {
             try {
                 // Change fetch path to be relative for the proxy
-                const response = await fetch('/memorygame', { 
+                const response = await fetch('/api/memorygame', { 
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -6,9 +6,8 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // This proxies any request starting with /memorygame
-      // to your backend server at http://localhost:8000
-      '/memorygame': {
+      // CHANGE: Proxy anything starting with /api to the backend
+      '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
