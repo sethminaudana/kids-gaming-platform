@@ -3,6 +3,8 @@
 
 /* 2. Set global styles */
 body {
+  margin: 0; /* Added safety reset */
+  padding: 0; /* Added safety reset */
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
@@ -11,6 +13,9 @@ body {
 
   /* Set a light, friendly background for the whole page */
   background-color: #f8f9fa;
+  /* IMPORTANT: Ensure we don't trap the layout */
+  display: block; 
+  height: auto;
 }
 
 /* 3. Helper class for our special font */
@@ -60,6 +65,8 @@ body {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  /* Add margin auto to center it inside its column if needed */
+  margin: 0 auto;
 }
 
 /* --- Add this new rule for the blueprint game --- */
@@ -69,4 +76,8 @@ body {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* Add margin auto to center it inside its column if needed */
+  margin: 0 auto;
+  
+
 }
