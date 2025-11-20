@@ -28,6 +28,12 @@ const MemoryGame = () => {
     const [winner, setWinner] = useState(false);
     const [gameOver, setGameOver] = useState(false);
 
+    // --- DATA COLLECTION REFS (New) ---
+    const eventLog = useRef([]); // Stores the raw timeline of events
+    const lastClickTime = useRef(Date.now()); // To calculate Inter-Click Interval
+    const isProcessing = useRef(false); // To track if board is locked (for invalid clicks)
+
+
     // Use useState to create audio objects only once
     const [correctAudio] = useState(new Audio(right));
     const [wrongAudio] = useState(new Audio(wrong));
@@ -47,6 +53,20 @@ const MemoryGame = () => {
         return array;
     }
 
+     // --- HELPER: Log an event to the array (New) ---
+     function logEvent(type, details = {}) {
+        const now = Date.now();
+        const timeDiff = now - lastClickTime.current;
+        lastClickTime.current = now;
+
+        eventLog.current.push({
+            timestamp: now,
+            eventType: type,
+            timeSinceLastAction: timeDiff,
+            ...details
+        });
+    }
+
     function handleClose() {
         setCloseTut(!closeTut);
     }
@@ -58,6 +78,8 @@ const MemoryGame = () => {
         }
         setStartGame(true); // Always set to true
         restartGame(false); // Pass false to not send data
+        // Log Game Start
+        logEvent('game_start', { deckSize: cards.length });
     }
 
     const contentRef = useRef(null);
@@ -67,25 +89,54 @@ const MemoryGame = () => {
         }
     }, [startGame]);
 
-    function handleCardClick(index) {
-        if (matchedIndexes.includes(index) || flippedIndexes.includes(index) || flippedIndexes.length === 2) return;
+   // Updated handleCardClick to accept the 'e' (event) object
+   function handleCardClick(index, e) {
+    // 1. CAPTURE CLICK COORDINATES (For Spatial Analysis)
+    const clickDetails = {
+        cardIndex: index,
+        cardSymbol: cards[index].symbol,
+        x: e ? e.clientX : 0,
+        y: e ? e.clientY : 0
+    };
 
-        // Check against the *current* state value
-        if (flippedIndexes.length === 0) {
-            setFlippedIndexes([index]);
-        } else if (flippedIndexes.length === 1) {
-            const firstIndex = flippedIndexes[0];
-            setFlippedIndexes([firstIndex, index]); // Show both cards
-            
-            setTimeout(() => checkForMatch(firstIndex, index), 1000);
-        }
+    // 2. CHECK FOR INVALID CLICKS (Impulsivity / Hyperactivity)
+    // If board is processing (waiting for timeout) or card already flipped/matched
+    if (isProcessing.current || matchedIndexes.includes(index) || flippedIndexes.includes(index)) {
+        logEvent('invalid_click', {
+            ...clickDetails,
+            reason: isProcessing.current ? 'board_locked' : 'card_already_active'
+        });
+        return;
     }
+
+    // 3. LOG VALID CLICK
+    logEvent('card_flip', clickDetails);
+
+    // Standard Logic
+    if (flippedIndexes.length === 0) {
+        setFlippedIndexes([index]);
+    } else if (flippedIndexes.length === 1) {
+        const firstIndex = flippedIndexes[0];
+        setFlippedIndexes([firstIndex, index]); // Show both cards
+        
+        isProcessing.current = true; // LOCK BOARD
+        setTimeout(() => checkForMatch(firstIndex, index), 1000);
+    }
+}
 
     function checkForMatch(firstIndex, secondIndex) {
         const firstCard = cards[firstIndex];
         const secondCard = cards[secondIndex];
+        const isMatch = firstCard.symbol === secondCard.symbol;
 
-        if (firstCard.symbol === secondCard.symbol) {
+        // Log the result of the attempt
+        logEvent(isMatch ? 'match_found' : 'mismatch', {
+            cardA: firstIndex,
+            cardB: secondIndex,
+            symbol: firstCard.symbol
+        });
+
+        if (isMatch) {
             setMatchedIndexes(prev => [...prev, firstIndex, secondIndex]);
             setRightMatches(prev => [...prev, firstIndex, secondIndex]);
             correctAudio.play();
@@ -95,6 +146,7 @@ const MemoryGame = () => {
         }
 
         setFlippedIndexes([]); // Flip both back
+        isProcessing.current = false; // UNLOCK BOARD
     }
 
     function restartGame(shouldSendData = true) {
@@ -109,6 +161,12 @@ const MemoryGame = () => {
         setElapsedTime(0);
         setWinner(false);
         setGameOver(false); // Reset game over
+
+        // Reset Logs
+        eventLog.current = [];
+        lastClickTime.current = Date.now();
+        isProcessing.current = false;
+
         window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
     }
 
@@ -148,7 +206,8 @@ const MemoryGame = () => {
                     body: JSON.stringify({
                         rightMatches: rightMatches.length / 2,
                         wrongMatches: wrongMatches.length / 2,
-                        timetaken: elapsedTime
+                        timetaken: elapsedTime,
+                        events: eventLog.current // SEND THE FULL EVENT LOG
                     }),
                 });
                 const responseData = await response.json();
@@ -196,7 +255,8 @@ const MemoryGame = () => {
                         <div
                             key={index}
                             className={`card ${flippedIndexes.includes(index) || matchedIndexes.includes(index) ? 'flipped' : ''}`}
-                            onClick={() => handleCardClick(index)}
+                            // Pass the event 'e' to the handler
+                            onClick={(e) => handleCardClick(index, e)}
                         >
                             {flippedIndexes.includes(index) || matchedIndexes.includes(index) ? card.symbol : '💡💭'}
                         </div>

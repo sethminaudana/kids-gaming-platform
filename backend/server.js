@@ -36,6 +36,19 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
+// 2. GameSession Schema (For ML Data Storage)
+// This stores the raw event logs separate from the user profile
+const gameSessionSchema = new mongoose.Schema({
+  username: { type: String, required: true }, // Links to the user
+  gameType: { type: String, default: "memory_game" },
+  playedAt: { type: Date, default: Date.now },
+  score: Number,
+  duration: Number,
+  events: [], // <--- This stores the big array of click events for ML
+});
+
+const GameSession = mongoose.model("GameSession", gameSessionSchema);
+
 // --- Global State for "Session" (Matches your old logic) ---
 // Note: Ideally use tokens (JWT) for this, but keeping it simple as requested.
 let username_logged = "";
@@ -135,11 +148,13 @@ app.get("/profile", isAuthenticated, async (req, res) => {
 
 // 6. Save Memory Game Data (The route your frontend calls)
 // We changed the route to /api/memorygame to match the vite config fix
+// 6. Save Memory Game Data (Updated for ML)
 app.post("/api/memorygame", isAuthenticated, async (req, res) => {
-  const { rightMatches, wrongMatches, timetaken } = req.body;
+  // Extract events from the request
+  const { rightMatches, wrongMatches, timetaken, events } = req.body;
 
   try {
-    // Find user and update specific memory game fields
+    // A. Update User Profile (Summary Stats)
     const user = await User.findOneAndUpdate(
       { username: username_logged },
       {
@@ -147,15 +162,27 @@ app.post("/api/memorygame", isAuthenticated, async (req, res) => {
         memorywrong: wrongMatches,
         memorytime: timetaken,
       },
-      { new: true } // Return the updated document
+      { new: true }
     );
 
     if (!user) {
       return res.status(404).send({ error: "User not found" });
     }
 
-    console.log(`Score updated for ${username_logged}`);
-    res.status(200).send({ score: user.score }); // Sending back generic score or whatever frontend expects
+    // B. Save Raw Game Session (Detailed Logs for ML)
+    if (events && events.length > 0) {
+        const newSession = new GameSession({
+            username: username_logged,
+            score: rightMatches, // Assuming score is based on matches
+            duration: timetaken,
+            events: events // <--- The crucial array for your ADHD analysis
+        });
+        await newSession.save();
+        console.log(`Detailed session saved for ${username_logged} with ${events.length} events.`);
+    }
+
+    console.log(`User profile updated for ${username_logged}`);
+    res.status(200).send({ score: user.score }); 
   } catch (err) {
     console.error("Error saving game data:", err);
     res.status(500).send({ error: "Internal server error" });
