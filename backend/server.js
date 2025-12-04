@@ -51,7 +51,7 @@ const GameSession = mongoose.model("GameSession", gameSessionSchema);
 
 // --- Global State for "Session" (Matches your old logic) ---
 // Note: Ideally use tokens (JWT) for this, but keeping it simple as requested.
-let username_logged = "";
+let username_logged = "TestKid";
 
 // --- Helper Middleware ---
 function isAuthenticated(req, res, next) {
