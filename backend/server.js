@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
+const { spawn } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -179,10 +180,41 @@ app.post("/api/memorygame", isAuthenticated, async (req, res) => {
         });
         await newSession.save();
         console.log(`Detailed session saved for ${username_logged} with ${events.length} events.`);
+   // --- NEW: TRIGGER PYTHON SCRIPT ---
+        
+        // spawn('python', ['filename', 'argument'])
+        // Note: Use 'python3' instead of 'python' if you are on Mac/Linux
+        const pythonProcess = spawn('python', ['../adhd_ml_project/predict.py', username_logged]);
+
+        let reportData = "";
+
+        // Collect data from script output
+        pythonProcess.stdout.on('data', (data) => {
+            reportData += data.toString();
+        });
+
+        // Handle errors
+        pythonProcess.stderr.on('data', (data) => {
+            console.error(`Python Error: ${data}`);
+        });
+
+        // When script finishes, send response to React
+        pythonProcess.on('close', (code) => {
+            console.log(`Analysis complete with code ${code}`);
+            
+            // Send back the score AND the Python report
+            res.status(200).send({ 
+                score: user.score, 
+                report: reportData 
+            }); 
+        });
+      }else {
+        // Fallback if no events (shouldn't happen in real game)
+        res.status(200).send({ score: user.score, report: "No events to analyze." }); 
     }
 
     console.log(`User profile updated for ${username_logged}`);
-    res.status(200).send({ score: user.score }); 
+    // res.status(200).send({ score: user.score }); 
   } catch (err) {
     console.error("Error saving game data:", err);
     res.status(500).send({ error: "Internal server error" });

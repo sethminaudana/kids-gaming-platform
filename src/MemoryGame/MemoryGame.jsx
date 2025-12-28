@@ -211,6 +211,11 @@ const MemoryGame = () => {
                     }),
                 });
                 const responseData = await response.json();
+                // --- NEW: DISPLAY THE ALERT ---
+                if (responseData.report) {
+                    // This pops up the browser alert with the Python output
+                    alert(responseData.report);
+                }
                 console.log('Response from server:', responseData.score);
             } catch (error) {
                 console.error('Error sending data:', error);
