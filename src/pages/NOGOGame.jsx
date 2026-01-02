@@ -624,13 +624,9 @@ const NOGOGame = () => {
   };
 
   const showNewBlock = useCallback(() => {
-    if (!gameActiveRef.current) return;
-    
     let availableBlocks = blockTypes;
     
-    
     if (level === 1) {
-      availableBlocks = blockTypes.slice(0, 4);
       availableBlocks = blockTypes.slice(0, 4);
     } else if (level === 2) {
       availableBlocks = blockTypes.slice(0, 6);
@@ -679,18 +675,8 @@ const NOGOGame = () => {
     setTimeLeft(60);
     setGameActive(true);
     setLevel(1);
-    setCurrentBlock(null);
-    setGameMessage('');
-    setIsProcessing(false);
-    
-    // Show first block immediately
-    setTimeout(() => {
-      let availableBlocks = blockTypes.slice(0, 4);
-      const randomBlock = availableBlocks[Math.floor(Math.random() * availableBlocks.length)];
-      setCurrentBlock(randomBlock);
-    }, 100);
+    showNewBlock();
   };
-
 
   useEffect(() => {
     if (score >= 20 && level < 3) {
@@ -1153,28 +1139,16 @@ const NOGOGame = () => {
             <button
               className="go-button"
               onClick={() => handleReaction('GO')}
-              disabled={buttonDisabled}
             >
               {t('goButton')}
             </button>
             <button
               className="no-go-button"
               onClick={() => handleReaction('NO-GO')}
-              disabled={buttonDisabled}
             >
               {t('noGoButton')}
             </button>
           </div>
-          
-          {isProcessing && (
-            <div className="processing-indicator">
-              <div className="processing-dots">
-                <span>.</span>
-                <span>.</span>
-                <span>.</span>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>
