@@ -1,15 +1,15 @@
 # 🧠 [Project Name]: Gamified ADHD Diagnostic Tool
 
-![Project Status](https://img.shields.io/badge/Status-Research_Phase-blue)
-![Version](https://img.shields.io/badge/Version-1.0.0-green)
-![License](https://img.shields.io/badge/License-MIT-orange)
+![Stack](https://img.shields.io/badge/Stack-MERN-green)
+![Status](https://img.shields.io/badge/Status-Research_Phase-blue)
+![Version](https://img.shields.io/badge/Version-1.0.0-orange)
 ![Team Size](https://img.shields.io/badge/Team-4_Members-purple)
 
 > **Bridging the gap between clinical psychology and interactive technology.**
 
 ## 📖 Project Overview
 
-**[Project Name]** is a research-based software solution designed to screen for Attention Deficit Hyperactivity Disorder (ADHD) using gamification techniques. Unlike traditional paper-based questionnaires, this tool utilizes interactive gameplay to measure attention span, impulsivity, and reaction times in a stress-free environment.
+**[Project Name]** is a research based software solution designed to screen for Attention Deficit Hyperactivity Disorder (ADHD) using gamification techniques. Unlike traditional paper-based questionnaires, this tool utilizes interactive gameplay to measure attention span, impulsivity, and reaction times in a stress-free environment.
 
 This project was developed as a comprehensive research initiative to determine if gamified metrics can correlate with standard DSM-5 diagnostic criteria.
 
@@ -18,7 +18,7 @@ This project was developed as a comprehensive research initiative to determine i
 ## ✨ Key Features
 
 ### 🎮 Gamified Assessment
-* **Interactive Modules:** Mini-games designed to test sustained attention and working memory.
+* **Interactive Modules:** Mini games designed to test sustained attention and working memory.
 * **Impulsivity Tracking:** Measures premature clicks and reaction variability.
 * **Visual Feedback:** Engaging UI to keep users focused during the assessment.
 
@@ -30,20 +30,20 @@ This project was developed as a comprehensive research initiative to determine i
 ### 🛡️ User Management
 * **Role-Based Access:** Separate dashboards for Admins, Researchers, and Users.
 * **Secure Data:** Anonymized data storage for research integrity.
+* **JWT Authentication:** Secure login for Admins, Researchers, and Users.
+* **NoSQL Data Structure:** Flexible schema for storing complex gameplay logs.
 
 ---
 
 ## 🛠️ Technology Stack
 
-**(Edit this section based on your specific tech)**
-
 | Category | Technologies Used |
 | :--- | :--- |
-| **Backend** | PHP (CodeIgniter Framework) |
-| **Frontend** | HTML5, CSS3, JavaScript (Canvas API for games) |
-| **Database** | MySQL |
-| **Server** | Apache/Nginx |
-
+| **Frontend** | React.js, Redux (State Management), Tailwind CSS / Material UI |
+| **Backend** | Node.js, Express.js |
+| **Database** | MongoDB (Mongoose ODM) |
+| **Authentication** | JSON Web Tokens (JWT) |
+| **Deployment** | Vercel/Netlify (Frontend), Heroku/Render (Backend) |
 ---
 
 ## 🔬 Research Methodology
@@ -60,12 +60,12 @@ This tool operates on a specific set of psychological parameters:
 
 This project is brought to you by a dedicated team of four:
 
-| Name | Role | Contribution |
-| :--- | :--- | :--- |
-| **[Member 1 Name]** | Project Lead & Full Stack Dev | Architecture, Backend Logic, Integration |
-| **[Member 2 Name]** | Research Analyst | DSM-5 Criteria, Data Analysis, Testing |
-| **[Member 3 Name]** | UI/UX Designer | Game Design, Frontend, Accessibility |
-| **[Member 4 Name]** | QA & Documentation | Testing, Bug Fixes, Research Paper |
+| Name | Contribution |
+| :--- | :--- |
+| **[Member 1 Name]** | Architecture, Backend Logic, Integration |
+| **[Member 2 Name]** | DSM-5 Criteria, Data Analysis, Testing |
+| **[Member 3 Name]** | Game Design, Frontend, Accessibility |
+| **[Member 4 Name]** | Testing, Bug Fixes, Research Paper |
 
 ---
 
@@ -73,23 +73,26 @@ This project is brought to you by a dedicated team of four:
 
 Follow these steps to set up the project locally:
 
+### Prerequisites
+* Node.js (v14 or higher)
+* MongoDB (Atlas URL)
+* [Git](https://git-scm.com/)
+  
 1.  **Clone the repository**
     ```bash
     git clone [https://github.com/yourusername/project-name.git](https://github.com/yourusername/project-name.git)
     ```
 
-2.  **Configure the Database**
-    * Create a MySQL database named `adhd_research`.
-    * Import the `database.sql` file located in the `/db` folder.
+2.  **Backend Setup (Server)**
+    * cd server.
+    * npm install.
+    * npm start.
 
-3.  **Configure the Application**
-    * Navigate to `application/config/database.php`.
-    * Update your database credentials (username/password).
-    * Set your `base_url` in `config.php`.
+3.  **Frontend Setup (Client)**
+    * cd client.
+    * npm install.
+    * npm run dev.
 
-4.  **Run the Project**
-    * Host on a local server (XAMPP/WAMP) or run via command line.
-    * Access via browser at `http://localhost/project-name`.
 
 ---
 
@@ -105,9 +108,8 @@ Follow these steps to set up the project locally:
 
 ## 📝 Future Scope
 
-* Integration with AI to predict ADHD subtypes.
-* Mobile application development (React Native/Flutter).
-* Expansion of game library to test for other neurodivergent conditions.
+* AI Analysis: implementing a Python microservice to analyze gameplay patterns.
+* Expansion: Adding more modules for other neurodivergent conditions.
 
 ---
 
@@ -117,4 +119,4 @@ This is a closed research project. However, suggestions are welcome. Please open
 
 ---
 
-*Generated for the [University/Institution Name] Research Requirement.*
+
