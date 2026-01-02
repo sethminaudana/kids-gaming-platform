@@ -1,0 +1,228 @@
+import React, { useState } from "react";
+import { Button, Row, Col, Card } from "react-bootstrap";
+import { Link } from "react-router-dom";
+
+// --- SVG Icon Components  ---
+const PuzzleIcon = ({ className }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M14 2H10V6H14V2M20.59 10.59L19 12V15L20.59 16.59C21.37 17.37 21.37 18.63 20.59 19.41L19.41 20.59C18.63 21.37 17.37 21.37 16.59 20.59L15 19H12V22H8V18H4V14H8V10H4V6H8V2H12V4.87L13.87 3L15.29 4.41L14.41 5.29L15.83 6.71L17.24 5.29L18.66 6.71L17.24 8.12L19.12 10L20.59 8.59C21.37 7.81 21.37 6.55 20.59 5.76L19.41 4.59C18.63 3.8 17.37 3.8 16.59 4.59L15.17 6L14.29 5.12L13.41 6L12 4.59L10.59 6L12 7.41L10.12 9.29L8.71 7.88L7.29 9.29L8.71 10.71L7.29 12.12L5.88 10.71L4.46 12.12L6.34 14L8 12.34V10H10V12.34L12 14.34V16.34L10 18.34H8L6.34 20L4.46 18.12L5.88 16.71L4.46 15.29L5.88 13.88L4.46 12.46L3 14L2.41 13.41L4.83 11H2V8H4.83L2.41 5.59L3 5L4.41 6.41L5.83 5L7.24 6.41L8.66 5L10.08 6.41L11.5 5L12.91 6.41L12.23 7.09L14 8.86V10H16V8.86L17.77 7.09L17.09 6.41L18.5 5L19.91 6.41L18.5 7.83L19.91 9.24L21.33 7.83L22 8.5L20.59 10.59Z" />
+  </svg>
+);
+
+const AdventureIcon = ({ className }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M22 12A10 10 0 0 0 12 2A10 10 0 0 0 2 12A10 10 0 0 0 12 22A10 10 0 0 0 22 12M12 4A8 8 0 0 1 20 12A8 8 0 0 1 12 20A8 8 0 0 1 4 12A8 8 0 0 1 12 4M12 5A7 7 0 0 0 5 12A7 7 0 0 0 12 19A7 7 0 0 0 19 12A7 7 0 0 0 12 5M15.5 6.5L14.09 9.33L11.25 10.75L14.09 12.16L15.5 15L16.91 12.16L19.75 10.75L16.91 9.33L15.5 6.5M8.5 8.5L7.33 10.83L5 12L7.33 13.17L8.5 15.5L9.67 13.17L12 12L9.67 10.83L8.5 8.5Z" />
+  </svg>
+);
+
+const DrawingIcon = ({ className }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M18.5,1.15C17.97,1.15 17.46,1.34 17.07,1.73L15.66,3.15L19.85,7.34L21.27,5.93C22.05,5.15 22.05,3.89 21.27,3.1L19.9,1.73C19.5,1.34 19,1.15 18.5,1.15M15.06,3.74L3,15.8V20H7.2L19.26,7.94L15.06,3.74M7,18H5V16L14.06,6.94L16.06,8.94L7,18Z" />
+  </svg>
+);
+
+const MusicIcon = ({ className }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12,3V13.55C11.41,13.21 10.73,13 10,13C7.79,13 6,14.79 6,17C6,19.21 7.79,21 10,21C12.21,21 14,19.21 14,17V7H18V3H12Z" />
+  </svg>
+);
+
+// NO GO Game Icon
+const NOGOIcon = ({ className }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12,2C17.52,2 22,6.48 22,12C22,17.52 17.52,22 12,22C6.48,22 2,17.52 2,12C2,6.48 6.48,2 12,2M12,4C7.58,4 4,7.58 4,12C4,16.42 7.58,20 12,20C16.42,20 20,16.42 20,12C20,7.58 16.42,4 12,4M12,10.59L15.88,6.7L17.29,8.11L13.41,12L17.29,15.88L15.88,17.29L12,13.41L8.12,17.29L6.71,15.88L10.59,12L6.71,8.12L8.12,6.71L12,10.59Z" />
+  </svg>
+);
+
+// --- Game Data ---
+const games = [
+  {
+    id: 1,
+    title: "Jigsaw Jungle",
+    category: "Puzzles",
+    icon: PuzzleIcon,
+    variant: "primary",
+    link: "#"
+  },
+  {
+    id: 2,
+    title: "Starship Quest",
+    category: "Adventure",
+    icon: AdventureIcon,
+    variant: "info",
+    link: "#"
+  },
+  {
+    id: 3,
+    title: "Color Canvas",
+    category: "Drawing",
+    icon: DrawingIcon,
+    variant: "danger",
+    link: "#"
+  },
+  {
+    id: 4,
+    title: "Melody Maker",
+    category: "Music",
+    icon: MusicIcon,
+    variant: "success",
+    link: "#"
+  },
+  {
+    id: 5,
+    title: "Logic Blocks",
+    category: "Puzzles",
+    icon: PuzzleIcon,
+    variant: "warning",
+    link: "#"
+  },
+  {
+    id: 6,
+    title: "Dragon's Maze",
+    category: "Adventure",
+    icon: AdventureIcon,
+    variant: "dark",
+    link: "#"
+  },
+  {
+    id: 7,
+    title: "NO GO Game",
+    category: "Puzzles",
+    icon: NOGOIcon,
+    variant: "warning",
+    link: "/nogo-game",
+    featured: true
+  },
+];
+
+export default function Home() {
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const categories = ["All", ...new Set(games.map((g) => g.category))];
+  const filteredGames =
+    selectedCategory === "All"
+      ? games
+      : games.filter((game) => game.category === selectedCategory);
+
+  return (
+    <>
+      <div className="text-center mb-4">
+        <h1 className="display-4 fw-bold text-primary mb-3">FunZone Arcade</h1>
+        <p className="lead fs-3">Games and Adventures for Awesome Kids!</p>
+      </div>
+
+      {/* --- Category Filters --- */}
+      <div className="d-flex justify-content-center flex-wrap gap-2 mb-5">
+        {categories.map((category) => (
+          <Button
+            key={category}
+            variant={selectedCategory === category ? "warning" : "outline-warning"}
+            onClick={() => setSelectedCategory(category)}
+            className="fw-bold px-4 py-2 rounded-pill"
+            size="lg"
+          >
+            {category}
+          </Button>
+        ))}
+      </div>
+
+      {/* --- Games Grid --- */}
+      <Row className="g-4">
+        {filteredGames.map((game, index) => (
+          <Col
+            key={game.id}
+            sm={6}
+            lg={4}
+            xl={3}
+            className="fade-in-up"
+            style={{ animationDelay: `${index * 0.05}s` }}
+          >
+            <Card
+              className={`h-100 shadow-lg border-0 text-white position-relative ${
+                game.featured ? 'featured-game' : ''
+              }`}
+              style={{
+                background: game.featured 
+                  ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                  : `var(--bs-${game.variant})`
+              }}
+            >
+              {game.featured && (
+                <div className="position-absolute top-0 start-50 translate-middle px-3 py-1 bg-warning text-dark rounded-pill fw-bold small">
+                  🚀 NEW
+                </div>
+              )}
+              <Card.Body className="d-flex flex-column align-items-center text-center p-4">
+                <div className="game-icon-wrapper mb-3">
+                  <game.icon className="game-icon" style={{ fontSize: '3rem' }} />
+                </div>
+                <Card.Title as="h3" className="h5 fw-bold mb-2">
+                  {game.title}
+                </Card.Title>
+                <Card.Text className="mb-3 opacity-75">
+                  {game.category}
+                </Card.Text>
+                {game.link === "/nogo-game" ? (
+                  <Link to={game.link} className="w-100 mt-auto">
+                    <Button
+                      variant="light"
+                      className="fw-bold text-dark w-100 py-2 rounded-pill"
+                      size="lg"
+                    >
+                      🎮 Play Now!
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button
+                    variant="light"
+                    className="fw-bold text-dark w-100 py-2 rounded-pill mt-auto"
+                    size="lg"
+                  >
+                    Play Now!
+                  </Button>
+                )}
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      {/* Inline Styles */}
+      <style jsx>{`
+        .featured-game {
+          transform: scale(1.05);
+          transition: all 0.3s ease;
+          border: 3px solid #ffeb3b !important;
+        }
+        
+        .featured-game:hover {
+          transform: scale(1.08);
+          box-shadow: 0 15px 35px rgba(255, 235, 59, 0.3) !important;
+        }
+        
+        .game-icon-wrapper {
+          transition: transform 0.3s ease;
+        }
+        
+        .card:hover .game-icon-wrapper {
+          transform: scale(1.1);
+        }
+        
+        .fade-in-up {
+          animation: fadeInUp 0.6s ease forwards;
+          opacity: 0;
+        }
+        
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+    </>
+  );
+}
