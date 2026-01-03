@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { Button, Row, Col, Card } from "react-bootstrap";
+import "./Home.css";
 import { Link } from "react-router-dom";
+import { ButtonGroup, Button, Row, Col, Card } from "react-bootstrap";
+import { PhaserGame } from "../components/PhaserGame";
 
 // --- SVG Icon Components  ---
 const PuzzleIcon = ({ className }) => (
@@ -223,6 +225,51 @@ export default function Home() {
           }
         }
       `}</style>
+      <div className="home-container d-flex justify-content-center flex-wrap gap-4 p-4">
+        <h1 className="home-title font-fredoka">Cognitive Games</h1>
+        <p className="home-subtitle">Select a game to begin your session.</p>
+
+        <div className="game-card-container">
+          {/* This is the card that links to your game */}
+          <Link to="/game" className="game-card fade-in-up">
+            <div className="game-icon-wrapper">
+              {/* Simple SVG icon for the gem game */}
+              <svg
+                className="game-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M12 2.25l-7.89 7.89a5.25 5.25 0 000 7.425l7.89 7.89a5.25 5.25 0 007.425 0l7.89-7.89a5.25 5.25 0 000-7.425L19.425 2.25a5.25 5.25 0 00-7.425 0z" />
+              </svg>
+            </div>
+            <h2 className="card-title font-fredoka">Magic Gems</h2>
+            <p className="card-description">
+              Test your visuo-spatial working memory.
+            </p>
+          </Link>
+        </div>
+        <div className="game-card-container">
+        <Link to="/memorygame" className="game-card fade-in-up" style={{ textDecoration: 'none' }}>
+          <div className="game-icon-wrapper">
+            {/* SVG Icon: Two cards or a simple rectangular shape */}
+            <svg 
+              className="game-icon" 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 24 24" 
+              fill="currentColor"
+            >
+              <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <h2 className="card-title font-fredoka">Card Flip</h2>
+          <p className="card-description">
+             Sharpen your memory and attention by matching pairs.
+          </p>
+        </Link>
+      </div>
+      </div>
+      <PhaserGame />
     </>
   );
 }
