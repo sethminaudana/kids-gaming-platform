@@ -79,10 +79,11 @@
                 <li>Collect balls to earn points: 
                     <span class="color-sample blue-ball"></span> Blue = 10 points / නිල් = 10 ලකුණු, 
                     <span class="color-sample green-ball"></span> Green = 20 points / කොළ = 20 ලකුණු,
-                    <span class="color-sample red-ball"></span> Red = 15 points but be careful! / රතු = 15 ලකුණු (ප්‍රවේශම් වන්න!)
+                    <span class="color-sample red-ball"></span> Red = 30 points but be careful! / රතු = 30 ලකුණු (ප්‍රවේශම් වන්න!)
                 </li>
                 <li>If you touch 3 red balls, the game is over! / රතු බෝල 3ක් ස්පර්ශ කළේ නම් ක්‍රීඩාව අවසන්!</li>
-              
+                <li>Special celebrations at 50, 100, 200, 300, 400... points! / විශේෂ සමරු 50, 100, 200, 300, 400... ලකුණු වලදී!</li>
+                
             </ul>
         </div>
         
@@ -139,7 +140,7 @@
             
             // Constants
             ballColors: ['#2196F3', '#4CAF50', '#F44336'],
-            ballPoints: [10, 20, 15],
+            ballPoints: [10, 20, 30],
             ballRadius: 20,
             ballSpawnInterval: 60,
             MAX_RED_BALLS: 3
@@ -149,6 +150,8 @@
     <script src="data/messages.js"></script>
     <script src="js/sounds.js"></script>
     <script src="js/speech.js"></script>
+    <script src="js/eventBusBridge.js"></script>
+    <script src="js/gameTracker.js"></script>
     <script src="js/game.js"></script>
 </body>
 </html>
