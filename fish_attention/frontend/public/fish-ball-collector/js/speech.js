@@ -42,8 +42,7 @@ window.speakText = function(text) {
             if (gs.currentLanguage === 'sinhala') {
                 const sinhalaVoices = gs.voices.filter(voice => 
                     voice.lang.startsWith('si') || // Sinhala
-                    
-                    voice.lang.startsWith('hi')
+                    v
                 );
                 
                 if (sinhalaVoices.length > 0) {
