@@ -276,6 +276,7 @@ a:focus {
     padding: 10px 20px;
     font-size: 1em;
   }
+  
 #phaser-game-container {
   /* This is for the GemMatch game */
   width: 800px;
@@ -298,4 +299,5 @@ a:focus {
   margin: 0 auto;
   
 
+}
 }
