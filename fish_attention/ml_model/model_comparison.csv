@@ -1,0 +1,7 @@
+Model,Accuracy,Confusion_Matrix,Classification_Report
+Random Forest,1.0,"[[191   0]
+ [  0  30]]",              precision    recall  f1-score   support |  |            0       1.00      1.00      1.00       191 |            1       1.00      1.00      1.00        30 |  |     accuracy                           1.00       221 |    macro avg       1.00      1.00      1.00       221 | weighted avg       1.00      1.00      1.00       221 | 
+Gradient Boosting,0.995475113122172,"[[191   0]
+ [  1  29]]",              precision    recall  f1-score   support |  |            0       0.99      1.00      1.00       191 |            1       1.00      0.97      0.98        30 |  |     accuracy                           1.00       221 |    macro avg       1.00      0.98      0.99       221 | weighted avg       1.00      1.00      1.00       221 | 
+Neural Network,1.0,"[[191   0]
+ [  0  30]]",              precision    recall  f1-score   support |  |            0       1.00      1.00      1.00       191 |            1       1.00      1.00      1.00        30 |  |     accuracy                           1.00       221 |    macro avg       1.00      1.00      1.00       221 | weighted avg       1.00      1.00      1.00       221 | 
