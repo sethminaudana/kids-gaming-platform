@@ -245,7 +245,30 @@ a:focus {
   60% { transform: translateY(-3px); }
 }
 
-/* Responsive design */
+/* Game container styles - MOVED OUTSIDE MEDIA QUERY */
+#phaser-game-container {
+  /* This is for the GemMatch game */
+  width: 800px;
+  height: 600px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  /* Add margin auto to center it inside its column if needed */
+  margin: 0 auto;
+}
+
+/* --- Add this new rule for the blueprint game --- */
+#blueprint-game-container {
+  width: 1024px;
+  height: 768px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* Add margin auto to center it inside its column if needed */
+  margin: 0 auto;
+}
+
+/* Responsive design - FIXED: Properly closed media query */
 @media (max-width: 768px) {
   .home {
     padding: 10px;
@@ -276,26 +299,17 @@ a:focus {
     padding: 10px 20px;
     font-size: 1em;
   }
-#phaser-game-container {
-  /* This is for the GemMatch game */
-  width: 800px;
-  height: 600px;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  /* Add margin auto to center it inside its column if needed */
-  margin: 0 auto;
-}
-
-/* --- Add this new rule for the blueprint game --- */
-#blueprint-game-container {
-  width: 1024px;
-  height: 768px;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  /* Add margin auto to center it inside its column if needed */
-  margin: 0 auto;
   
-
-}
+  /* Responsive styles for game containers inside media query */
+  #phaser-game-container {
+    width: 100%;
+    height: 400px;
+    max-width: 800px;
+  }
+  
+  #blueprint-game-container {
+    width: 100%;
+    height: 500px;
+    max-width: 1024px;
+  }
+} /* <-- This closing brace was missing! */
