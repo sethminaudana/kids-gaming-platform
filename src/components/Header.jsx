@@ -64,12 +64,20 @@ export default function Header() {
                     </button>
                     <div className="collapse navbar-collapse" id="navbarCollapse">
                         <div className="navbar-nav mx-auto">
-                            <a href="index.html" className="nav-item nav-link active">Home</a>
+                            <Link to="/" className="nav-item nav-link active">Home</Link>
+                            <Link to="/about" className="nav-item nav-link">About</Link>
+                            <Link to="/service" className="nav-item nav-link">Services</Link>
+                            <Link to="/programs" className="nav-item nav-link">Programs</Link>
+                            <Link to="/events" className="nav-item nav-link">Events</Link>
+                            <Link to="/blog" className="nav-item nav-link">Blog</Link>
+                            <Link to="/contact" className="nav-item nav-link">Contact</Link>
+
+                            {/* <a href="index.html" className="nav-item nav-link active">Home</a>
                             <a href="about.html" className="nav-item nav-link">About</a>
                             <a href="service.html" className="nav-item nav-link">Services</a>
                             <a href="program.html" className="nav-item nav-link">Programs</a>
-                            <a href="event.html" className="nav-item nav-link">Events</a>
-                            <div className="nav-item dropdown">
+                            <a href="event.html" className="nav-item nav-link">Events</a> */}
+                            {/* <div className="nav-item dropdown">
                                 <a href="#" className="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                                 <div className="dropdown-menu m-0 bg-secondary rounded-0">
                                     <a href="blog.html" className="dropdown-item">Our Blog</a>
@@ -77,8 +85,9 @@ export default function Header() {
                                     <a href="testimonial.html" className="dropdown-item">Testimonial</a>
                                     <a href="404.html" className="dropdown-item">404 Page</a>
                                 </div>
-                            </div>
-                            <a href="contact.html" className="nav-item nav-link">Contact</a>
+                            </div> */}
+                            {/* <a href="contact.html" className="nav-item nav-link">Contact</a>
+                            <a href="contact.html" className="nav-item nav-link">Blog</a> */}
                         </div>
                         <div className="d-flex me-4">
                             <div id="phone-tada" className="d-flex align-items-center justify-content-center">

@@ -186,7 +186,7 @@ export default function Home() {
                         <div className="program-item rounded">
                             <div className="program-img position-relative">
                                 <div className="overflow-hidden img-border-radius">
-                                    <img src="/img/program-2.jpg" className="img-fluid w-100" alt="Image" />
+                                    <img src="/src/public/img/program-2.jpg" className="img-fluid w-100" alt="Image" />
                                 </div>
                                 <div className="px-4 py-2 bg-primary text-white program-rate">$60.99</div>
                             </div>
@@ -197,7 +197,7 @@ export default function Home() {
                                 </div>
                             </div>
                             <div className="program-teacher d-flex align-items-center border-top border-primary bg-white px-4 py-3">
-                                <img src="/img/program-teacher.jpg" className="img-fluid rounded-circle p-2 border border-primary bg-white" alt="" style={{ width: "70px", height: "70px" }} />
+                                <img src="/src/public/img/program-teacher.jpg" className="img-fluid rounded-circle p-2 border border-primary bg-white" alt="" style={{ width: "70px", height: "70px" }} />
                                 <div className="ms-3">
                                     <h6 className="mb-0 text-primary">Mary Mordern</h6>
                                     <small>Arts Designer</small>
@@ -214,7 +214,7 @@ export default function Home() {
                         <div className="program-item rounded">
                             <div className="program-img position-relative">
                                 <div className="overflow-hidden img-border-radius">
-                                    <img src="/img/program-3.jpg" className="img-fluid w-100" alt="Image" />
+                                    <img src="/src/public/img/program-3.jpg" className="img-fluid w-100" alt="Image" />
                                 </div>
                                 <div className="px-4 py-2 bg-primary text-white program-rate">$60.99</div>
                             </div>
@@ -225,7 +225,7 @@ export default function Home() {
                                 </div>
                             </div>
                             <div className="program-teacher d-flex align-items-center border-top border-primary bg-white px-4 py-3">
-                                <img src="/img/program-teacher.jpg" className="img-fluid rounded-circle p-2 border border-primary bg-white" alt="" style={{ width: "70px", height: "70px" }} />
+                                <img src="/src/public/img/program-teacher.jpg" className="img-fluid rounded-circle p-2 border border-primary bg-white" alt="" style={{ width: "70px", height: "70px" }} />
                                 <div className="ms-3">
                                     <h6 className="mb-0 text-primary">Mary Mordern</h6>
                                     <small>Arts Designer</small>
@@ -259,9 +259,9 @@ export default function Home() {
                         <div className="events-item bg-primary rounded">
                             <div className="events-inner position-relative">
                                 <div className="events-img overflow-hidden rounded-circle position-relative">
-                                    <img src="/img/event-1.jpg" className="img-fluid w-100 rounded-circle" alt="Image" />
+                                    <img src="/src/public/img/event-1.jpg" className="img-fluid w-100 rounded-circle" alt="Image" />
                                     <div className="event-overlay">
-                                        <a href="/img/event-1.jpg" data-lightbox="event-1"><i className="fas fa-search-plus text-white fa-2x"></i></a>
+                                        <a href="/src/public/img/event-1.jpg" data-lightbox="event-1"><i className="fas fa-search-plus text-white fa-2x"></i></a>
                                     </div>
                                 </div>
                                 <div className="px-4 py-2 bg-secondary text-white text-center events-rate">29 Nov</div>
@@ -280,9 +280,9 @@ export default function Home() {
                         <div className="events-item bg-primary rounded">
                             <div className="events-inner position-relative">
                                 <div className="events-img overflow-hidden rounded-circle position-relative">
-                                    <img src="/img/event-2.jpg" className="img-fluid w-100 rounded-circle" alt="Image" />
+                                    <img src="/src/public/img/event-2.jpg" className="img-fluid w-100 rounded-circle" alt="Image" />
                                     <div className="event-overlay">
-                                        <a href="/img/event-3.jpg" data-lightbox="event-1"><i className="fas fa-search-plus text-white fa-2x"></i></a>
+                                        <a href="/src/public/img/event-2.jpg" data-lightbox="event-1"><i className="fas fa-search-plus text-white fa-2x"></i></a>
                                     </div>
                                 </div>
                                 <div className="px-4 py-2 bg-secondary text-white text-center events-rate">29 Nov</div>
@@ -301,9 +301,9 @@ export default function Home() {
                         <div className="events-item bg-primary rounded">
                             <div className="events-inner position-relative">
                                 <div className="events-img overflow-hidden rounded-circle position-relative">
-                                    <img src="/img/event-3.jpg" className="img-fluid w-100 rounded-circle" alt="Image" />
+                                    <img src="/src/public/img/event-3.jpg" className="img-fluid w-100 rounded-circle" alt="Image" />
                                     <div className="event-overlay">
-                                        <a href="/img/event-3.jpg" data-lightbox="event-1"><i className="fas fa-search-plus text-white fa-2x"></i></a>
+                                        <a href="/src/public/img/event-3.jpg" data-lightbox="event-1"><i className="fas fa-search-plus text-white fa-2x"></i></a>
                                     </div>
                                 </div>
                                 <div className="px-4 py-2 bg-secondary text-white text-center events-rate">29 Nov</div>
@@ -335,7 +335,7 @@ export default function Home() {
                     <div className="col-md-6 col-lg-6 col-xl-4 wow fadeIn" data-wow-delay="0.1s">
                         <div className="blog-item rounded-bottom">
                             <div className="blog-img overflow-hidden position-relative img-border-radius">
-                                <img src="/img/blog-1.jpg" className="img-fluid w-100" alt="Image" />
+                                <img src="/src/public/img/blog-1.jpg" className="img-fluid w-100" alt="Image" />
                             </div>
                             <div className="d-flex justify-content-between px-4 py-3 bg-light border-bottom border-primary blog-date-comments">
                                 <small className="text-dark"><i className="fas fa-calendar me-1 text-dark"></i> 29 Nov 2023</small>
@@ -343,7 +343,7 @@ export default function Home() {
                             </div>
                             <div className="blog-content d-flex align-items-center px-4 py-3 bg-light">
                                 <div className="overflow-hidden rounded-circle rounded-top border border-primary">
-                                    <img src="/img/program-teacher.jpg" className="img-fluid rounded-circle p-2 rounded-top" alt="Image" style={{ width: "70px", height: "70px", borderStyle: "dotted", borderColor: "var(--bs-primary)" }} />
+                                    <img src="/src/public/img/program-teacher.jpg" className="img-fluid rounded-circle p-2 rounded-top" alt="Image" style={{ width: "70px", height: "70px", borderStyle: "dotted", borderColor: "var(--bs-primary)" }} />
                                 </div>
                                 <div className="ms-3">
                                     <h6 className="text-primary">Mary Mordern</h6>
@@ -364,7 +364,7 @@ export default function Home() {
                     <div className="col-md-6 col-lg-6 col-xl-4 wow fadeIn" data-wow-delay="0.3s">
                         <div className="blog-item rounded-bottom">
                             <div className="blog-img overflow-hidden position-relative img-border-radius">
-                                <img src="/img/blog-2.jpg" className="img-fluid w-100" alt="Image" />
+                                <img src="/src/public/img/blog-2.jpg" className="img-fluid w-100" alt="Image" />
                             </div>
                             <div className="d-flex justify-content-between px-4 py-3 bg-light border-bottom border-primary blog-date-comments">
                                 <small className="text-dark"><i className="fas fa-calendar me-1 text-dark"></i> 29 Nov 2023</small>
@@ -372,7 +372,7 @@ export default function Home() {
                             </div>
                             <div className="blog-content d-flex align-items-center px-4 py-3 bg-light">
                                 <div className="overflow-hidden rounded-circle rounded-top border border-primary">
-                                    <img src="/img/program-teacher.jpg" className="img-fluid rounded-circle p-2 rounded-top" alt="" style={{ width: "70px", height: "70px", borderStyle: "dotted", borderColor: "var(--bs-primary)" }} />
+                                    <img src="/src/public/img/program-teacher.jpg" className="img-fluid rounded-circle p-2 rounded-top" alt="" style={{ width: "70px", height: "70px", borderStyle: "dotted", borderColor: "var(--bs-primary)" }} />
                                 </div>
                                 <div className="ms-3">
                                     <h6 className="text-primary">Mary Mordern</h6>
@@ -393,7 +393,7 @@ export default function Home() {
                     <div className="col-md-6 col-lg-6 col-xl-4 wow fadeIn" data-wow-delay="0.5s">
                         <div className="blog-item rounded-bottom">
                             <div className="blog-img overflow-hidden position-relative img-border-radius">
-                                <img src="/img/blog-3.jpg" className="img-fluid w-100" alt="Image" />
+                                <img src="/src/public/img/blog-3.jpg" className="img-fluid w-100" alt="Image" />
                             </div>
                             <div className="d-flex justify-content-between px-4 py-3 bg-light border-bottom border-primary blog-date-comments">
                                 <small className="text-dark"><i className="fas fa-calendar me-1 text-dark"></i> 29 Nov 2023</small>
@@ -401,7 +401,7 @@ export default function Home() {
                             </div>
                             <div className="blog-content d-flex align-items-center px-4 py-3 bg-light">
                                 <div className="overflow-hidden rounded-circle rounded-top border border-primary">
-                                    <img src="/img/program-teacher.jpg" className="img-fluid rounded-circle p-2 rounded-top" alt="" style={{ width: "70px", height: "70px", borderStyle: "dotted", borderColor: "var(--bs-primary)" }} />
+                                    <img src="/src/public/img/program-teacher.jpg" className="img-fluid rounded-circle p-2 rounded-top" alt="" style={{ width: "70px", height: "70px", borderStyle: "dotted", borderColor: "var(--bs-primary)" }} />
                                 </div>
                                 <div className="ms-3">
                                     <h6 className="text-primary">Mary Mordern</h6>
@@ -435,7 +435,7 @@ export default function Home() {
                 <div className="row g-5 justify-content-center">
                     <div className="col-md-6 col-lg-4 col-xl-3 wow fadeIn" data-wow-delay="0.1s">
                         <div className="team-item border border-primary img-border-radius overflow-hidden">
-                            <img src="/img/team-1.jpg" className="img-fluid w-100" alt="" />
+                            <img src="/src/public/img/team-1.jpg" className="img-fluid w-100" alt="" />
                             <div className="team-icon d-flex align-items-center justify-content-center">
                                 <a className="share btn btn-primary btn-md-square text-white rounded-circle me-3" href=""><i className="fas fa-share-alt"></i></a>
                                 <a className="share-link btn btn-primary btn-md-square text-white rounded-circle me-3" href=""><i className="fab fa-facebook-f"></i></a>
@@ -450,7 +450,7 @@ export default function Home() {
                     </div>
                     <div className="col-md-6 col-lg-4 col-xl-3 wow fadeIn" data-wow-delay="0.3s">
                         <div className="team-item border border-primary img-border-radius overflow-hidden">
-                            <img src="/img/team-2.jpg" className="img-fluid w-100" alt="" />
+                            <img src="/src/public/img/team-2.jpg" className="img-fluid w-100" alt="" />
                             <div className="team-icon d-flex align-items-center justify-content-center">
                                 <a className="share btn btn-primary btn-md-square text-white rounded-circle me-3" href=""><i className="fas fa-share-alt"></i></a>
                                 <a className="share-link btn btn-primary btn-md-square text-white rounded-circle me-3" href=""><i className="fab fa-facebook-f"></i></a>
@@ -465,7 +465,7 @@ export default function Home() {
                     </div>
                     <div className="col-md-6 col-lg-4 col-xl-3 wow fadeIn" data-wow-delay="0.5s">
                         <div className="team-item border border-primary img-border-radius overflow-hidden">
-                            <img src="/img/team-3.jpg" className="img-fluid w-100" alt="" />
+                            <img src="/src/public/img/team-3.jpg" className="img-fluid w-100" alt="" />
                             <div className="team-icon d-flex align-items-center justify-content-center">
                                 <a className="share btn btn-primary btn-md-square text-white rounded-circle me-3" href=""><i className="fas fa-share-alt"></i></a>
                                 <a className="share-link btn btn-primary btn-md-square text-white rounded-circle me-3" href=""><i className="fab fa-facebook-f"></i></a>
@@ -480,7 +480,7 @@ export default function Home() {
                     </div>
                     <div className="col-md-6 col-lg-4 col-xl-3 wow fadeIn" data-wow-delay="0.7s">
                         <div className="team-item border border-primary img-border-radius overflow-hidden">
-                            <img src="/img/team-4.jpg" className="img-fluid w-100" alt="" />
+                            <img src="/src/public/img/team-4.jpg" className="img-fluid w-100" alt="" />
                             <div className="team-icon d-flex align-items-center justify-content-center">
                                 <a className="share btn btn-primary btn-md-square text-white rounded-circle me-3" href=""><i className="fas fa-share-alt"></i></a>
                                 <a className="share-link btn btn-primary btn-md-square text-white rounded-circle me-3" href=""><i className="fab fa-facebook-f"></i></a>
@@ -513,7 +513,7 @@ export default function Home() {
                             <i className="fa fa-quote-right fa-2x text-primary position-absolute" style={{ top: "15px", right: "15px" }}></i>
                             <div className="d-flex align-items-center">
                                 <div className="border border-primary bg-white rounded-circle">
-                                    <img src="/img/testimonial-2.jpg" className="rounded-circle p-2" style={{ width: "80px", height: "80px", borderStyle: "dotted", borderColor: "var(--bs-primary)" }} alt="" />
+                                    <img src="/src/public/img/testimonial-2.jpg" className="rounded-circle p-2" style={{ width: "80px", height: "80px", borderStyle: "dotted", borderColor: "var(--bs-primary)" }} alt="" />
                                 </div>
                                 <div className="ms-4">
                                     <h4 className="text-dark">Client Name</h4>
@@ -538,7 +538,7 @@ export default function Home() {
                             <i className="fa fa-quote-right fa-2x text-primary position-absolute" style={{ top: "15px", right: "15px" }}></i>
                             <div className="d-flex align-items-center">
                                 <div className="border border-primary bg-white rounded-circle">
-                                    <img src="/img/testimonial-2.jpg" className="rounded-circle p-2" style={{ width: "80px", height: "80px", borderStyle: "dotted", borderColor: "var(--bs-primary)" }} alt="" />
+                                    <img src="/src/public/img/testimonial-2.jpg" className="rounded-circle p-2" style={{ width: "80px", height: "80px", borderStyle: "dotted", borderColor: "var(--bs-primary)" }} alt="" />
                                 </div>
                                 <div className="ms-4">
                                     <h4 className="text-dark">Client Name</h4>

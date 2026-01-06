@@ -32,7 +32,7 @@ const Event = () => {
               <div className="events-item bg-primary rounded">
                 <div className="events-inner position-relative">
                   <div className="events-img overflow-hidden rounded-circle position-relative">
-                    <img src="img/event-1.jpg" className="img-fluid w-100 rounded-circle" alt="Image" />
+                    <img src="src/public/img/event-1.jpg" className="img-fluid w-100 rounded-circle" alt="Image" />
                     <div className="event-overlay">
                       <a href="img/event-1.jpg" data-lightbox="event-1"><i className="fas fa-search-plus text-white fa-2x"></i></a>
                     </div>
@@ -55,7 +55,7 @@ const Event = () => {
               <div className="events-item bg-primary rounded">
                 <div className="events-inner position-relative">
                   <div className="events-img overflow-hidden rounded-circle position-relative">
-                    <img src="img/event-2.jpg" className="img-fluid w-100 rounded-circle" alt="Image" />
+                    <img src="src/public/img/event-2.jpg" className="img-fluid w-100 rounded-circle" alt="Image" />
                     <div className="event-overlay">
                       <a href="img/event-3.jpg" data-lightbox="event-1"><i className="fas fa-search-plus text-white fa-2x"></i></a>
                     </div>
@@ -78,7 +78,7 @@ const Event = () => {
               <div className="events-item bg-primary rounded">
                 <div className="events-inner position-relative">
                   <div className="events-img overflow-hidden rounded-circle position-relative">
-                    <img src="img/event-3.jpg" className="img-fluid w-100 rounded-circle" alt="Image" />
+                    <img src="src/public/img/event-3.jpg" className="img-fluid w-100 rounded-circle" alt="Image" />
                     <div className="event-overlay">
                       <a href="img/event-3.jpg" data-lightbox="event-1"><i className="fas fa-search-plus text-white fa-2x"></i></a>
                     </div>
