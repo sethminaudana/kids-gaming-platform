@@ -34,7 +34,7 @@ const Blog = () => {
                   <img src="img/blog-1.jpg" className="img-fluid w-100" alt="Image" />
                 </div>
                 <div className="d-flex justify-content-between px-4 py-3 bg-light border-bottom border-primary blog-date-comments">
-                  <small className="text-dark"><i className="fas fa-calendar me-1 text-dark"></i> 29 Nov 2023</small>
+                  {/*<small className="text-dark"><i className="fas fa-calendar me-1 text-dark"></i> 29 Nov 2023</small>*/}
                   <small className="text-dark"><i className="fas fa-comment-alt me-1 text-dark"></i> Comments (15)</small>
                 </div>
                 <div className="blog-content d-flex align-items-center px-4 py-3 bg-light">
@@ -48,7 +48,7 @@ const Blog = () => {
                   </div>
                   <div className="ms-3">
                     <h6 className="text-primary">Mary Mordern</h6>
-                    <p className="text-muted">Baby Care</p>
+                    <p className="text-muted">ADHD</p>
                   </div>
                 </div>
                 <div className="px-4 pb-4 bg-light rounded-bottom">

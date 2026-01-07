@@ -11,7 +11,7 @@ const Testimonial = () => {
             <ol className="breadcrumb justify-content-center mb-0">
               <li className="breadcrumb-item"><a href="#">Home</a></li>
               <li className="breadcrumb-item"><a href="#">Pages</a></li>
-              <li className="breadcrumb-item text-white" aria-current="page">Testimonial</li>
+              {/*<li className="breadcrumb-item text-white" aria-current="page">Testimonial</li>*/}
             </ol>
           </nav>
         </div>
@@ -22,8 +22,8 @@ const Testimonial = () => {
       <div className="container-fluid testimonial py-5">
         <div className="container py-5">
           <div className="mx-auto text-center wow fadeIn" data-wow-delay="0.1s" style={{ maxWidth: '700px' }}>
-            <h4 className="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">Our Testimonials</h4>
-            <h1 className="mb-5 display-3">Parents Say About Us</h1>
+            {/*<h4 className="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">Our Testimonials</h4>
+            <h1 className="mb-5 display-3">Parents Say About Us</h1>*/}
           </div>
           <div className="owl-carousel testimonial-carousel wow fadeIn" data-wow-delay="0.3s">
             
@@ -41,8 +41,8 @@ const Testimonial = () => {
                     />
                   </div>
                   <div className="ms-4">
-                    <h4 className="text-dark">Client Name</h4>
-                    <p className="m-0 pb-3">Profession</p>
+                    {/*<h4 className="text-dark">Client Name</h4>
+                    <p className="m-0 pb-3">Profession</p>*/}
                     <div className="d-flex pe-5">
                       <i className="fas fa-star text-primary"></i>
                       <i className="fas fa-star text-primary"></i>
@@ -72,8 +72,8 @@ const Testimonial = () => {
                     />
                   </div>
                   <div className="ms-4">
-                    <h4 className="text-dark">Client Name</h4>
-                    <p className="m-0 pb-3">Profession</p>
+                    {/*<h4 className="text-dark">Client Name</h4>
+                    <p className="m-0 pb-3">Profession</p>*/}
                     <div className="d-flex pe-5">
                       <i className="fas fa-star text-primary"></i>
                       <i className="fas fa-star text-primary"></i>

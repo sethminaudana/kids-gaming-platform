@@ -25,7 +25,7 @@ const Contact = () => {
             <div className="mx-auto text-center wow fadeIn" data-wow-delay="0.1s" style={{ maxWidth: '700px' }}>
               <h4 className="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">Contact Us</h4>
               <h1 className="display-3">Contact For Any Query</h1>
-              <p className="mb-5">The contact form is currently inactive. Get a functional and working contact form with Ajax & PHP in a few minutes. Just copy and paste the files, add a little code and you're done. <a href="https://htmlcodex.com/contact-form">Download Now</a>.</p>
+              <p className="mb-5">The contact form is currently inactive. <a href="https://htmlcodex.com/contact-form">Download Now</a>.</p>
             </div>
             <div className="row g-5 mb-5">
               <div className="col-lg-4 wow fadeIn" data-wow-delay="0.1s">
@@ -33,7 +33,7 @@ const Contact = () => {
                   <i className="fas fa-map-marker-alt fa-2x text-primary me-4"></i>
                   <div className="">
                     <h4>Address</h4>
-                    <p className="mb-2">104 North tower New York, USA</p>
+                    <p className="mb-2">104 North tower Colombo, Sri lanka</p>
                   </div>
                 </div>
               </div>
@@ -51,7 +51,7 @@ const Contact = () => {
                   <i className="fa fa-phone-alt fa-2x text-primary me-4"></i>
                   <div className="">
                     <h4>Telephone</h4>
-                    <p className="mb-2">(+012) 3456 7890 123</p>
+                    <p className="mb-2">(+094) 3456 7890 123</p>
                   </div>
                 </div>
               </div>

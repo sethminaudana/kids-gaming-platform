@@ -23,7 +23,7 @@ const Service = () => {
         <div className="container py-5">
           <div className="mx-auto text-center wow fadeIn" data-wow-delay="0.1s" style={{ maxWidth: '700px' }}>
             <h4 className="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">What We Do</h4>
-            <h1 className="mb-5 display-3">Thanks To Get Started With Our School</h1>
+            <h1 className="mb-5 display-3">Thanks To Get Started With Our Game archade</h1>
           </div>
           <div className="row g-5">
             
@@ -33,7 +33,7 @@ const Service = () => {
                 <div className="service-content d-flex align-items-center justify-content-center p-4">
                   <div className="service-content-inner">
                     <div className="p-4"><i className="fas fa-gamepad fa-6x text-primary"></i></div>
-                    <a href="#" className="h4">Study & Game</a>
+                    <a href="#" className="h4">Fun with Game</a>
                     <p className="my-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, culpa qui officiis animi Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
                     <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>
                   </div>
@@ -47,7 +47,7 @@ const Service = () => {
                 <div className="service-content d-flex align-items-center justify-content-center p-4">
                   <div className="service-content-inner">
                     <div className="p-4"><i className="fas fa-sort-alpha-down fa-6x text-primary"></i></div>
-                    <a href="#" className="h4">A to Z Programs</a>
+                    <a href="#" className="h4">Tracking by webcam</a>
                     <p className="my-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, culpa qui officiis animi Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
                     <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>
                   </div>
@@ -61,7 +61,7 @@ const Service = () => {
                 <div className="service-content d-flex align-items-center justify-content-center p-4">
                   <div className="service-content-inner">
                     <div className="p-4"><i className="fas fa-users fa-6x text-primary"></i></div>
-                    <a href="#" className="h4">Expert Teacher</a>
+                    <a href="#" className="h4">Personal Report</a>
                     <p className="my-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, culpa qui officiis animi Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
                     <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>
                   </div>
@@ -75,7 +75,7 @@ const Service = () => {
                 <div className="service-content d-flex align-items-center justify-content-center p-4">
                   <div className="service-content-inner">
                     <div className="p-4"><i className="fas fa-user-nurse fa-6x text-primary"></i></div>
-                    <a href="#" className="h4">Mental Health</a>
+                    <a href="#" className="h4">Info about Experts</a>
                     <p className="my-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, culpa qui officiis animi Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
                     <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>
                   </div>
