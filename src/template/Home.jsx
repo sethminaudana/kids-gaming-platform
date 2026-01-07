@@ -15,8 +15,9 @@ export default function Home() {
         <div className="container-fluid py-5 hero-header wow fadeIn" data-wow-delay="0.1s">
             <div className="container py-5">
                 <div className="row g-5">
-                    <div className="col-lg-7 col-md-12">                        {/*<h1 className="mb-3 text-primary">We Care Your Baby</h1>
-                        <h1 className="mb-5 display-1 text-white">The Best Play Area For Your Kids</h1>*/}
+                    <div className="col-lg-7 col-md-12">    
+                                            <h1 className="mb-3 text-primary">We Care Your Baby</h1>
+                        <h1 className="mb-5 display-1 text-white">The Best Play Area For Your Kids</h1>
                         <a href="" className="btn btn-primary px-4 py-3 px-md-5  me-4 btn-border-radius">Get Started</a>
                         <a href="" className="btn btn-primary px-4 py-3 px-md-5 btn-border-radius">Learn More</a>
                     </div>
@@ -38,11 +39,11 @@ export default function Home() {
                         </div>
                     </div>
                     <div className="col-lg-7 wow fadeIn" data-wow-delay="0.3s">
-                        {/*<h4 className="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">About Us</h4>
-                        <h1 className="text-dark mb-4 display-5">We Learn Smart Way To Build Bright Futute For Your Children</h1>*/}
-                       {/*} <p className="text-dark mb-4">Lorem Ipsum is simply dummy text of the printing and typesetting industry. the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
-                        </p>*/}
-                        {/*<div className="row mb-4">
+                        <h4 className="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">About Us</h4>
+                        <h1 className="text-dark mb-4 display-5">We Learn Smart Way To Build Bright Futute For Your Children</h1>
+                       <p className="text-dark mb-4">Lorem Ipsum is simply dummy text of the printing and typesetting industry. the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+                        </p>
+                        <div className="row mb-4">
                             <div className="col-lg-6">
                                 <h6 className="mb-3"><i className="fas fa-check-circle me-2"></i>Sport Activites</h6>
                                 <h6 className="mb-3"><i className="fas fa-check-circle me-2 text-primary"></i>Outdoor Games</h6>
@@ -53,7 +54,7 @@ export default function Home() {
                                 <h6 className="mb-3"><i className="fas fa-check-circle me-2 text-primary"></i>Friendly Environment</h6>
                                 <h6><i className="fas fa-check-circle me-2 text-secondary"></i>Qualified Teacher</h6>
                             </div>
-                        </div>*/}
+                        </div>
                         <a href="" className="btn btn-primary px-5 py-3 btn-border-radius">More Details</a>
                     </div>
                 </div>
@@ -68,7 +69,7 @@ export default function Home() {
                         <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div className="modal-body">
-                        {/* 16:9 aspect ratio */}
+                        16:9 aspect ratio
                         <div className="ratio ratio-16x9">
                             <iframe className="embed-responsive-item" src="" id="video" allowFullScreen allow="autoplay"></iframe>
                         </div>
@@ -84,7 +85,7 @@ export default function Home() {
             <div className="container py-5">
                 <div className="mx-auto text-center wow fadeIn" data-wow-delay="0.1s" style={{ maxWidth: "700px" }}>
                     <h4 className="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">What We Do</h4>
-                    {/*<h1 className="mb-5 display-3">Thanks To Get Started With Our School</h1>*/}
+                    <h1 className="mb-5 display-3">Thanks To Get Started With Our School</h1>
                 </div>
                 <div className="row g-5">
                     <div className="col-md-6 col-lg-6 col-xl-3 wow fadeIn" data-wow-delay="0.1s">
@@ -92,10 +93,10 @@ export default function Home() {
                             <div className="service-content d-flex align-items-center justify-content-center p-4">
                                 <div className="service-content-inner">
                                     <div className="p-4"><i className="fas fa-gamepad fa-6x text-primary"></i></div>
-                                  {/*}  <a href="#" className="h4">Study & Game</a>
+                                    <a href="#" className="h4">Study & Game</a>
                                     <p className="my-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, culpa qui officiis animi Lorem ipsum dolor sit amet, 
                                         consectetur adipisicing elit.</p>
-                                    <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>*/}
+                                    <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>
                                 </div>
                             </div>
                         </div>
@@ -499,14 +500,14 @@ export default function Home() {
 
 
         {/* Testimonial Start */}
-        <div className="container-fluid testimonial py-5">
+        {/* <div className="container-fluid testimonial py-5">
             <div className="container py-5">
                 <div className="mx-auto text-center wow fadeIn" data-wow-delay="0.1s" style={{ maxWidth: "700px" }}>
                     <h4 className="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">Our Testimonials</h4>
                     <h1 className="mb-5 display-3">Parents Say About Us</h1>
-                </div>
+                </div> */}
                 {/* Note: Owl Carousel is a jQuery plugin. In React, this list will display, but it won't slide unless you use a React-specific carousel library or initialize the jQuery script manually. */}
-                <div className="owl-carousel testimonial-carousel wow fadeIn" data-wow-delay="0.3s">
+                {/* <div className="owl-carousel testimonial-carousel wow fadeIn" data-wow-delay="0.3s">
                     <div className="testimonial-item img-border-radius bg-light border border-primary p-4">
                         <div className="p-4 position-relative">
                             <i className="fa fa-quote-right fa-2x text-primary position-absolute" style={{ top: "15px", right: "15px" }}></i>
@@ -559,7 +560,7 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div> */}
         {/* Testimonial End */}
     </>
   );

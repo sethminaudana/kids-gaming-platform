@@ -66,9 +66,9 @@ export default function Header() {
                         <div className="navbar-nav mx-auto">
                             <Link to="/" className="nav-item nav-link active">Home</Link>
                             <Link to="/about" className="nav-item nav-link">About</Link>
-                            <Link to="/service" className="nav-item nav-link">Services</Link>
-                            <Link to="/programs" className="nav-item nav-link">Programs</Link>
-                            <Link to="/events" className="nav-item nav-link">Events</Link>
+                            {/* <Link to="/service" className="nav-item nav-link">Services</Link>
+                            <Link to="/programs" className="nav-item nav-link">Programs</Link> */}
+                            <Link to="/events" className="nav-item nav-link">Games</Link>
                             <Link to="/blog" className="nav-item nav-link">Blog</Link>
                             <Link to="/contact" className="nav-item nav-link">Contact</Link>
 
