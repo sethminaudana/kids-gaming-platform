@@ -8,6 +8,8 @@ import Event from './template/Event';
 import Blog from './template/Blog';
 import Testimonial from './template/Testimonial';
 import Contact from './template/Contact';
+import About from './template/About';
+
 
 // Assuming you have these components (or placeholders)
 import Header from './components/Header'; 
@@ -46,6 +48,8 @@ function App() {
         <Route path="/blog" element={<Blog />} />
         <Route path="/testimonial" element={<Testimonial />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
+
 
         {/* 404 Fallback */}
         <Route path="*" element={<div className="text-center py-5"><h1>404 - Page Not Found</h1></div>} />
