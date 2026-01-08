@@ -31,7 +31,7 @@ const Blog = () => {
             <div className="col-md-6 col-lg-6 col-xl-4 wow fadeIn" data-wow-delay="0.1s">
               <div className="blog-item rounded-bottom">
                 <div className="blog-img overflow-hidden position-relative img-border-radius">
-                  <img src="img/blog-1.jpg" className="img-fluid w-100" alt="Image" />
+                  <img src="src/public/img/blog-1.jpg" className="img-fluid w-100" alt="Image" />
                 </div>
                 <div className="d-flex justify-content-between px-4 py-3 bg-light border-bottom border-primary blog-date-comments">
                   {/*<small className="text-dark"><i className="fas fa-calendar me-1 text-dark"></i> 29 Nov 2023</small>*/}
@@ -40,7 +40,7 @@ const Blog = () => {
                 <div className="blog-content d-flex align-items-center px-4 py-3 bg-light">
                   <div className="overflow-hidden rounded-circle rounded-top border border-primary">
                     <img 
-                      src="img/program-teacher.jpg" 
+                      src="src/public/img/program-teacher.jpg" 
                       className="img-fluid rounded-circle p-2 rounded-top" 
                       alt="Image" 
                       style={{ width: '70px', height: '70px', borderStyle: 'dotted', borderColor: 'var(--bs-primary)' }} 
@@ -67,7 +67,7 @@ const Blog = () => {
             <div className="col-md-6 col-lg-6 col-xl-4 wow fadeIn" data-wow-delay="0.3s">
               <div className="blog-item rounded-bottom">
                 <div className="blog-img overflow-hidden position-relative img-border-radius">
-                  <img src="img/blog-2.jpg" className="img-fluid w-100" alt="Image" />
+                  <img src="src/public/img/blog-2.jpg" className="img-fluid w-100" alt="Image" />
                 </div>
                 <div className="d-flex justify-content-between px-4 py-3 bg-light border-bottom border-primary blog-date-comments">
                   <small className="text-dark"><i className="fas fa-calendar me-1 text-dark"></i> 29 Nov 2023</small>
@@ -76,7 +76,7 @@ const Blog = () => {
                 <div className="blog-content d-flex align-items-center px-4 py-3 bg-light">
                   <div className="overflow-hidden rounded-circle rounded-top border border-primary">
                     <img 
-                      src="img/program-teacher.jpg" 
+                      src="src/public/img/program-teacher.jpg" 
                       className="img-fluid rounded-circle p-2 rounded-top" 
                       alt="" 
                       style={{ width: '70px', height: '70px', borderStyle: 'dotted', borderColor: 'var(--bs-primary)' }} 
@@ -103,7 +103,7 @@ const Blog = () => {
             <div className="col-md-6 col-lg-6 col-xl-4 wow fadeIn" data-wow-delay="0.5s">
               <div className="blog-item rounded-bottom">
                 <div className="blog-img overflow-hidden position-relative img-border-radius">
-                  <img src="img/blog-3.jpg" className="img-fluid w-100" alt="Image" />
+                  <img src="src/public/img/blog-3.jpg" className="img-fluid w-100" alt="Image" />
                 </div>
                 <div className="d-flex justify-content-between px-4 py-3 bg-light border-bottom border-primary blog-date-comments">
                   <small className="text-dark"><i className="fas fa-calendar me-1 text-dark"></i> 29 Nov 2023</small>
@@ -112,7 +112,7 @@ const Blog = () => {
                 <div className="blog-content d-flex align-items-center px-4 py-3 bg-light">
                   <div className="overflow-hidden rounded-circle rounded-top border border-primary">
                     <img 
-                      src="img/program-teacher.jpg" 
+                      src="src/public/img/program-teacher.jpg" 
                       className="img-fluid rounded-circle p-2 rounded-top" 
                       alt="" 
                       style={{ width: '70px', height: '70px', borderStyle: 'dotted', borderColor: 'var(--bs-primary)' }} 
