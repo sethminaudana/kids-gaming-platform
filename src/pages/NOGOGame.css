@@ -232,7 +232,7 @@
   100% { transform: scale(1); }
 }
 
-/*.sparkle {
+.sparkle {
   position: absolute;
   width: 20px;
   height: 20px;
@@ -240,7 +240,7 @@
   border-radius: 50%;
   animation: sparkle 1s infinite;
 }
-*/
+
 @keyframes sparkle {
   0%, 100% { opacity: 0; transform: scale(0); }
   50% { opacity: 1; transform: scale(1); }
@@ -1801,7 +1801,6 @@
   r: 3;
 }
 
-/* Add to your existing CSS */
 .nogo-game {
   max-width: 900px;
   margin: 0 auto;
@@ -1816,6 +1815,13 @@
   position: relative;
 }
 
-/* Rest of your existing CSS remains the same */
-
-/* ... Rest of your existing CSS ... */
+.fixation-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
