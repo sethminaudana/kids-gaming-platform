@@ -313,3 +313,28 @@ a:focus {
     max-width: 1024px;
   }
 } /* <-- This closing brace was missing! */
+  
+#phaser-game-container {
+  /* This is for the GemMatch game */
+  width: 800px;
+  height: 600px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  /* Add margin auto to center it inside its column if needed */
+  margin: 0 auto;
+}
+
+/* --- Add this new rule for the blueprint game --- */
+#blueprint-game-container {
+  width: 1024px;
+  height: 768px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* Add margin auto to center it inside its column if needed */
+  margin: 0 auto;
+  
+
+}
+}
