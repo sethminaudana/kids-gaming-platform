@@ -28,6 +28,10 @@ const MemoryGame = () => {
     const [winner, setWinner] = useState(false);
     const [gameOver, setGameOver] = useState(false);
 
+    // FIX: Force scroll to top when page opens
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
     // --- DATA COLLECTION REFS (New) ---
     const eventLog = useRef([]); // Stores the raw timeline of events
     const lastClickTime = useRef(Date.now()); // To calculate Inter-Click Interval

@@ -107,7 +107,7 @@ if prediction[0] == 1:
     print("RESULT: Neurotypical Pattern")
     print("   The gameplay behavior aligns with the baseline.")
 else:
-    print("RESULT: ANOMALY DETECTED (Potential ADHD)")
+    print("RESULT: ANOMALY DETECTED")
     print("   Significant deviation from baseline observed.")
     if variability > 500:
         print("    -> High inconsistency in attention detected.")
