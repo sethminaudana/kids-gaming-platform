@@ -42,7 +42,7 @@ export default function Header() {
 
         {/* Removed 'wow fadeIn' class so content is visible */}
         <div className="container-fluid border-bottom bg-light wow fadeIn" data-wow-delay="0.1s">
-            <div className="container topbar bg-primary d-none d-lg-block py-2" style={{ borderRadius: "0 40px" }}>
+            {/* <div className="container topbar bg-primary d-none d-lg-block py-2" style={{ borderRadius: "0 40px" }}>
                 <div className="d-flex justify-content-between">
                     <div className="top-info ps-2">
                         <small className="me-3"><i className="fas fa-map-marker-alt me-2 text-secondary"></i> <a href="#" className="text-white">123 Street, New York</a></small>
@@ -55,10 +55,10 @@ export default function Header() {
                         <a href="" className="btn btn-light btn-sm-square rounded-circle me-0"><i className="fab fa-linkedin-in text-secondary"></i></a>
                     </div>
                 </div>
-            </div>
+            </div> */}
             <div className="container px-0">
                 <nav className="navbar navbar-light navbar-expand-xl py-3">
-                    <a href="index.html" className="navbar-brand"><h1 className="text-primary display-6">Baby<span className="text-secondary">Care</span></h1></a>
+                    <a href="/" className="navbar-brand"><h1 className="text-primary display-6">Child<span className="text-secondary">Arena</span></h1></a>
                     <button className="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                         <span className="fa fa-bars text-primary"></span>
                     </button>

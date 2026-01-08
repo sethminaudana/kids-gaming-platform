@@ -517,10 +517,10 @@ h6,
     transition: 0.5s;
 }
 
-.events .events-item:hover .events-img::after {
+/* .events .events-item:hover .events-img::after {
     height: 100%;
     opacity: 1;
-}
+} */
 
 .events .events-item .events-text a.h4,
 .events .events-item .events-img img {

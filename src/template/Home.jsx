@@ -16,7 +16,7 @@ export default function Home() {
             <div className="container py-5">
                 <div className="row g-5">
                     <div className="col-lg-7 col-md-12">    
-                                            <h1 className="mb-3 text-primary">We Care Your Baby</h1>
+                                            <h1 className="mb-3 text-primary">We Care Your Child</h1>
                         <h1 className="mb-5 display-1 text-white">The Best Play Area For Your Kids</h1>
                         <a href="" className="btn btn-primary px-4 py-3 px-md-5  me-4 btn-border-radius">Get Started</a>
                         <a href="" className="btn btn-primary px-4 py-3 px-md-5 btn-border-radius">Learn More</a>
@@ -41,13 +41,13 @@ export default function Home() {
                     <div className="col-lg-7 wow fadeIn" data-wow-delay="0.3s">
                         <h4 className="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">About Us</h4>
                         <h1 className="text-dark mb-4 display-5">We Learn Smart Way To Build Bright Futute For Your Children</h1>
-                       <p className="text-dark mb-4">Lorem Ipsum is simply dummy text of the printing and typesetting industry. the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+                       <p className="text-dark mb-4">Jump into a world of endless fun! SuperQuest is designed to test your skills, speed, and strategy. Collect badges, beat high scores, and become a legendary hero.
                         </p>
                         <div className="row mb-4">
                             <div className="col-lg-6">
-                                <h6 className="mb-3"><i className="fas fa-check-circle me-2"></i>Sport Activites</h6>
-                                <h6 className="mb-3"><i className="fas fa-check-circle me-2 text-primary"></i>Outdoor Games</h6>
-                                <h6 className="mb-3"><i className="fas fa-check-circle me-2 text-secondary"></i>Nutritious Foods</h6>
+                                <h6 className="mb-3"><i className="fas fa-check-circle me-2"></i>Games</h6>
+                                <h6 className="mb-3"><i className="fas fa-check-circle me-2 text-primary"></i>Fun</h6>
+                                <h6 className="mb-3"><i className="fas fa-check-circle me-2 text-secondary"></i>Training</h6>
                             </div>
                             <div className="col-lg-6">
                                 <h6 className="mb-3"><i className="fas fa-check-circle me-2"></i>Highly Secured</h6>
@@ -151,7 +151,7 @@ export default function Home() {
             <div className="container py-5">
                 <div className="mx-auto text-center wow fadeIn" data-wow-delay="0.1s" style={{ maxWidth: "700px" }}>
                     <h4 className="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">Our Programs</h4>
-                    <h1 className="mb-5 display-3">We Offer An Exclusive Program For Kids</h1>
+                    <h1 className="mb-5 display-3">We Offer An Exclusive Games For Kids</h1>
                 </div>
                 <div className="row g-5 justify-content-center">
                     <div className="col-md-6 col-lg-6 col-xl-4 wow fadeIn" data-wow-delay="0.1s">
@@ -426,7 +426,7 @@ export default function Home() {
 
 
         {/* Team Start*/}
-        <div className="container-fluid team py-5">
+        {/* <div className="container-fluid team py-5">
             <div className="container py-5">
                 <div className="mx-auto text-center wow fadeIn" data-wow-delay="0.1s" style={{ maxWidth: "600px" }}>
                     <h4 className="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">Our Team</h4>
@@ -495,7 +495,7 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div> */}
         {/* Team End*/}
 
 

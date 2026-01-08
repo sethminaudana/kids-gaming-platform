@@ -49,6 +49,11 @@ function App() {
         <Route path="/testimonial" element={<Testimonial />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
+        <Route path="nogo-game" element={<NOGOGame />} />
+         <Route path="game" element={<Game />} />
+         {/* <Route path="gem-match" element={<GemMatchGame />} /> */}
+        {/* <Route path="blueprint-builder" element={<BlueprintGame />} /> */}
+         <Route path='memorygame' element = {<MemoryGame/>} />
 
 
         {/* 404 Fallback */}
