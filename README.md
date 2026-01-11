@@ -9,7 +9,7 @@
 
 ## 📖 Project Overview
 
-**[Project Name]** is a research based software solution designed to screen for Attention Deficit Hyperactivity Disorder (ADHD) using gamification techniques. Unlike traditional paper-based questionnaires, this tool utilizes interactive gameplay to measure attention span, impulsivity, and reaction times in a stress-free environment.
+Our project is a research based software solution designed to screen for Attention Deficit Hyperactivity Disorder (ADHD) using gamification techniques. Unlike traditional paper based questionnaires, this tool utilizes interactive gameplay to measure attention span, impulsivity, and reaction times in a stress free environment.
 
 This project was developed as a comprehensive research initiative to determine if gamified metrics can correlate with standard DSM-5 diagnostic criteria.
 
@@ -25,12 +25,12 @@ This project was developed as a comprehensive research initiative to determine i
 ### 📊 Diagnostic Analytics
 * **Real-time Scoring:** Instant calculation of performance metrics.
 * **Comparative Analysis:** Compare user results against control group baselines.
-* **Detailed Reports:** Generates PDF reports for clinicians/researchers.
+* **Detailed Reports:** Generates PDF reports for clinicians or parents.
 
 ### 🛡️ User Management
-* **Role-Based Access:** Separate dashboards for Admins, Researchers, and Users.
+* **Role Based Access:** Separate dashboard for parents.
 * **Secure Data:** Anonymized data storage for research integrity.
-* **JWT Authentication:** Secure login for Admins, Researchers, and Users.
+* **JWT Authentication:** Secure login for Users.
 * **NoSQL Data Structure:** Flexible schema for storing complex gameplay logs.
 
 ---
@@ -41,9 +41,8 @@ This project was developed as a comprehensive research initiative to determine i
 | :--- | :--- |
 | **Frontend** | React.js, Redux (State Management), Tailwind CSS / Material UI |
 | **Backend** | Node.js, Express.js |
-| **Database** | MongoDB (Mongoose ODM) |
+| **Database** | MongoDB Atlas |
 | **Authentication** | JSON Web Tokens (JWT) |
-| **Deployment** | Vercel/Netlify (Frontend), Heroku/Render (Backend) |
 ---
 
 ## 🔬 Research Methodology
@@ -52,7 +51,7 @@ This tool operates on a specific set of psychological parameters:
 
 1.  **Sustained Attention:** Measured by the user's ability to track targets over time.
 2.  **Inhibition Control:** Measured by "Go/No-Go" gameplay mechanics.
-3.  **DSM-5 Integration:** Game results are cross-referenced with digital questionnaire inputs.
+3.  **DSM-5 Integration:** Game results are cross referenced with digital questionnaire inputs.
 
 ---
 
@@ -64,7 +63,7 @@ This project is brought to you by a dedicated team of four:
 | :--- | :--- |
 | **[Member 1 Name]** | Architecture, Backend Logic, Integration |
 | **[Member 2 Name]** | DSM-5 Criteria, Data Analysis, Testing |
-| **[Member 3 Name]** | Game Design, Frontend, Accessibility |
+| **IT22582492 R SETHMINA UDANA** | Made card flip game to capture child's memory behaviour |
 | **[Member 4 Name]** | Testing, Bug Fixes, Research Paper |
 
 ---
@@ -80,7 +79,7 @@ Follow these steps to set up the project locally:
   
 1.  **Clone the repository**
     ```bash
-    git clone [https://github.com/yourusername/project-name.git](https://github.com/yourusername/project-name.git)
+    git clone https://github.com/sethminaudana/kids-gaming-platform.git
     ```
 
 2.  **Backend Setup (Server)**
@@ -98,7 +97,7 @@ Follow these steps to set up the project locally:
 
 ## 📸 Screenshots
 
-*(Place screenshots of your game or dashboard here)*
+
 
 | Landing Page | Diagnostic Game |
 | :---: | :---: |
