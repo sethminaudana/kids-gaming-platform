@@ -110,7 +110,7 @@ else:
     print("RESULT: ANOMALY DETECTED")
     print("   Significant deviation from baseline observed.")
     if variability > 500:
-        print("    -> High inconsistency in attention detected.")
+        print("    -> High inconsistency in Memory detected.")
     if total_invalid > 3:
         print("    -> High impulsivity detected.")
 

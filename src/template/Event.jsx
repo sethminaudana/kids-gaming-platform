@@ -84,7 +84,7 @@ const Event = () => {
             <div className="col-md-6 col-lg-6 col-xl-4 wow fadeIn" data-wow-delay="0.3s">
               <div className="events-item bg-primary rounded">
                 <div className="events-inner position-relative">
-            <Link to="/">
+            <Link to="http://localhost:3000/">
 
                   <div className="events-img overflow-hidden  position-relative">
                     <img src="src/public/img/event-2.jpg" className="img-fluid w-100 " alt="Image" />
@@ -100,7 +100,7 @@ const Event = () => {
                   </Link>
                 </div>
                 <div className="events-text p-4 border border-primary bg-white border-top-0 rounded-bottom">
-                  <a href="#" className="h4">Attention Checking</a>
+                  <a href="http://localhost:3000/" className="h4">Attention Checking</a>
                   <p className="mb-0 mt-3">Ckeck your Attention through the game</p>
                 </div>
               </div>
