@@ -1,0 +1,52 @@
+============================================================
+ATTENTION ANALYSIS MODEL - TRAINING REPORT
+============================================================
+
+Training Date: 2026-01-04 13:24:47
+
+Best Model: Random Forest
+Accuracy: 1.0000 (100.00%)
+
+Training Samples: 880
+Test Samples: 221
+Number of Features: 14
+
+------------------------------------------------------------
+CONFUSION MATRIX:
+------------------------------------------------------------
+[[191   0]
+ [  0  30]]
+
+------------------------------------------------------------
+CLASSIFICATION REPORT:
+------------------------------------------------------------
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00       191
+           1       1.00      1.00      1.00        30
+
+    accuracy                           1.00       221
+   macro avg       1.00      1.00      1.00       221
+weighted avg       1.00      1.00      1.00       221
+
+============================================================
+ALL MODELS COMPARISON:
+============================================================
+
+Random Forest:
+  Accuracy: 1.0000
+  Confusion Matrix:
+[[191   0]
+ [  0  30]]
+
+Gradient Boosting:
+  Accuracy: 0.9955
+  Confusion Matrix:
+[[191   0]
+ [  1  29]]
+
+Neural Network:
+  Accuracy: 1.0000
+  Confusion Matrix:
+[[191   0]
+ [  0  30]]

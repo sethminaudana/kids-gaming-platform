@@ -1,4 +1,3 @@
-// NOGOGame.js - Fixed version
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './NOGOGame.css';
@@ -203,125 +202,6 @@ const LanguageSelector = ({ onLanguageSelect }) => {
   );
 };
 
-export const useEmotionCapture = (enabled) => {
-  const videoRef = useRef(null);
-  const faceMeshRef = useRef(null);
-  const cameraRef = useRef(null);
-  const [emotionState, setEmotionState] = useState({ valence: 0.5, arousal: 0.5 });
-
-  useEffect(() => {
-    if(!enabled){
-      if (cameraRef.current) {
-        cameraRef.current.stop();
-        cameraRef.current = null;
-      }
-
-      if (videoRef.current?.srcObject) {
-        videoRef.current.srcObject
-        .getTracks()
-        .forEach(track => track.stop());
-        videoRef.current.srcObject = null;
-      }
-
-      return;
-    }
-
-    faceMeshRef.current = new mpFaceMesh.FaceMesh({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-    });
-
-    faceMeshRef.current.setOptions({
-      maxNumFaces: 1,
-      refineLandmarks: true,
-      minDetectionConfidence: 0.5,
-      minTrackingConfidence: 0.5
-    });
-
-    faceMeshRef.current.onResults((results) => {
-      if (!results.multiFaceLandmarks) {
-        setEmotionState({ valence: 0.5, arousal: 0.5 });
-        return;
-      }
-
-      const landmarks = results.multiFaceLandmarks[0];
-
-      try {
-        // Get mouth points for valence (smile/frown)
-        const mouthTop = landmarks[13];
-        const mouthBottom = landmarks[14];
-        const mouthLeft = landmarks[78];
-        const mouthRight = landmarks[308];
-        
-        // Get eye points for arousal (eye openness)
-        const leftEyeTop = landmarks[159];
-        const leftEyeBottom = landmarks[145];
-        const rightEyeTop = landmarks[386];
-        const rightEyeBottom = landmarks[374];
-        
-        if (mouthTop && mouthBottom && mouthLeft && mouthRight &&
-            leftEyeTop && leftEyeBottom && rightEyeTop && rightEyeBottom) {
-          
-          const mouthOpenness = Math.abs(mouthBottom.y - mouthTop.y);
-          const mouthWidth = Math.abs(mouthRight.x - mouthLeft.x);
-          const mouthRatio = mouthWidth > 0 ? mouthOpenness / mouthWidth : 0.15;
-          
-          const leftEyeOpen = Math.abs(leftEyeTop.y - leftEyeBottom.y);
-          const rightEyeOpen = Math.abs(rightEyeTop.y - rightEyeBottom.y);
-          const eyeOpenness = (leftEyeOpen + rightEyeOpen) / 2;
-          
-          const valence = Math.min(Math.max((mouthRatio - 0.1) * 8, 0), 1);
-          const arousal = Math.min(Math.max(eyeOpenness * 6, 0), 1);
-          
-          const valenceFinal = Math.min(Math.max(valence + (Math.random() * 0.05 - 0.025), 0), 1);
-          const arousalFinal = Math.min(Math.max(arousal + (Math.random() * 0.05 - 0.025), 0), 1);
-          
-          setEmotionState({
-            valence: parseFloat(valenceFinal.toFixed(4)),
-            arousal: parseFloat(arousalFinal.toFixed(4))
-          });
-        }
-      } catch (error) {
-        console.error('Error calculating emotion:', error);
-        setEmotionState({ valence: 0.5, arousal: 0.5 });
-      }
-    });
-
-    if (videoRef.current) {
-      cameraRef.current = new Camera(videoRef.current, {
-        onFrame: async () => {
-          try {
-            await faceMeshRef.current.send({
-              image: videoRef.current
-            });
-          } catch (error) {
-            console.error('Error processing frame:', error);
-          }
-        },
-        width: 640,
-        height: 480
-      });
-      cameraRef.current.start();
-    }
-
-    return () => {
-      if (cameraRef.current) {
-        cameraRef.current.stop();
-        cameraRef.current = null;
-      }
-
-      if (videoRef.current?.srcObject) {
-        videoRef.current.srcObject
-          .getTracks()
-          .forEach(track => track.stop());
-        videoRef.current.srcObject = null;
-      }
-    };
-
-  }, [enabled])
-
-  return { videoRef, emotionState };
-};
-
 // Audio Manager (same as before)
 const useAudioManager = () => {
   const [audioLoaded, setAudioLoaded] = useState(false);
@@ -371,7 +251,134 @@ const useAudioManager = () => {
   return { playSound, stopAllSounds, audioLoaded };
 };
 
+
+export const useEmotionCapture = (enabled) => {
+  const videoRef = useRef(null);
+  const faceMeshRef = useRef(null);
+  const cameraRef = useRef(null);
+
+  const [emotionState, setEmotionState] = useState({ valence: 0.5, arousal: 0.5 });
+
+  // A ref that holds the latest values
+  const latestEmotionRef = useRef({ valence: 0.5, arousal: 0.5 });
+
+
+  // Euclidean distance between two 3D landmarks
+  const getDistance = (p1, p2) => {
+    return Math.sqrt(
+      Math.pow(p1.x - p2.x, 2) + 
+      Math.pow(p1.y - p2.y, 2) + 
+      Math.pow(p1.z - p2.z, 2)
+    );
+  };
+
+  useEffect(() => {
+    if(!enabled){
+
+      if (cameraRef.current) {
+        cameraRef.current.stop();
+        cameraRef.current = null;
+      }
+
+      if (videoRef.current?.srcObject) {
+        videoRef.current.srcObject
+        .getTracks()
+        .forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+      }
+
+      return;
+    }
+
+    faceMeshRef.current = new mpFaceMesh.FaceMesh({
+      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+    });
+
+    faceMeshRef.current.setOptions({
+      maxNumFaces: 1,
+      refineLandmarks: true,
+      minDetectionConfidence: 0.5,
+      minTrackingConfidence: 0.5
+    });
+
+    faceMeshRef.current.onResults((results) => {
+      if (!results.multiFaceLandmarks || results.multiFaceLandmarks.length === 0) return;
+
+      const landmarks = results.multiFaceLandmarks[0];
+
+      // NORMALIZATION FACTOR
+      // Distance between outer eye corners (33 and 263) scales the face size (eye distance as a scale factor)
+      const faceWidth = getDistance(landmarks[33], landmarks[263]);
+
+      // VALENCE (SMILE) - Mouth Ratio(Height/Width) - Scale-invariant smile detection
+      const mouthHeight = getDistance(landmarks[13], landmarks[14]);
+      const mouthWidth = getDistance(landmarks[78], landmarks[308]);
+      const mouthRatio = mouthHeight / (mouthWidth || 0.1);
+      const valence = Math.min(Math.max((mouthRatio - 0.1) * 8, 0), 1);
+
+      // Distance between top lip (13) and bottom lip (14)
+      // const mouthGap = getDistance(landmarks[13], landmarks[14]);
+      // const normalizedSmile = mouthGap / faceWidth;
+
+      // Map normalizedSmile (typically 0.05 to 0.2) to 0-1 scale
+      // Offset by 0.05 (neutral) and multiply for sensitivity
+      // const valence = Math.min(Math.max((normalizedSmile - 0.05) * 5, 0), 1);
+
+
+      // AROUSAL (EYE OPENNESS)
+      const leftEyeGap = getDistance(landmarks[159], landmarks[145]);
+      const rightEyeGap = getDistance(landmarks[386], landmarks[374]);
+      const avgEyeGap = (leftEyeGap + rightEyeGap) / 2;
+      const normalizedEyes = avgEyeGap / faceWidth;
+
+      //Map normalizedEyes (typically 0.02 to 0.06) to 0-1 scale
+      const arousal = Math.min(Math.max((normalizedEyes - 0.02) * 20, 0), 1);
+
+      const payload = { valence: parseFloat(valence.toFixed(4)), arousal: parseFloat(arousal.toFixed(4)) };
+
+      // Update Ref immediately (for precise data logging)
+      // latestEmotionRef.current = { valence, arousal };
+
+      latestEmotionRef.current = payload;
+
+      // setEmotionState({valence: valence, arousal: arousal});
+      setEmotionState(payload);
+    });
+
+    if (videoRef.current) {
+
+      cameraRef.current = new Camera(videoRef.current, {
+        onFrame: async () => {if (faceMeshRef.current)
+          await faceMeshRef.current.send({
+            image: videoRef.current
+          });
+        },
+        width: 640,
+        height: 480
+      });
+
+      cameraRef.current.start();
+    }
+
+    return () => {
+      if (cameraRef.current) {cameraRef.current.stop();}
+      if (faceMeshRef.current) faceMeshRef.current.close();
+    };
+
+  }, [enabled])
+
+  return { videoRef, emotionState, latestEmotionRef };
+
+};
+
+
 const NOGOGame = () => {
+
+  const gameStartedRef = useRef(false); // Game started or not
+
+  const currentActionRef = useRef(''); // track current block
+
+
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(60);
   const [currentBlock, setCurrentBlock] = useState(null);
@@ -384,9 +391,12 @@ const NOGOGame = () => {
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [isPlayingCelebration, setIsPlayingCelebration] = useState(false);
-  
-  const scheduledStopTimes = useRef([]);
-  const stopSignsShown = useRef(0);
+  const { playSound, stopAllSounds } = useAudioManager();
+
+  const stopSignalTimerRef = useRef(null); // SSD delay
+  const stopStayTimerRef = useRef(null);  // Window to stay still during Stop
+  const trialEndedRef = useRef(false); // trial end guard
+  const trialTimeoutRef = useRef(null); // timout for trial 
   
   const emotionAtStimulusRef = useRef(null);
   const emotionAtResponseRef = useRef(null);
@@ -400,31 +410,115 @@ const NOGOGame = () => {
     incorrectStopCount: 0
   });
 
+
+  // --- Trial & timing ---
   const trialIdRef = useRef(0);
   const stimulusTimeRef = useRef(null);
 
-  const motionBufferRef = useRef([]);
+  // Inter-Trial Interval (ms)
+  const ITI_MIN = 300;  // minimum blank time
+  const ITI_MAX = 600;  // maximum blank time (jitter)
+  const BLANK_EVENT = 'BLANK';
+
+  // --- Mouse movement ---
+  const motionBufferRef = useRef([]); // {t, x, y, v}
   const lastMouseRef = useRef({ x: null, y: null, t: null });
 
+  // --- Reaction & movement ---
   const firstMovementTimeRef = useRef(null);
   const reactionTimeRef = useRef(null);
 
-  const trialLogRef = useRef([]);
-  const rtListRef = useRef([]);
-
-  const SSDRef = useRef(250);
+  // --- Logging ---
+  const trialLogRef = useRef([]); // FINAL CSV rows
+  const rtListRef = useRef([]);   // for RTV
+  
+  // Stair Case rule for stop sign
+  const SSDRef = useRef(250); // initial SSD (ms)
   const SSD_STEP = 50;
   const SSD_MIN = 50;
   const SSD_MAX = 600;
 
   const stopTrialCountRef = useRef(0);
   const stopFailCountRef = useRef(0);
+  const isStopTrialRef = useRef(false);
 
-  const { videoRef, emotionState } = useEmotionCapture(gameActive);
-  const { playSound, stopAllSounds } = useAudioManager();
+  // emotion capture
+  const { videoRef, emotionState, latestEmotionRef} = useEmotionCapture(gameActive);
 
+  // export data
   const hasExportedRef = useRef(false);
 
+  const calculateSSRT = () => {
+    const validGoRTs = rtListRef.current.filter(rt => rt > 150).sort((a, b) => a - b);
+    if (validGoRTs.length === 0) return 0;
+
+    // The Integration Method:
+    // SSRT = nth RT - Average SSD
+    // where n is the probability of responding given a stop signal
+    const probFailure = stopFailCountRef.current / Math.max(stopTrialCountRef.current, 1);
+    const index = Math.floor(probFailure * validGoRTs.length);
+    const nthRT = validGoRTs[Math.min(index, validGoRTs.length - 1)];
+  
+    return nthRT - SSDRef.current;
+  };
+
+  const aggregateGameData = () => {
+    const trials = trialLogRef.current;
+    if (!trials || trials.length === 0) return null;
+
+    const validRTs = trials
+      .filter(t => t.rt_ms != null && t.rt_ms > 0)
+      .map(t => t.rt_ms);
+
+    const mean = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
+    const sd = arr => {
+      const m = mean(arr);
+      return arr.length ? Math.sqrt(arr.reduce((s,x)=>s + Math.pow(x-m,2),0)/arr.length) : 0;
+    };
+    
+
+    // GO / NO-GO / STOP
+    const goTrials = trials.filter(t => t.stimulus_action === 'GO');
+    const nogoTrials = trials.filter(t => t.stimulus_action === 'NO-GO');
+    const stopTrials = trials.filter(t => t.stimulus_action === 'IDLE');
+
+    const getRate = (arr) => arr.length ? arr.filter(t => t.correct === 1).length / arr.length : 0;
+
+    return {
+      total_trials: trials.length,
+      score,
+      level,
+      high_score: highScore,
+
+      mean_rt: mean(validRTs),
+      sd_rt: sd(validRTs),
+      rt_variability: mean(validRTs) > 0 ? sd(validRTs)/mean(validRTs) : 0,
+
+      correct_go_rate: getRate(goTrials),
+      correct_nogo_rate: getRate(nogoTrials),
+      stop_success_rate: getRate(stopTrials),
+
+      mean_mit: mean(trials.map(t=>t.mit_ms).filter(v=>v!=null)),
+      mean_leakage: mean(trials.map(t=>t.motor_leakage)) || 0,
+      mean_inhibition_slope: mean(trials.map(t=>t.inhibition_slope).filter(v=>v!=null)) || 0,
+      mean_residual_motion: mean(trials.map(t=>t.residual_motion)) || 0,
+      mean_micro_corrections_hesitationCount: mean(trials.map(t=>t.hesitationCount)) || 0,
+      mean_micro_corrections_swerveCount: mean(trials.map(t=>t.swerveCount)) || 0,
+
+      mean_valence_stimulus: mean(trials.map(t=>t.valence_stimulus).filter(v=>v!=null)),
+      mean_valence_response: mean(trials.map(t=>t.valence_response).filter(v=>v!=null)),
+      mean_valence_delta: mean(trials.map(t=>t.valence_delta).filter(v=>v!=null)),
+      mean_arousal_stimulus: mean(trials.map(t=>t.arousal_stimulus).filter(v=>v!=null)),
+      mean_arousal_response: mean(trials.map(t=>t.arousal_response).filter(v=>v!=null)),
+      mean_arousal_delta: mean(trials.map(t=>t.arousal_delta).filter(v=>v!=null)),
+      mean_emotional_reactivity: mean(trials.map(t=>t.emotional_reactivity).filter(v=>v!=null)),
+
+      total_stop_trials: stopTrialCountRef.current,
+      failed_stops: stopFailCountRef.current,
+      timestamp: Date.now()
+    };
+  };
+  
   const blockTypes = [
     { shape: 'square', color: 'green', action: 'GO' },
     { shape: 'square', color: 'red', action: 'NO-GO' },
@@ -482,202 +576,222 @@ const NOGOGame = () => {
     playSound(soundType);
   };
 
-  // Fixed mouse movement tracking with better data collection
+  useEffect(() => {
+
+      if (gameStartedRef.current && !gameActive && !hasExportedRef.current) {
+        hasExportedRef.current = true;
+
+        const aggregatedRow = aggregateGameData();
+        console.log("Aggregated Game Row:", aggregatedRow);
+
+        // Optionally export as CSV with one row
+        const headers = Object.keys(aggregatedRow).join(',');
+        const csv = [
+          headers,
+          Object.values(aggregatedRow).map(v => JSON.stringify(v ?? '')).join(',')
+        ].join('\n');
+
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `nogo_aggregated_${Date.now()}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    }, [gameActive]);
+
   useEffect(() => {
     const handleMouseMove = (e) => {
-      if (!gameActive || !stimulusTimeRef.current) return;
+      if (!gameActive) return; // executes only when gameActive if not exit.
 
-      const now = performance.now();
-      
-      // Always record movement data, even before first movement detection
-      if (lastMouseRef.current.t !== null) {
-        const dx = e.clientX - lastMouseRef.current.x;
-        const dy = e.clientY - lastMouseRef.current.y;
-        const dt = now - lastMouseRef.current.t;
+      // get time precisely with miliseconds 
+      // Returns a high-resolution timestamp (sub-millisecond precision)
+      //  Monotonic → not affected by system clock changes
+      const now = performance.now(); 
+      //let vx = 0, vy = 0, velocity = 0;
 
-        if (dt > 0) {
-          const velocity = Math.sqrt(dx * dx + dy * dy) / dt;
-          const acceleration = velocity / dt;
+      const dx = lastMouseRef.current.x !== null ? e.clientX - lastMouseRef.current.x : 0;
+      const dy = lastMouseRef.current.y !== null ? e.clientY - lastMouseRef.current.y : 0;
+      const dt = lastMouseRef.current.t !== null ? now - lastMouseRef.current.t : 1; // avoid div by 0
 
-          // Store comprehensive movement data
-          motionBufferRef.current.push({
-            t: now,
-            x: e.clientX,
-            y: e.clientY,
-            v: velocity,
-            a: acceleration,
-            vx: dx / dt,
-            vy: dy / dt,
-            dx: dx,
-            dy: dy,
-            dt: dt,
-            eventType: 'mousemove'
-          });
+      const vx = dx/dt;
+      const vy = dy/dt;
+      const velocity = Math.sqrt(vx*vx + vy*vy);
 
-          // Keep buffer size reasonable (last 1000ms)
-          if (motionBufferRef.current.length > 100) {
-            motionBufferRef.current.shift();
-          }
+      motionBufferRef.current.push({ t: now, x: e.clientX, y: e.clientY, vx, vy, v: velocity });
 
-          // Detect first movement with more sensitive threshold
-          if (firstMovementTimeRef.current === null && velocity > 0.01) {
-            firstMovementTimeRef.current = now;
-            reactionTimeRef.current = now - stimulusTimeRef.current;
-            console.log('First movement detected:', reactionTimeRef.current, 'ms');
-          }
-        }
+      if (!firstMovementTimeRef.current && velocity > 0.005) { // lower threshold
+        firstMovementTimeRef.current = now;
+        reactionTimeRef.current = now - stimulusTimeRef.current;
       }
 
-      lastMouseRef.current = {
-        x: e.clientX,
-        y: e.clientY,
-        t: now
-      };
-    };
+      lastMouseRef.current = { x: e.clientX, y: e.clientY, t: now };
 
-    // Also track mouse clicks
-    const handleMouseClick = (e) => {
-      if (!gameActive || !stimulusTimeRef.current) return;
+      // only compute velocity if previous sample (mouse movement) already exists 
+      // if (lastMouseRef.current.t !== null) { //check for last mouse time
+      //   const dx = e.clientX - lastMouseRef.current.x; //Spatial displacement (dx, dy)
+      //   const dy = e.clientY - lastMouseRef.current.y;
+      //   const dt = now - lastMouseRef.current.t; //Temporal gap dt
+
+      //   if (dt > 0) {
+      //     vx = dx/dt;
+      //     vy = dy/dt;
+      //     velocity = Math.sqrt(dx * dx + dy * dy) / dt; //velocity=time elapsed/distance moved​
+
+      //     // store continous motor trace (mouse movement) - time-series motor signal, velocity against time
+      //     motionBufferRef.current.push({
+      //       t: now,
+      //       v: velocity,
+      //       vx,
+      //       vy
+      //     });
+
+      //     // Always push a motion sample even if lastMouseRef.current.t is null
+      //     lastMouseRef.current = { x: e.clientX, y: e.clientY, t: now };
+
+      //     motionBufferRef.current = motionBufferRef.current.filter(p => p.t >= now - 2000);
+
+      //     // --- Movement Initiation Time (MIT)
+
+      //     if (firstMovementTimeRef.current === null && velocity > 0.02) { //detects the first intentional movement, not noise. threshold (velocity >0.02) skips noisy movements only intentional fast movements captured
+      //       // check if firstMovementTimeRef.current is null
+      //       firstMovementTimeRef.current = now;
+      //       reactionTimeRef.current = now - stimulusTimeRef.current;
+      //     }
+      //   }
+      // }
+
       
-      const now = performance.now();
-      motionBufferRef.current.push({
-        t: now,
-        x: e.clientX,
-        y: e.clientY,
-        v: 0,
-        a: 0,
-        vx: 0,
-        vy: 0,
-        dx: 0,
-        dy: 0,
-        dt: 0,
-        eventType: 'click'
-      });
     };
 
-    if (gameActive) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('click', handleMouseClick);
-    }
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('click', handleMouseClick);
-    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [gameActive]);
 
-  const scheduleStopSigns = () => {
-    const times = [];
-    while (times.length < 2) {
-      const r = Math.floor(Math.random() * 50) + 5;
-      if (!times.includes(r)) times.push(r);
-    }
-    scheduledStopTimes.current = times;
-    stopSignsShown.current = 0;
-  };
+  const advanceTrial = () => {
+    // 1. Show blank/fixation
+    setCurrentBlock(BLANK_EVENT);
 
-  useEffect(() => {
-    if (gameActive && timeLeft > 0) {
-      if (scheduledStopTimes.current.includes(timeLeft) && !isStopSignActive) {
-        triggerStopSign();
-      }
-    }
-  }, [gameActive, timeLeft, isStopSignActive]);
+    // 2. Reset motion buffer & first movement
+    motionBufferRef.current = [];
+    firstMovementTimeRef.current = null;
 
-  const triggerStopSign = () => {
-    const stimulusTime = performance.now();
-    stimulusTimeRef.current = stimulusTime;
+    // 3. Random ITI
+    const iti = ITI_MIN + Math.random() * (ITI_MAX - ITI_MIN);
 
-    emotionAtStimulusRef.current = {
-      valence: emotionState.valence,
-      arousal: emotionState.arousal,
-      timestamp: stimulusTime
-    };
-
-    setIsStopSignActive(true);
-    setCurrentBlock(STOP_SIGN_EVENT);
-    stopSignsShown.current += 1;
-
-    playGameSound('stop');
-
+    // 4. Schedule next trial
     setTimeout(() => {
-      const movedDuringStop = firstMovementTimeRef.current !== null;
-      
-      if (movedDuringStop) {
-        setGameMessage(t('stopMessage'));
-        counters.current.incorrectStopCount++;
-        setScore(prev => Math.max(0, prev - 2));
-        playGameSound('wrong');
-      }
-
-      finalizeTrial({
-        stimulus: STOP_SIGN_EVENT,
-        response: movedDuringStop ? 'MOVED' : null,
-        correct: !movedDuringStop,
-        rt: movedDuringStop ? (firstMovementTimeRef.current - stimulusTime) : null,
-        mit: movedDuringStop ? (firstMovementTimeRef.current - stimulusTime) : null
-      });
-      
-      setIsStopSignActive(false);
-      setTimeout(showNewBlock, 800);
-    }, 600);
+      showNewBlock();
+    }, iti);
   };
 
   const showNewBlock = useCallback(() => {
-    let availableBlocks = blockTypes;
-    
-    if (level === 1) {
-      availableBlocks = blockTypes.slice(0, 4);
-    } else if (level === 2) {
-      availableBlocks = blockTypes.slice(0, 6);
-    } else {
-      availableBlocks = blockTypes.slice(0, 8);
-    }
+    // reset trial end guard
+    trialEndedRef.current = false;
 
+    // Clear any persistent timeouts from previous trials
+    if (trialTimeoutRef.current) clearTimeout(trialTimeoutRef.current);
+    if (stopSignalTimerRef.current) clearTimeout(stopSignalTimerRef.current);
+    if (stopStayTimerRef.current) clearTimeout(stopStayTimerRef.current);
+    
+    
+    lastMouseRef.current = { x: null, y: null, t: null };
+    firstMovementTimeRef.current = null;
+    reactionTimeRef.current = null;
+    stimulusTimeRef.current = performance.now();
+
+    const currentEmotions = latestEmotionRef?.current || { valence: 0, arousal: 0 };
+
+    emotionAtStimulusRef.current = {
+      valence: currentEmotions.valence,
+      arousal: currentEmotions.arousal,
+      timestamp: performance.now()
+    };
+
+    // 1. Basic Setup
+    let availableBlocks = level === 1 ? blockTypes.slice(0, 4) : blockTypes;
     const randomBlock = availableBlocks[Math.floor(Math.random() * availableBlocks.length)];
 
     trialIdRef.current += 1;
 
-    const stimulusTime = performance.now();
-    stimulusTimeRef.current = stimulusTime;
+    const currentTrialId = trialIdRef.current;
 
-    emotionAtStimulusRef.current = {
-      valence: emotionState.valence,
-      arousal: emotionState.arousal,
-      timestamp: stimulusTime
-    };
+    // 3. 25% Probability Logic
+    // We only turn GO trials into STOP trials (standard scientific practice)
+    const forceStop = stopTrialCountRef.current < 20 && trialIdRef.current > 30;
 
-    // Reset tracking buffers
-    motionBufferRef.current = [];
-    firstMovementTimeRef.current = null;
-    reactionTimeRef.current = null;
-    lastMouseRef.current = { x: null, y: null, t: null };
+    const isStopTrial = randomBlock.action === 'GO' && (forceStop || Math.random() * 100 < 25);
+    
+    isStopTrialRef.current = isStopTrial;
 
+    currentActionRef.current = randomBlock.action;
     setCurrentBlock(randomBlock);
     setGameMessage('');
-  }, [blockTypes, level, emotionState]);
 
+    if (isStopTrial) {
+      stopTrialCountRef.current++;
+      // Schedule the STOP SIGN appearance
+      stopSignalTimerRef.current = setTimeout(() => {
+        // ONLY show if we are still on the same trial
+        if (trialIdRef.current === currentTrialId && !trialEndedRef.current) {
+          currentActionRef.current = 'IDLE';
+          setCurrentBlock(STOP_SIGN_EVENT);
+          setIsStopSignActive(true);
+          playGameSound('stop');
+          
+          // automatic timeout: for the STOP signal
+          stopStayTimerRef.current = setTimeout(() => {
+            if (trialIdRef.current === currentTrialId && !trialEndedRef.current) {
+              handleReaction('STAY'); 
+            }
+          }, 1500);
+        }
+      }, SSDRef.current);
+    }
+
+    // if (isStopTrial) {
+    //   // TRIGGER STOP SIGNAL AFTER SSD
+    //   setTimeout(() => {
+    //     // Check if the user is still on the same trial (hasn't clicked yet)
+    //     if (trialIdRef.current === currentTrialId) {
+    //       setIsStopSignActive(true);
+    //       setCurrentBlock(STOP_SIGN_EVENT);
+          
+    //       // Window to stay still
+    //       setTimeout(() => {
+    //         if (isStopSignActive) {
+    //           handleReaction('STAY');
+    //           setIsStopSignActive(false);
+    //         }
+    //       }, 800);
+    //     }
+    //   }, SSDRef.current);
+    // } else {
+    //   // NORMAL TRIAL TIMEOUT (Auto-resolve if no click)
+    //   trialTimeoutRef.current = setTimeout(() => {
+    //     handleReaction('STAY');
+    //   }, 1200); 
+    // }
+  }, [level, blockTypes, latestEmotionRef, language, soundEnabled]);
+
+ 
   const startGame = () => {
+
+    gameStartedRef.current = true; 
     hasExportedRef.current = false;
     trialLogRef.current = [];
-    rtListRef.current = [];
-    setIsPlayingCelebration(false);
 
-    // Reset all tracking
-    lastMouseRef.current = { x: null, y: null, t: null };
-    motionBufferRef.current = [];
-    firstMovementTimeRef.current = null;
-    reactionTimeRef.current = null;
-    stimulusTimeRef.current = null;
-
-    scheduleStopSigns();
     setScore(0);
     setTimeLeft(60);
     setGameActive(true);
     setLevel(1);
     showNewBlock();
+    setIsPlayingCelebration(false);
+
   };
 
+  
   useEffect(() => {
     if (score >= 20 && level < 3) {
       setLevel(3);
@@ -687,6 +801,7 @@ const NOGOGame = () => {
         setIsPlayingCelebration(true);
         setTimeout(() => setIsPlayingCelebration(false), 3000);
       }
+      //setGameMessage('මට්ටම 3! දුෂ්කර බ්ලොක් එකතු විය!');
     } else if (score >= 10 && level < 2) {
       setLevel(2);
       setGameMessage(t('levelUp1'));
@@ -695,92 +810,126 @@ const NOGOGame = () => {
         setIsPlayingCelebration(true);
         setTimeout(() => setIsPlayingCelebration(false), 2000);
       }
+      //setGameMessage('මට්ටම 2! නව බ්ලොක් එකතු විය!');
     }
-  }, [score, level, language, soundEnabled]);
+  }, [score, level]);
 
   const handleReaction = (userAction) => {
-    if (!gameActive || !currentBlock) return;
+    if (!gameActive || trialEndedRef.current) return; //exit if game not started or no any active current blocks
 
-    const responseTime = performance.now();
-    const rt = reactionTimeRef.current;
+    trialEndedRef.current = true;
+
+    // 1. IMMEDIATELY clear all pending timers to stop race conditions
+    if (stopSignalTimerRef.current) clearTimeout(stopSignalTimerRef.current);
+    if (stopStayTimerRef.current) clearTimeout(stopStayTimerRef.current);
+    if (trialTimeoutRef.current) clearTimeout(trialTimeoutRef.current);
+   
+    const actionOnScreen = currentActionRef.current;
+
+    //const rt = reactionTimeRef.current; // first detected movement (MIT)
+    const buttonRT = performance.now() - stimulusTimeRef.current;
+    const rt = buttonRT;
     let correct = false;
 
+    const currentEmotions = latestEmotionRef?.current || { valence: 0, arousal: 0 };
+
+    // Emotion at response
     emotionAtResponseRef.current = {
-      valence: emotionState.valence,
-      arousal: emotionState.arousal,
-      timestamp: responseTime
+      valence: currentEmotions.valence,
+      arousal: currentEmotions.arousal,
+      timestamp: performance.now()
     };
 
-    if (currentBlock.action === 'IDLE') {
-      setGameMessage(t('stopMessage'));
-      counters.current.incorrectStopCount++;
-      setScore(prev => Math.max(0, prev - 2));
-      playGameSound('wrong');
+    if (actionOnScreen === 'IDLE') { // Stop-Signal event
 
-      finalizeTrial({
-        stimulus: currentBlock,
-        response: userAction,
-        correct: false,
-        rt,
-        mit: rt,
-        emotion_stimulus: emotionAtStimulusRef.current,
-        emotion_response: emotionAtResponseRef.current
-      });
+      const stopLeakage = motionBufferRef.current
+      .filter(p => p.t >= stimulusTimeRef.current)
+      .reduce((s, p) => s + p.v, 0);
 
-      return;
-    }
+      const failedByMovement = stopLeakage > 0.05;
 
-    correct = userAction === currentBlock.action;
-
-    if (currentBlock.action === 'GO' && correct) counters.current.correctGo++;
-    if (currentBlock.action === 'NO-GO' && correct) counters.current.correctNoGo++;
-    if (currentBlock.action === 'GO' && !correct) counters.current.incorrectGo++;
-    if (currentBlock.action === 'NO-GO' && !correct) counters.current.incorrectNoGo++;
-
-    if (correct) {
-      const points = level === 1 ? 1 : level === 2 ? 2 : 3;
-      setScore(prev => prev + points);
-      setGameMessage(`${t('correctMessage')} +${points} ${t('score').toLowerCase()}`);
-      playGameSound('correct');
-      
-      if (soundEnabled && (score % 10 === 9 || score >= 20)) {
-        playGameSound('celebration');
-        setIsPlayingCelebration(true);
-        setTimeout(() => setIsPlayingCelebration(false), 3000);
+      if (userAction === 'STAY'  && !failedByMovement) {
+        // SUCCESS: Increase SSD (make it harder next time)
+        SSDRef.current = Math.min(SSDRef.current + SSD_STEP, SSD_MAX);
+        correct = true;
+        setScore(prev => prev + 5);
+        setGameMessage(t('stopMessage'));
+        setGameMessage('හරි! විශිෂ්ට පාලනයක්! +5');
+      } else {
+        // FAILURE: Decrease SSD (make it easier next time)
+        SSDRef.current = Math.max(SSDRef.current - SSD_STEP, SSD_MIN);
+        stopFailCountRef.current++;
+        correct = false;
+        setScore(prev => prev - 2);
+        setGameMessage('නැවතිය යුතුව තිබුණි! -2');
+        playGameSound('wrong');
       }
-    } else {
-      setGameMessage(t('wrongMessage'));
-      playGameSound('wrong');
+    }
+    else{
+
+      /* ---------------- GO / NO-GO ---------------- */
+      correct = (userAction === actionOnScreen);
+
+      // --- Accuracy counters (ML)
+      if (currentBlock.action === 'GO' && correct) counters.current.correctGo++;
+      if (currentBlock.action === 'NO-GO' && correct) counters.current.correctNoGo++;
+      if (currentBlock.action === 'GO' && !correct) counters.current.incorrectGo++;
+      if (currentBlock.action === 'NO-GO' && !correct) counters.current.incorrectNoGo++;
+
+      // --- Score + feedback (GAME)
+      if (correct) {
+        const points = level === 1 ? 1 : level === 2 ? 2 : 3;
+        setScore(prev => prev + points);
+        //setGameMessage(`හරි! +${points} ලකුණු`);
+        setGameMessage(`${t('correctMessage')} +${points} ${t('score').toLowerCase()}`);
+        playGameSound('correct');
+        
+        if (soundEnabled && (score % 10 === 9 || score >= 20)) {
+          playGameSound('celebration');
+          setIsPlayingCelebration(true);
+          setTimeout(() => setIsPlayingCelebration(false), 3000);
+        }
+      } else {
+        setGameMessage(t('wrongMessage'));
+        playGameSound('wrong');
+        //setGameMessage('වැරදියි! ලකුණු නැත');
+      }
+
     }
 
-    if (rt !== null) {
-      rtListRef.current.push(rt);
+    // --- RT tracking (ML)
+    if (rt !== null && userAction !== 'STAY') {
+      rtListRef.current.push(rt); //reaction time is append to the rtListRef List of reaction times per each trial
     }
 
-    let mit = null;
-    if (firstMovementTimeRef.current && stimulusTimeRef.current) {
-      mit = Math.round(firstMovementTimeRef.current - stimulusTimeRef.current);
-    }
-
+    // --- Finalize trial (ML) log data
     finalizeTrial({
       response: userAction,
       correct,
-      rt: rt,
-      mit: mit,
+      rt,
       stimulus: currentBlock,
       emotion_stimulus: emotionAtStimulusRef.current,
       emotion_response: emotionAtResponseRef.current
     });
 
+    // --- Optional: emotion immediately after response (non-invasive)
     setTimeout(() => {
-      emotionAfterRef.current = {
+        emotionAfterRef.current = {
         valence: emotionState.valence,
         arousal: emotionState.arousal,
         timestamp: performance.now()
       };
     }, 100);
 
-    setTimeout(showNewBlock, 800);
+    // --- Move to next block
+    setIsStopSignActive(false);
+
+    advanceTrial();
+
+    // const baseDelay = 600;
+    // const jitter = Math.floor(Math.random() * 600);
+
+    // setTimeout(showNewBlock, baseDelay + jitter);
   };
   
   useEffect(() => {
@@ -788,14 +937,43 @@ const NOGOGame = () => {
 
     if (timeLeft === 0) {
       setGameActive(false);
+
+      // 1. Calculate final metrics
+      const finalSSRT = calculateSSRT();
+      
+      const validRTs = rtListRef.current.filter(rt => rt > 150);
+      const meanRT = validRTs.length > 0 
+        ? validRTs.reduce((a, b) => a + b, 0) / validRTs.length 
+        : 0;
+      
+      // Calculate RTV (Reaction Time Variability)
+      const sdRT = validRTs.length > 0
+        ? Math.sqrt(validRTs.reduce((s, rt) => s + Math.pow(rt - meanRT, 2), 0) / validRTs.length)
+        : 0;
+
+      const RTV = meanRT > 0 ? sdRT / meanRT : 0;
       if (score > highScore) setHighScore(score);
       setGameMessage(`${t('gameOver')} ${score}`);
-      
+
       if (score > 0 && score >= highScore && soundEnabled) {
         playGameSound('celebration');
         setIsPlayingCelebration(true);
         setTimeout(() => setIsPlayingCelebration(false), 4000);
       }
+
+      //setGameMessage(`ක්‍රීඩාව අවසන්! ඔබේ ලකුණු: ${score}`);
+
+      trialLogRef.current.push({
+        trial_id: 'SUMMARY',
+        final_score: score,
+        mean_go_rt: meanRT.toFixed(2),
+        calculated_ssrt: finalSSRT ? finalSSRT.toFixed(2) : 'N/A',
+        rt_variability: RTV.toFixed(3),
+        total_stop_trials: stopTrialCountRef.current,
+        failed_stops: stopFailCountRef.current,
+        timestamp: Date.now()
+      });
+
       return;
     }
 
@@ -804,178 +982,159 @@ const NOGOGame = () => {
     }, 1000);
 
     return () => clearTimeout(timer);
+
   }, [gameActive, timeLeft, score, highScore, language, soundEnabled]);
 
-  // FIXED: Calculate enhanced movement metrics
-  const calculateMovementMetrics = (t0, data) => {
-    if (!data || data.length === 0 || !t0) {
-      return {
-        motorLeakage: 0,
-        inhibitionSlope: "",
-        residualMotion: 0,
-        microCorrections: 0
-      };
-    }
-
-    // Ensure we have enough data points
-    const validData = data.filter(p => p && typeof p.t === 'number');
-    if (validData.length < 5) {
-      return {
-        motorLeakage: 0,
-        inhibitionSlope: "",
-        residualMotion: 0,
-        microCorrections: 0
-      };
-    }
-
-    // 1. Motor Leakage - average velocity 100-200ms before stimulus
-    const preStimulusWindow = 100; // ms before stimulus to analyze
-    const preStimulus = validData.filter(p => p.t >= t0 - preStimulusWindow && p.t < t0);
-    
-    let motorLeakage = 0;
-    if (preStimulus.length > 0) {
-      const velocities = preStimulus.map(p => Math.abs(p.v || 0));
-      motorLeakage = velocities.reduce((sum, v) => sum + v, 0) / velocities.length;
-      // Add baseline noise (0.01-0.05) to ensure non-zero values
-      motorLeakage = Math.max(motorLeakage, Math.random() * 0.05);
-    } else {
-      // If no pre-stimulus data, use random low baseline
-      motorLeakage = Math.random() * 0.05;
-    }
-
-    // 2. Residual Motion - average velocity 0-500ms after stimulus
-    const analysisWindow = 500; // ms after stimulus to analyze
-    const postStimulus = validData.filter(p => p.t >= t0 && p.t <= t0 + analysisWindow);
-    
-    let residualMotion = 0;
-    if (postStimulus.length > 0) {
-      const velocities = postStimulus.map(p => Math.abs(p.v || 0));
-      residualMotion = velocities.reduce((sum, v) => sum + v, 0) / velocities.length;
-      residualMotion = Math.max(residualMotion, Math.random() * 0.03);
-    } else {
-      residualMotion = Math.random() * 0.03;
-    }
-
-    // 3. Inhibition Slope - rate of velocity change after stimulus
-    let inhibitionSlope = "";
-    if (postStimulus.length >= 3) {
-      // Calculate linear regression slope of velocity over time
-      const times = postStimulus.map(p => p.t - t0);
-      const velocities = postStimulus.map(p => p.v || 0);
-      
-      const n = times.length;
-      let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-      
-      for (let i = 0; i < n; i++) {
-        sumX += times[i];
-        sumY += velocities[i];
-        sumXY += times[i] * velocities[i];
-        sumX2 += times[i] * times[i];
-      }
-      
-      const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-      
-      if (!isNaN(slope) && isFinite(slope)) {
-        inhibitionSlope = slope.toFixed(6);
-      }
-    }
-
-    // 4. Micro Corrections - direction reversals after stimulus
-    let microCorrections = 0;
-    if (postStimulus.length >= 3) {
-      // Count direction reversals in velocity components
-      for (let i = 1; i < postStimulus.length - 1; i++) {
-        const prevVx = postStimulus[i - 1].vx || 0;
-        const currVx = postStimulus[i].vx || 0;
-        const nextVx = postStimulus[i + 1].vx || 0;
-        
-        const prevVy = postStimulus[i - 1].vy || 0;
-        const currVy = postStimulus[i].vy || 0;
-        const nextVy = postStimulus[i + 1].vy || 0;
-        
-        // Detect velocity sign changes that indicate corrections
-        const xSignChange = Math.sign(prevVx) !== Math.sign(currVx) && 
-                           Math.sign(currVx) !== 0;
-        const ySignChange = Math.sign(prevVy) !== Math.sign(currVy) && 
-                           Math.sign(currVy) !== 0;
-        
-        // Detect acceleration reversals
-        const xAccelReversal = Math.sign(prevVx - currVx) !== Math.sign(currVx - nextVx);
-        const yAccelReversal = Math.sign(prevVy - currVy) !== Math.sign(currVy - nextVy);
-        
-        if (xSignChange || ySignChange) microCorrections++;
-        if (xAccelReversal || yAccelReversal) microCorrections++;
-      }
-      
-      // Add some random micro-corrections for realism
-      const randomCorrections = Math.floor(Math.random() * 3);
-      microCorrections = Math.max(microCorrections, randomCorrections);
-    } else {
-      microCorrections = Math.floor(Math.random() * 3);
-    }
-
-    return {
-      motorLeakage: parseFloat(motorLeakage.toFixed(4)),
-      inhibitionSlope: inhibitionSlope,
-      residualMotion: parseFloat(residualMotion.toFixed(4)),
-      microCorrections: microCorrections
+  useEffect(() => {
+    const logMotion = (e) => {
+      motionBufferRef.current.push({x: e.clientX, y: e.clientY, t: performance.now()});
+      console.log('motion recorded', motionBufferRef.current.length); // check if numbers increase
     };
-  };
+    document.addEventListener('mousemove', logMotion);
+    return () => document.removeEventListener('mousemove', logMotion);
+  }, []);
 
-  const finalizeTrial = ({ 
-    response, 
-    correct, 
-    rt, 
-    mit, 
-    stimulus, 
-    emotion_stimulus = emotionAtStimulusRef.current, 
-    emotion_response = emotionAtResponseRef.current 
-  }) => {
-    const t0 = stimulusTimeRef.current;
-    const data = [...motionBufferRef.current]; // Create a copy to avoid mutation issues
 
-    // Calculate movement metrics with the FIXED function
-    const movementMetrics = calculateMovementMetrics(t0, data);
 
-    // Ensure emotion values are valid numbers
-    const valenceStimulus = typeof emotion_stimulus?.valence === 'number' ? emotion_stimulus.valence : 0.5;
-    const arousalStimulus = typeof emotion_stimulus?.arousal === 'number' ? emotion_stimulus.arousal : 0.5;
-    const valenceResponse = typeof emotion_response?.valence === 'number' ? emotion_response.valence : 0.5;
-    const arousalResponse = typeof emotion_response?.arousal === 'number' ? emotion_response.arousal : 0.5;
+  const finalizeTrial = ({ response, correct, rt, stimulus, emotion_stimulus = emotionAtStimulusRef.current, emotion_response = emotionAtResponseRef.current }) => {
+    //response → what the participant did
+    // correct → whether the response matches the task
+    // rt → reaction time (from stimulus → movement)
+    // stimulus → metadata about the current trial
 
-    const valenceDelta = parseFloat((valenceResponse - valenceStimulus).toFixed(6));
-    const arousalDelta = parseFloat((arousalResponse - arousalStimulus).toFixed(6));
-    const emotionalReactivity = parseFloat(Math.abs(arousalDelta).toFixed(6));
+    const t0 = stimulusTimeRef.current; // timestamp when the stimulus (block) appeared
+    const data = motionBufferRef.current; // continuous velocity time series collected during the trial
+    const trialData = motionBufferRef.current.filter(p => p.t >= t0); // all mouse/motor movements that happened after the stimulus appeared.
 
+    // --- Helper filters
+    const preNoGo = motionBufferRef.current.filter(p => p.t >= t0 - 200 && p.t < t0); // preNoGo → 200ms before stimulus (block appeared) - Captures pre-stimulus motor leakage
+
+    const postNoGo = trialData.filter(p => p.t >= t0 && p.t <= t0 + 500); // postNoGo → first 500ms after stimulus (block appeared) - Captures initial inhibition attempts or movement initiation
+
+    // 1️⃣ MIT
+    const mit = firstMovementTimeRef.current
+      ? firstMovementTimeRef.current - t0
+      : null;
+
+    // 2️⃣ Pre-No-Go Motor Leakage
+    const leakage = preNoGo.length > 0 ? preNoGo.reduce((s, p) => s + p.v, 0) / preNoGo.length : 0; // Default to 0 instead of null
+    //const leakage = preNoGo.length ? preNoGo.reduce((s, p) => s + p.v, 0) / preNoGo.length : 0;
+
+    // 3️⃣ Inhibition Slope using Linear Regression (y = mx + b)
+    let slope = 0;
+    if (postNoGo.length > 2) {
+      const n = postNoGo.length;
+      let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+      postNoGo.forEach(p => {
+        const x = p.t - t0;
+        const y = p.v;
+        sumX += x; sumY += y; sumXY += x * y; sumX2 += x * x;
+      });
+      slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    }
+
+    // 3️⃣ Inhibition Slope
+    // let inhibitionSlope = null;
+    // if (postNoGo.length > 2) {
+    //   const v0 = postNoGo[0].v;
+    //   const v1 = postNoGo[postNoGo.length - 1].v;
+    //   const dt = postNoGo[postNoGo.length - 1].t - postNoGo[0].t;
+    //   inhibitionSlope = dt > 0 ? (v1 - v0) / dt : null;
+    // }
+
+    // 4️⃣ Residual Motion
+    // const residualMotion = postNoGo.reduce((s, p) => s + Math.abs(p.v), 0);
+    const residualMotion = postNoGo.length > 0 ? postNoGo.reduce((s, p) => s + Math.abs(p.v), 0) : 0; // Default to 0 instead of null
+
+    // 5️⃣ Micro-corrections
+    // let microCorrections = 0;
+    // for (let i = 1; i < data.length; i++) {
+
+    //   const acc1 = data[i-1].v - data[i-2].v;
+    //   const acc2 = data[i].v - data[i-1].v; 
+
+    //   // If the user was speeding up and then suddenly slowed down (or vice versa)
+    //   if (Math.sign(acc1) !== Math.sign(acc2) && Math.abs(acc1) > 0.01) {
+    //     microCorrections++;
+    //   }
+
+    //   // if (Math.sign(data[i].v) !== Math.sign(data[i - 1].v)) {
+    //   //   microCorrections++;
+    //   // }
+    // }
+
+    let hesitationCount = 0; // Speed stuttering
+    let swerveCount = 0;     // Directional changes
+
+    for (let i = 2; i < data.length; i++) {
+      const prev = data[i - 1];
+      const curr = data[i];
+      const prevPrev = data[i - 2];
+
+      // 1. Detect Hesitations (Speed-based)
+      // Acceleration flip: Speeding up then suddenly slowing down
+      const acc1 = prev.v - prevPrev.v;
+      const acc2 = curr.v - prev.v;
+      if (Math.sign(acc1) !== Math.sign(acc2) && Math.abs(acc1) > 0.002) {
+        hesitationCount++;
+      }
+
+      // 2. Detect Swerves (Vector-based)
+      // Sign flip in X or Y components (moving Right then Left, or Up then Down)
+      const flippedX = Math.sign(prev.vx) !== Math.sign(curr.vx) && Math.abs(curr.vx) > 0.002;
+      const flippedY = Math.sign(prev.vy) !== Math.sign(curr.vy) && Math.abs(curr.vy) > 0.002;
+      
+      if (flippedX || flippedY) {
+        swerveCount++;
+      }
+    }
+
+     // Emotion deltas
+    const valenceDelta =
+    emotion_response?.valence != null && emotion_stimulus?.valence != null
+      ? emotion_response.valence - emotion_stimulus.valence
+      : null;
+
+    const arousalDelta =
+    emotion_response?.arousal != null && emotion_stimulus?.arousal != null
+      ? emotion_response.arousal - emotion_stimulus.arousal
+      : null;
+
+    const emotionalReactivity =
+    arousalDelta != null ? Math.abs(arousalDelta) : null;
+
+    // --- Save trial row
     trialLogRef.current.push({
       trial_id: trialIdRef.current,
-      stimulus_action: stimulus.action,
+
+      // Task
+      stimulus_action: isStopTrialRef.current ? 'IDLE' : stimulus.action,
       response_action: response,
-      correct: correct,
-      rt_ms: rt !== null ? Math.round(rt) : "",
-      mit_ms: mit !== null ? Math.round(mit) : "",
-      motor_leakage: movementMetrics.motorLeakage,
-      inhibition_slope: movementMetrics.inhibitionSlope,
-      residual_motion: movementMetrics.residualMotion,
-      micro_corrections: movementMetrics.microCorrections,
-      valence_stimulus: parseFloat(valenceStimulus.toFixed(6)),
-      arousal_stimulus: parseFloat(arousalStimulus.toFixed(6)),
-      valence_response: parseFloat(valenceResponse.toFixed(6)),
-      arousal_response: parseFloat(arousalResponse.toFixed(6)),
+      correct : correct ? 1 : 0,
+      rt_ms: rt || 0,
+      mit_ms: mit || 0,
+
+      ssd_ms: stimulus.action === 'IDLE' ? SSDRef.current : null, 
+      current_level: level,
+
+      // Motor dynamics
+      motor_leakage: leakage,
+      inhibition_slope: slope,
+      residual_motion: residualMotion,
+      hesitationCount: hesitationCount || 0,
+      swerveCount: swerveCount || 0,
+
+      // Emotion
+      valence_stimulus: emotion_stimulus?.valence ?? null,
+      arousal_stimulus: emotion_stimulus?.arousal ?? null,
+      valence_response: emotion_response?.valence ?? null,
+      arousal_response: emotion_response?.arousal ?? null,
       valence_delta: valenceDelta,
       arousal_delta: arousalDelta,
       emotional_reactivity: emotionalReactivity,
       timestamp: Date.now()
     });
-    
-    console.log('Trial logged:', {
-      trialId: trialIdRef.current,
-      stimulus: stimulus.action,
-      response,
-      motorLeakage: movementMetrics.motorLeakage,
-      residualMotion: movementMetrics.residualMotion,
-      microCorrections: movementMetrics.microCorrections
-    });
+
   };
 
   const exportCSV = () => {
@@ -987,7 +1146,7 @@ const NOGOGame = () => {
       headers,
       ...rows.map(row =>
         Object.values(row)
-          .map(v => v !== null && v !== undefined && v !== '' ? v : '')
+          .map(v => JSON.stringify(v ?? ''))
           .join(',')
       )
     ].join('\n');
@@ -1003,12 +1162,6 @@ const NOGOGame = () => {
     URL.revokeObjectURL(url);
   };
 
-  useEffect(() => {
-    if (!gameActive && !hasExportedRef.current && trialLogRef.current.length > 0) {
-      hasExportedRef.current = true;
-      setTimeout(exportCSV, 500);
-    }
-  }, [gameActive]);
 
   // Show language selector on first load
   useEffect(() => {
@@ -1123,14 +1276,16 @@ const NOGOGame = () => {
       ) : (
         <div className="game-area">
           <div className="current-block-container">
-            {currentBlock && (
+            {currentBlock === BLANK_EVENT ? (<div className="fixation-dot" />)
+             : currentBlock ? (
               <div
                 className={`block ${currentBlock.shape} ${currentBlock.color} ${level > 1 && currentBlock.action !== 'IDLE' ? 'pulse' : ''}`}
+                
               >
                 {level > 2 && currentBlock.action !== 'IDLE' && <div className="sparkle"></div>}
                 {currentBlock.action === 'IDLE' && <div className="stop-label">{t('stopSign')}</div>}
               </div>
-            )}
+            ):null}
           </div>
           <div className={`message ${gameMessage.includes(t('correctMessage')) ? 'correct' : 'wrong'}`}>
             {gameMessage}
