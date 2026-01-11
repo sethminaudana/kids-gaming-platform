@@ -1,4 +1,4 @@
-# 🧠 [Project Name]: Gamified ADHD Diagnostic Tool
+# 🧠 INTERACTIVE	PLATFORM	FOR DETECTION	OF	ADHD	TRAITS IN	CHILDREN	THROUGH GAMIFIED	ACTIVITIES : ADHD Diagnostic Tool
 
 ![Stack](https://img.shields.io/badge/Stack-MERN-green)
 ![Status](https://img.shields.io/badge/Status-Research_Phase-blue)
