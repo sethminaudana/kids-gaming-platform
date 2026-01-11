@@ -113,10 +113,6 @@ Follow these steps to set up the project locally:
 
 ---
 
-## 🤝 Contribution
 
-This is a closed research project. However, suggestions are welcome. Please open an issue to discuss proposed changes or methodology questions.
-
----
 
 
