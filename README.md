@@ -19,13 +19,16 @@ This project was developed as a comprehensive research initiative to determine i
 
 ### 🎮 Gamified Assessment
 * **Interactive Modules:** Mini games designed to test sustained attention and working memory.
-* **Impulsivity Tracking:** Measures premature clicks and reaction variability.
+* **NO-GO Game:** Measures premature clicks and reaction variability.Measures impulse control and inhibition with real-time emotion tracking
 * **Visual Feedback:** Engaging UI to keep users focused during the assessment.
+* **Multi-Language Support:** Available in English, Sinhala, and Tamil
 
 ### 📊 Diagnostic Analytics
 * **Real-time Scoring:** Instant calculation of performance metrics.
 * **Comparative Analysis:** Compare user results against control group baselines.
 * **Detailed Reports:** Generates PDF reports for clinicians or parents.
+* **Detailed CSV Reports:** Comprehensive data export including emotion and motor metrics
+* **Impulsivity Scoring:** Calculates inhibition success rates and response variability
 
 ### 🛡️ User Management
 * **Role Based Access:** Separate dashboard for parents.
@@ -50,8 +53,10 @@ This project was developed as a comprehensive research initiative to determine i
 This tool operates on a specific set of psychological parameters:
 
 1.  **Sustained Attention:** Measured by the user's ability to track targets over time.
-2.  **Inhibition Control:** Measured by "Go/No-Go" gameplay mechanics.
-3.  **DSM-5 Integration:** Game results are cross referenced with digital questionnaire inputs.
+2.  **Response Inhibition:** Measured by NO-GO success rates and stop-signal delays
+3.  **Emotional Regulation:** Quantified via facial expression changes during tasks
+4.  **Motor Control:** Analyzed through micro-movements and response precision
+5.  **DSM-5 Integration:** Game results are cross referenced with digital questionnaire inputs.
 
 ---
 
@@ -62,7 +67,7 @@ This project is brought to you by a dedicated team of four:
 | Name | Contribution |
 | :--- | :--- |
 | **[Member 1 Name]** | Architecture, Backend Logic, Integration |
-| **[Member 2 Name]** | DSM-5 Criteria, Data Analysis, Testing |
+| **IT22349460 Warunika R S** | Built a NO-GO game that tracks facial expressions and motor movements to assess impulse control.|
 | **IT22582492 R SETHMINA UDANA** | Made card flip game to capture child's memory behaviour |
 | **[Member 4 Name]** | Testing, Bug Fixes, Research Paper |
 
