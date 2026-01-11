@@ -21,6 +21,7 @@ This project was developed as a comprehensive research initiative to determine i
 * **Interactive Modules:** Mini games designed to test sustained attention and working memory.
 * **NO-GO Game:** Measures impulse control and inhibition with real-time emotion tracking
 * **Visual Feedback:** Engaging UI to keep users focused during the assessment.
+* **Impulsivity Tracking:** Measures premature clicks and reaction variability.
 * **Multi-Language Support:** Available in English, Sinhala, and Tamil
 
 ### 📊 Diagnostic Analytics
@@ -36,16 +37,24 @@ This project was developed as a comprehensive research initiative to determine i
 * **JWT Authentication:** Secure login for Users.
 * **NoSQL Data Structure:** Flexible schema for storing complex gameplay logs.
 
+### ⚠️ Attention Detection 
+- 🎮 Interactive fish ball collector game 
+- 👁️ Real-time eye tracking using webcam (MediaPipe FaceMesh)
+- 📊 Game performance tracking (score, reaction time, ball collection)
+- 💾 Data storage in MongoDB Atlas
+- 🤖 ML model for attention pattern analysis
+
 ---
 
 ## 🛠️ Technology Stack
 
 | Category | Technologies Used |
 | :--- | :--- |
-| **Frontend** | React.js, Redux (State Management), Tailwind CSS / Material UI |
+| **Frontend** | React.js, Redux (State Management), Tailwind CSS / Material UI, Phaser.js |
 | **Backend** | Node.js, Express.js |
 | **Database** | MongoDB Atlas |
 | **Authentication** | JSON Web Tokens (JWT) |
+| **Model Training** | Python |
 ---
 
 ## 🔬 Research Methodology
@@ -66,10 +75,10 @@ This project is brought to you by a dedicated team of four:
 
 | Name | Contribution |
 | :--- | :--- |
-| **[Member 1 Name]** | Architecture, Backend Logic, Integration |
+| **IT22258694 Vidurangi K.G.D** | FishBall game, Eye tracking, Attention model |
 | **IT22349460 Warunika R S** | Built a NO-GO game that tracks facial expressions and motor movements to assess impulse control.|
-| **IT22582492 R SETHMINA UDANA** | Made card flip game to capture child's memory behaviour |
-| **[Member 4 Name]** | Testing, Bug Fixes, Research Paper |
+| **IT22582492 R SETHMINA UDANA** | Made card flip game to capture child's memory behaviour via reaction time |
+| **IT22141538 Arunodya	Pathum	Miyuranga W.A.K.** |Build parent dashboard with ADHD analysis |
 
 ---
 
@@ -104,10 +113,10 @@ Follow these steps to set up the project locally:
 
 
 
-| Landing Page | Diagnostic Game |
+| Section | Preview |
 | :---: | :---: |
-| ![Landing](path/to/image1.png) | ![Game](path/to/image2.png) |
-
+| **Landing Page** | ![Landing](public/p1.png) |
+| **Game Pages** | ![Game](public/p2.png) <br> ![Game](public/p3.png) |
 ---
 
 ## 📝 Future Scope
