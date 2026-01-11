@@ -19,7 +19,7 @@ This project was developed as a comprehensive research initiative to determine i
 
 ### 🎮 Gamified Assessment
 * **Interactive Modules:** Mini games designed to test sustained attention and working memory.
-* **NO-GO Game:** Measures premature clicks and reaction variability.Measures impulse control and inhibition with real-time emotion tracking
+* **NO-GO Game:** Measures impulse control and inhibition with real-time emotion tracking
 * **Visual Feedback:** Engaging UI to keep users focused during the assessment.
 * **Multi-Language Support:** Available in English, Sinhala, and Tamil
 
