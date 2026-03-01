@@ -124,7 +124,7 @@ export default function Home() {
       </div>
 
       {/* --- Games Grid --- */}
-      <Row className="g-4">
+      {/* <Row className="g-4">
         {filteredGames.map((game, index) => (
           <Col
             key={game.id}
@@ -155,7 +155,7 @@ export default function Home() {
             </Card>
           </Col>
         ))}
-      </Row>
+      </Row> */}
 
       <div className="home-container d-flex justify-content-center flex-wrap gap-4 p-4">
         <h1 className="home-title font-fredoka">Cognitive Games</h1>
