@@ -9,6 +9,9 @@ import Game from "./components/Game";
 import GemMatchGame from "./components/GemMatchGame";
 import BlueprintGame from "./components/BlueprintGame";
 import MemoryGame from "./MemoryGame/MemoryGame";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 
 // This is our main layout component
@@ -35,9 +38,15 @@ export default function App() {
         <Route index element={<Home />} />
         <Route path="about" element={<About />} />
         <Route path="game" element={<Game />} />
-        <Route path="gem-match" element={<GemMatchGame />} />
-        <Route path="blueprint-builder" element={<BlueprintGame />} />
-        <Route path='memorygame' element = {<MemoryGame/>} />
+        {/* <Route path="gem-match" element={<GemMatchGame />} /> */}
+        {/* <Route path="blueprint-builder" element={<BlueprintGame />} /> */}
+        <Route path='memorygame' element = {
+          <ProtectedRoute>
+              <MemoryGame />
+            </ProtectedRoute>} />
+            
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
       </Route>
       {/* <Route path="/magic-gems" element={<Game />} /> */}
     </Routes>

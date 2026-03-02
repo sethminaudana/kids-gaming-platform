@@ -81,3 +81,14 @@ body {
   
 
 }
+/* --- Fix for Game CSS leaking into Auth Forms --- */
+.card-body form label,
+.card-body form input,
+.card-body h2 {
+  font-size: 1rem !important; /* Forces standard text size */
+  line-height: 1.5 !important;
+}
+
+.card-body h2 {
+  font-size: 2rem !important; /* Keeps the title a nice size */
+}

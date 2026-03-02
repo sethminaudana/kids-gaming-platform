@@ -17,7 +17,7 @@ function formatTime(seconds) {
 }
 
 const MemoryGame = () => {
-    const [cards, setCards] = useState(createDeck()); // Make settable for restart
+    // const [cards, setCards] = useState(createDeck()); // Make settable for restart
     const [startGame, setStartGame] = useState(false);
     const [closeTut, setCloseTut] = useState(true);
     const [flippedIndexes, setFlippedIndexes] = useState([]);
@@ -27,6 +27,10 @@ const MemoryGame = () => {
     const [elapsedTime, setElapsedTime] = useState(0);
     const [winner, setWinner] = useState(false);
     const [gameOver, setGameOver] = useState(false);
+    const [currentLevel, setCurrentLevel] = useState(1); // 1 = 2x2, 2 = 4x2, 3 = 4x4
+    const [levelTransition, setLevelTransition] = useState(false); // For the brief celebration
+    const [cards, setCards] = useState(createDeck(1)); // Start at level 1
+    
 
     // --- DATA COLLECTION REFS (New) ---
     const eventLog = useRef([]); // Stores the raw timeline of events
@@ -39,8 +43,13 @@ const MemoryGame = () => {
     const [wrongAudio] = useState(new Audio(wrong));
     const [winning] = useState(new Audio(congrats));
 
-    function createDeck() {
-        const symbols = ['🍎', '🍌', '🍉', '🍇', '🥑', '🍓', '🍊', '🍍'];
+    function createDeck(level = 1) {
+        const allSymbols = ['🍎', '🍌', '🍉', '🍇', '🥑', '🍓', '🍊', '🍍'];
+        let pairCount = 2; // Level 1 (4 cards / 2x2)
+        if (level === 2) pairCount = 4; // Level 2 (8 cards / 4x2)
+        if (level >= 3) pairCount = 8;  // Level 3 (16 cards / 4x4)
+
+        const symbols = allSymbols.slice(0, pairCount);
         const deck = symbols.concat(symbols);
         return shuffle(deck.map((symbol, index) => ({ symbol, index })));
     }
@@ -149,11 +158,12 @@ const MemoryGame = () => {
         isProcessing.current = false; // UNLOCK BOARD
     }
 
-    function restartGame(shouldSendData = true) {
-        if (shouldSendData) {
+    function restartGame(shouldSendData = true, level = 1) {
+        if (shouldSendData && level === 1) { // Only send data on full restart/end
             sendDatatoserver();
         }
-        setCards(createDeck()); // Get a new shuffled deck
+        setCurrentLevel(level);
+        setCards(createDeck(level)); // Get deck for specific level
         setFlippedIndexes([]);
         setMatchedIndexes([]);
         setRightMatches([]);
@@ -167,7 +177,7 @@ const MemoryGame = () => {
         lastClickTime.current = Date.now();
         isProcessing.current = false;
 
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+        // window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
     }
 
     useEffect(() => {
@@ -183,13 +193,22 @@ const MemoryGame = () => {
     }, [startGame, gameOver]); // Add startGame to dependencies
 
     useEffect(() => {
-        if (rightMatches.length > 0 && rightMatches.length / 2 === 8) {
-            setWinner(true);
-            setGameOver(true); // Set game over state to true
+        // Check if all cards in the CURRENT level are matched
+        if (rightMatches.length > 0 && rightMatches.length === cards.length) {
             winning.play();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            if (currentLevel < 3) {
+                // BRIEF CELEBRATION - Then move to next level
+                setLevelTransition(true);
+               
+            } else {
+                // FINAL WIN (Finished 4x4)
+                setWinner(true);
+                setGameOver(true);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
-    }, [rightMatches, winning]); // removed 'winner' from deps
+    }, [rightMatches, winning, cards.length, currentLevel]);
 
     function sendDatatoserver(){
         // Only send if there's actually data to send
@@ -202,12 +221,14 @@ const MemoryGame = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem("token")}`
                     },
                     body: JSON.stringify({
                         rightMatches: rightMatches.length / 2,
                         wrongMatches: wrongMatches.length / 2,
                         timetaken: elapsedTime,
-                        events: eventLog.current // SEND THE FULL EVENT LOG
+                        events: eventLog.current, // SEND THE FULL EVENT LOG
+                        level: currentLevel
                     }),
                 });
                 const responseData = await response.json();
@@ -272,6 +293,29 @@ const MemoryGame = () => {
                     <button className='btn btn-warning' style={{fontSize: `1.5em`, cursor: `default`, transition: 'transform 0.2s'}}>⏰ {formatTime(elapsedTime)}</button>
                 </div>
             </div>}
+
+            {levelTransition && (
+                <div className="overlay" style={{ zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                    <Confetti />
+                    <h1 style={{ color: 'white', fontSize: '4rem', textShadow: '2px 2px 8px #000' }}>
+                        Level {currentLevel} Complete!
+                    </h1>
+                    <h3 style={{ color: 'yellow' }}>Get ready for the next level...</h3>
+                    {/* NEW NEXT LEVEL BUTTON */}
+                    <button 
+                        className="btn btn-warning btn-lg mt-4" 
+                        style={{ fontSize: '2rem', zIndex: 10000, position: 'relative' }}
+                        onClick={() => {
+                            sendDatatoserver();
+                            setLevelTransition(false); // Hide the overlay
+                            restartGame(false, currentLevel + 1); // Load next level
+                        }}
+                    >
+                        Start Level {currentLevel + 1}
+                    </button>
+                </div>
+            )}
+
             {winner && (
                 <div className="overlay">
                     <Confetti />
