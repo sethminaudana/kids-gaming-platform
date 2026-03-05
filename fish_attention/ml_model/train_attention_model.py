@@ -78,7 +78,7 @@ def fetch_data_from_mongodb():
                 all_labels.extend(labels)
                 print(f"✓ {len(features)} features")
             else:
-                print("SKIPPED (no features)")
+                print(" ")
         except Exception as e:
             print(f"ERROR: {str(e)}")
             continue
