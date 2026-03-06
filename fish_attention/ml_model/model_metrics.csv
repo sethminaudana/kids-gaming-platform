@@ -1,2 +1,2 @@
 Model,Accuracy,Training Samples,Test Samples,Features,Training Date,True Negatives,False Positives,False Negatives,True Positives
-Random Forest,1.0,880,221,14,2026-01-04 13:24:47,191,0,0,30
+Random Forest,1.0,1500,375,14,2026-03-02 22:57:14,321,0,0,54
