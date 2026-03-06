@@ -33,13 +33,10 @@ interface FinalReport {
   averageReactionTime: number | null;
   // reaction time stats from live computation
   meanReactionTime: number; stdReactionTime: number;
-<<<<<<< HEAD
   // adhd prediction
   hasADHD: boolean;
   adhdLevel: string | null;
   recommendations: string[];
-=======
->>>>>>> e47faf4a703aa99ccaf2e0ed511cb1bb9ee40f9b
 }
 
 // ─────────────────────────────────────────────
@@ -147,7 +144,6 @@ function downloadReport(report: FinalReport) {
   metricRow("Mean Reaction Time", `${report.meanReactionTime.toFixed(1)} ms`, 0);
   metricRow("Std Dev Reaction", `${report.stdReactionTime.toFixed(1)} ms`, 1);
 
-<<<<<<< HEAD
   // ── ADHD PREDICTION ──
   y += 4;
   sectionHeader("🧠  ADHD Profile", 220, 38, 38);
@@ -174,8 +170,6 @@ function downloadReport(report: FinalReport) {
   });
   y += 4;
 
-=======
->>>>>>> e47faf4a703aa99ccaf2e0ed511cb1bb9ee40f9b
   // ── FOOTER ──
   const pageH = doc.internal.pageSize.getHeight();
   doc.setFillColor(30, 27, 75);
@@ -428,7 +422,6 @@ function GameReportModal({ report }: { report: FinalReport }) {
         </div>
       </div>
 
-<<<<<<< HEAD
       {/* ADHD Prediction Section */}
       <div className="report-card" style={{ animationDelay: "0.4s", background: report.hasADHD ? "rgba(239,68,68,0.05)" : "rgba(16,185,129,0.05)", borderColor: report.hasADHD ? "rgba(239,68,68,0.2)" : "rgba(16,185,129,0.2)" }}>
         <div className="section-title">
@@ -459,10 +452,6 @@ function GameReportModal({ report }: { report: FinalReport }) {
 
       {/* Action Buttons */}
       <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center", animation: "fadeInUp 0.5s 0.5s both" }}>
-=======
-      {/* Action Buttons */}
-      <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center", animation: "fadeInUp 0.5s 0.4s both" }}>
->>>>>>> e47faf4a703aa99ccaf2e0ed511cb1bb9ee40f9b
         <button className="dl-btn" onClick={() => downloadReport(report)}>
           ⬇ Download Report (PDF)
         </button>
@@ -593,8 +582,6 @@ export default function GamePage() {
       } else if (ev.type === "GAME_OVER") {
         // ── Freeze final report ──
         const snap = liveFeaturesRef.current;
-<<<<<<< HEAD
-
         // ADHD Prediction Logic (rule-based evaluation of eye-tracking parameters)
         let adhdScore = 0;
         const isFaceValid = snap.facePresentRatio > 0;
@@ -640,8 +627,6 @@ export default function GamePage() {
           }
         }
 
-=======
->>>>>>> e47faf4a703aa99ccaf2e0ed511cb1bb9ee40f9b
         const report: FinalReport = {
           sessionId,
           generatedAt: new Date().toLocaleString(),
@@ -660,12 +645,9 @@ export default function GamePage() {
           averageReactionTime: ev.averageReactionTime,
           meanReactionTime: snap.meanReactionTime,
           stdReactionTime: snap.stdReactionTime,
-<<<<<<< HEAD
           hasADHD,
           adhdLevel,
           recommendations,
-=======
->>>>>>> e47faf4a703aa99ccaf2e0ed511cb1bb9ee40f9b
         };
         setFinalReport(report);
         setGameOver(true);
