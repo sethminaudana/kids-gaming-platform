@@ -34,6 +34,30 @@ function initDOMReferences() {
     
     gs.mouseX = gs.canvas.width / 2;
     gs.mouseY = gs.canvas.height / 2;
+    
+    // Background themes initialization
+    gs.backgroundThemes = [
+        { type: 'image', id: 'fish_tank_bg', src: 'assets/fish_tank_bg.png' },
+        { type: 'image', id: 'sea_bg', src: 'assets/sea_bg.png' },
+        { type: 'image', id: 'lake_bg', src: 'assets/lake_bg.png' },
+        { type: 'image', id: 'pond_bg', src: 'assets/pond_bg.png' },
+        { type: 'gradient', top: '#023047', bottom: '#219ebc', bubble: 'rgba(142, 202, 230, 0.2)', bubbleHighlight: 'rgba(142, 202, 230, 0.4)' }
+    ];
+    
+    // Preload images
+    if (!gs.bgImages) {
+        gs.bgImages = {};
+        gs.backgroundThemes.forEach(theme => {
+            if (theme.type === 'image') {
+                const img = new Image();
+                img.src = theme.src;
+                gs.bgImages[theme.id] = img;
+            }
+        });
+    }
+    
+    let savedTheme = sessionStorage.getItem('fishGameThemeIndex');
+    gs.currentThemeIndex = savedTheme ? parseInt(savedTheme, 10) : 0;
 }
 
 // Create a new ball with QUARTER RED FREQUENCY
@@ -573,6 +597,14 @@ function updateBalls() {
 function gameOver() {
     const gs = window.gameState;
     
+    gs.sessionCompleted = true;
+    
+    // Increment the theme index for the next session
+    if (gs.backgroundThemes) {
+        gs.currentThemeIndex = (gs.currentThemeIndex + 1) % gs.backgroundThemes.length;
+        sessionStorage.setItem('fishGameThemeIndex', gs.currentThemeIndex.toString());
+    }
+    
     gs.gameRunning = false;
     cancelAnimationFrame(gs.animationId);
     
@@ -619,15 +651,40 @@ function drawWaterBackground() {
     const gs = window.gameState;
     if (!gs.ctx || !gs.canvas) return;
     
-    // Draw water gradient
-    const waterGradient = gs.ctx.createLinearGradient(0, 0, 0, gs.canvas.height);
-    waterGradient.addColorStop(0, '#0a3d91');
-    waterGradient.addColorStop(1, '#1e7bc0');
-    gs.ctx.fillStyle = waterGradient;
-    gs.ctx.fillRect(0, 0, gs.canvas.width, gs.canvas.height);
+    // Default fallback if themes are not set yet
+    const theme = gs.backgroundThemes ? gs.backgroundThemes[gs.currentThemeIndex] : {
+        type: 'gradient',
+        top: '#0a3d91', bottom: '#1e7bc0', 
+        bubble: 'rgba(255, 255, 255, 0.2)', 
+        bubbleHighlight: 'rgba(255, 255, 255, 0.4)'
+    };
     
-    // Draw some animated bubbles
-    gs.ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    if (theme.type === 'image' && gs.bgImages && gs.bgImages[theme.id]) {
+        const img = gs.bgImages[theme.id];
+        if (img.complete && img.naturalHeight !== 0) {
+            gs.ctx.drawImage(img, 0, 0, gs.canvas.width, gs.canvas.height);
+        } else {
+            // Draw gradient while loading
+            const gradient = gs.ctx.createLinearGradient(0, 0, 0, gs.canvas.height);
+            gradient.addColorStop(0, '#0a3d91');
+            gradient.addColorStop(1, '#1e7bc0');
+            gs.ctx.fillStyle = gradient;
+            gs.ctx.fillRect(0, 0, gs.canvas.width, gs.canvas.height);
+        }
+    } else {
+        // Draw water gradient
+        const waterGradient = gs.ctx.createLinearGradient(0, 0, 0, gs.canvas.height);
+        waterGradient.addColorStop(0, theme.top || '#0a3d91');
+        waterGradient.addColorStop(1, theme.bottom || '#1e7bc0');
+        gs.ctx.fillStyle = waterGradient;
+        gs.ctx.fillRect(0, 0, gs.canvas.width, gs.canvas.height);
+    }
+    
+    // Draw some animated bubbles over the background
+    const bubbleColor = theme.bubble || 'rgba(255, 255, 255, 0.2)';
+    const bubbleHighlight = theme.bubbleHighlight || 'rgba(255, 255, 255, 0.4)';
+    
+    gs.ctx.fillStyle = bubbleColor;
     for (let i = 0; i < 15; i++) {
         const x = (Math.sin(Date.now() / 1000 + i * 0.5) * 50 + i * 60) % gs.canvas.width;
         const y = (Date.now() / 10 + i * 40) % gs.canvas.height;
@@ -638,11 +695,11 @@ function drawWaterBackground() {
         gs.ctx.fill();
         
         // Draw bubble highlight
-        gs.ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        gs.ctx.fillStyle = bubbleHighlight;
         gs.ctx.beginPath();
         gs.ctx.arc(x - radius/3, y - radius/3, radius/3, 0, Math.PI * 2);
         gs.ctx.fill();
-        gs.ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        gs.ctx.fillStyle = bubbleColor;
     }
 }
 

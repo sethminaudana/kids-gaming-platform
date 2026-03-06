@@ -41,7 +41,7 @@ sessionsRouter.post("/:sessionId/ingest", async (req, res) => {
         facePresent: !!g.facePresent,
         gazeX: g.gazeX,
         gazeY: g.gazeY,
-        landmarks: Array.isArray(g.landmarks) ? g.landmarks : undefined,
+        // landmarks: Array.isArray(g.landmarks) ? g.landmarks : undefined, // Removed to save DB quota space
       })),
       { ordered: false }
     );
