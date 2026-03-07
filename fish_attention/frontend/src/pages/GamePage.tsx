@@ -33,13 +33,10 @@ interface FinalReport {
   averageReactionTime: number | null;
   // reaction time stats from live computation
   meanReactionTime: number; stdReactionTime: number;
-<<<<<<< HEAD
   // adhd prediction
   hasADHD: boolean;
   adhdLevel: string | null;
   recommendations: string[];
-=======
->>>>>>> e47faf4a703aa99ccaf2e0ed511cb1bb9ee40f9b
 }
 
 // ─────────────────────────────────────────────
@@ -147,7 +144,6 @@ function downloadReport(report: FinalReport) {
   metricRow("Mean Reaction Time", `${report.meanReactionTime.toFixed(1)} ms`, 0);
   metricRow("Std Dev Reaction", `${report.stdReactionTime.toFixed(1)} ms`, 1);
 
-<<<<<<< HEAD
   // ── ADHD PREDICTION ──
   y += 4;
   sectionHeader("🧠  ADHD Profile", 220, 38, 38);
@@ -174,8 +170,6 @@ function downloadReport(report: FinalReport) {
   });
   y += 4;
 
-=======
->>>>>>> e47faf4a703aa99ccaf2e0ed511cb1bb9ee40f9b
   // ── FOOTER ──
   const pageH = doc.internal.pageSize.getHeight();
   doc.setFillColor(30, 27, 75);
@@ -365,7 +359,7 @@ function GameReportModal({ report }: { report: FinalReport }) {
             background: report.facePresentRatio > 0.5 ? "rgba(16,185,129,0.12)" : "rgba(239,68,68,0.12)",
             borderColor: report.facePresentRatio > 0.5 ? "rgba(16,185,129,0.3)" : "rgba(239,68,68,0.3)",
           }}>
-            <div className="metric-label">Face Present</div>
+            <div className="metric-label">Face Present (Session Avg)</div>
             <div className="metric-value" style={{ color: report.facePresentRatio > 0.5 ? "#34d399" : "#f87171" }}>
               {facePercent}%
             </div>
@@ -428,7 +422,6 @@ function GameReportModal({ report }: { report: FinalReport }) {
         </div>
       </div>
 
-<<<<<<< HEAD
       {/* ADHD Prediction Section */}
       <div className="report-card" style={{ animationDelay: "0.4s", background: report.hasADHD ? "rgba(239,68,68,0.05)" : "rgba(16,185,129,0.05)", borderColor: report.hasADHD ? "rgba(239,68,68,0.2)" : "rgba(16,185,129,0.2)" }}>
         <div className="section-title">
@@ -459,10 +452,6 @@ function GameReportModal({ report }: { report: FinalReport }) {
 
       {/* Action Buttons */}
       <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center", animation: "fadeInUp 0.5s 0.5s both" }}>
-=======
-      {/* Action Buttons */}
-      <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", justifyContent: "center", animation: "fadeInUp 0.5s 0.4s both" }}>
->>>>>>> e47faf4a703aa99ccaf2e0ed511cb1bb9ee40f9b
         <button className="dl-btn" onClick={() => downloadReport(report)}>
           ⬇ Download Report (PDF)
         </button>
@@ -491,6 +480,10 @@ export default function GamePage() {
   const trackerRef = useRef<GazeTracker | null>(null);
   const gameLoadedRef = useRef<boolean>(false);
 
+  // NEW: Refs for cumulative face present tracking
+  const totalGazeSamplesRef = useRef<number>(0);
+  const facePresentCountRef = useRef<number>(0);
+
   // Live ML Features calculation
   const [liveFeatures, setLiveFeatures] = useState<LiveFeatures>({
     meanGazeX: 0, stdGazeX: 0, varGazeX: 0,
@@ -503,7 +496,7 @@ export default function GamePage() {
   const liveFeaturesRef = useRef<LiveFeatures>(liveFeatures);
   liveFeaturesRef.current = liveFeatures;
 
-  // ── NEW: post-game report state ──
+  // ── post-game report state ──
   const [gameOver, setGameOver] = useState(false);
   const [finalReport, setFinalReport] = useState<FinalReport | null>(null);
 
@@ -590,20 +583,31 @@ export default function GamePage() {
 
       if (ev.type === "GAME_START") {
         gameStartTimeRef.current = eventTs;
+        // NEW: Reset cumulative counters when game starts
+        totalGazeSamplesRef.current = 0;
+        facePresentCountRef.current = 0;
+        console.log("Game started - counters reset");
       } else if (ev.type === "GAME_OVER") {
-        // ── Freeze final report ──
+        // ── Freeze final report with TRUE mean face present ratio ──
         const snap = liveFeaturesRef.current;
-<<<<<<< HEAD
+        
+        // NEW: Calculate the TRUE mean face present ratio for the entire session
+        const trueMeanFacePresentRatio = totalGazeSamplesRef.current > 0 
+          ? facePresentCountRef.current / totalGazeSamplesRef.current 
+          : snap.facePresentRatio; // fallback if no samples (shouldn't happen)
+        
+        console.log(`Game Over - Total samples: ${totalGazeSamplesRef.current}, Face present: ${facePresentCountRef.current}, True mean: ${trueMeanFacePresentRatio}`);
 
-        // ADHD Prediction Logic (rule-based evaluation of eye-tracking parameters)
+        // ADHD Prediction Logic (using TRUE mean ratio)
         let adhdScore = 0;
-        const isFaceValid = snap.facePresentRatio > 0;
-        // Inattention: looking away from screen
-        if (snap.facePresentRatio < 0.8) adhdScore += 2;
+        const isFaceValid = trueMeanFacePresentRatio > 0;
+        
+        // Inattention: looking away from screen - use TRUE mean
+        if (trueMeanFacePresentRatio < 0.8) adhdScore += 2;
         // Hyperactivity: fast eye movements
-        if (snap.gazeVelocity > 10) adhdScore += 1;
+        if (snap.gazeVelocity > 0.050) adhdScore += 2;
         // Inattention/Hyperactivity: high scatter of gaze
-        if (snap.varGazeX > 20 || snap.varGazeY > 20) adhdScore += 1;
+        if (snap.varGazeX > 0.020 || snap.varGazeY > 0.020) adhdScore += 1;
         // Inattention/Impulsivity: high reaction time variability
         if (snap.stdReactionTime > 500) adhdScore += 1;
 
@@ -630,7 +634,7 @@ export default function GamePage() {
               "Minimize background distractions in the learning environment."
             ];
           } else {
-            adhdLevel = "Mild";
+            adhdLevel = "Low";
             recommendations = [
               "Monitor attention span during focused tasks.",
               "Praise sustained attention and positive behavior.",
@@ -640,8 +644,6 @@ export default function GamePage() {
           }
         }
 
-=======
->>>>>>> e47faf4a703aa99ccaf2e0ed511cb1bb9ee40f9b
         const report: FinalReport = {
           sessionId,
           generatedAt: new Date().toLocaleString(),
@@ -651,7 +653,8 @@ export default function GamePage() {
           meanGazeY: snap.meanGazeY,
           stdGazeY: snap.stdGazeY,
           varGazeY: snap.varGazeY,
-          facePresentRatio: snap.facePresentRatio,
+          // NEW: Use TRUE mean ratio here
+          facePresentRatio: trueMeanFacePresentRatio,
           gazeVelocity: snap.gazeVelocity,
           finalScore: ev.finalScore,
           redBallsTouched: ev.redBallsTouched,
@@ -660,12 +663,9 @@ export default function GamePage() {
           averageReactionTime: ev.averageReactionTime,
           meanReactionTime: snap.meanReactionTime,
           stdReactionTime: snap.stdReactionTime,
-<<<<<<< HEAD
           hasADHD,
           adhdLevel,
           recommendations,
-=======
->>>>>>> e47faf4a703aa99ccaf2e0ed511cb1bb9ee40f9b
         };
         setFinalReport(report);
         setGameOver(true);
@@ -785,6 +785,12 @@ export default function GamePage() {
         tracker.start(10, (sample) => {
           gazeBuffer.current.push({ ...sample, sessionId } as any);
           rollingGazeBuffer.current.push({ ...sample, ts: Date.now() });
+          
+          // NEW: Update cumulative counters for face present tracking
+          totalGazeSamplesRef.current++;
+          if (sample.facePresent) {
+            facePresentCountRef.current++;
+          }
         });
 
         flushTimer.current = window.setInterval(async () => {
@@ -882,7 +888,7 @@ export default function GamePage() {
 
               {status === "tracking" && (
                 <div style={{ marginTop: "10px", padding: "10px", background: "#d4edda", borderRadius: "4px" }}>
-                  ✅ Eye tracking active
+                   Eye tracking active
                 </div>
               )}
             </div>
@@ -957,7 +963,7 @@ export default function GamePage() {
               <div style={{ display: "flex", alignItems: "center", marginBottom: "20px", paddingBottom: "12px", borderBottom: "2px solid #e2e8f0" }}>
                 <div style={{ background: "#10b981", width: "12px", height: "12px", borderRadius: "50%", marginRight: "12px", animation: "pulse-dot 2s infinite" }}></div>
                 <h3 style={{ margin: 0, fontSize: "18px", color: "#1e293b", fontWeight: 800, letterSpacing: "-0.5px" }}>
-                  Eye Tracking Features
+                  Live Eye Tracking Features (Last 5s)
                 </h3>
               </div>
 
@@ -993,11 +999,25 @@ export default function GamePage() {
                     <div className="feature-value" style={{ color: "#f59e0b" }}>{liveFeatures.gazeVelocity.toFixed(3)}</div>
                   </div>
                   <div className="feature-card" style={{ background: liveFeatures.facePresentRatio > 0.5 ? "#f0fdf4" : "#fef2f2", borderColor: liveFeatures.facePresentRatio > 0.5 ? "#bbf7d0" : "#fecaca" }}>
-                    <div className="feature-label">Face Present</div>
+                    <div className="feature-label">Face Present (Last 5s)</div>
                     <div className="feature-value" style={{ color: liveFeatures.facePresentRatio > 0.5 ? "#16a34a" : "#ef4444" }}>
                       {(liveFeatures.facePresentRatio * 100).toFixed(0)}%
                     </div>
                   </div>
+                </div>
+              </div>
+              
+              {/* NEW: Show cumulative stats */}
+              <div style={{ marginTop: "16px", padding: "10px", background: "#f8fafc", borderRadius: "8px", border: "1px dashed #94a3b8" }}>
+                <div style={{ fontSize: "11px", fontWeight: "bold", color: "#475569", marginBottom: "8px" }}>SESSION CUMULATIVE</div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px" }}>
+                  <span>Total Samples: <strong>{totalGazeSamplesRef.current}</strong></span>
+                  <span>Face Present: <strong>{facePresentCountRef.current}</strong></span>
+                  <span>Session Avg: <strong>
+                    {totalGazeSamplesRef.current > 0 
+                      ? ((facePresentCountRef.current / totalGazeSamplesRef.current) * 100).toFixed(0) 
+                      : 0}%
+                  </strong></span>
                 </div>
               </div>
             </div>
