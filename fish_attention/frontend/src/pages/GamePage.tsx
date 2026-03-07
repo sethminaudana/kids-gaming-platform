@@ -588,9 +588,9 @@ export default function GamePage() {
         // Inattention: looking away from screen
         if (snap.facePresentRatio < 0.8) adhdScore += 2;
         // Hyperactivity: fast eye movements
-        if (snap.gazeVelocity > 10) adhdScore += 1;
+        if (snap.gazeVelocity > 0.050) adhdScore += 2;
         // Inattention/Hyperactivity: high scatter of gaze
-        if (snap.varGazeX > 20 || snap.varGazeY > 20) adhdScore += 1;
+        if (snap.varGazeX > 0.020 || snap.varGazeY > 0.020) adhdScore += 1;
         // Inattention/Impulsivity: high reaction time variability
         if (snap.stdReactionTime > 500) adhdScore += 1;
 
@@ -617,7 +617,7 @@ export default function GamePage() {
               "Minimize background distractions in the learning environment."
             ];
           } else {
-            adhdLevel = "Mild";
+            adhdLevel = "Low";
             recommendations = [
               "Monitor attention span during focused tasks.",
               "Praise sustained attention and positive behavior.",
