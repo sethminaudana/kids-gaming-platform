@@ -1,16 +1,49 @@
-# React + Vite
+# every-ads-run
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<div align="center" style="margin: 30px;">
+    <a href="https://refine.dev">
+    <img alt="refine logo" src="https://refine.ams3.cdn.digitaloceanspaces.com/readme/refine-readme-banner.png">
+    </a>
+</div>
+<br/>
 
-Currently, two official plugins are available:
+This [Refine](https://github.com/refinedev/refine) project was generated with [create refine-app](https://github.com/refinedev/refine/tree/master/packages/create-refine-app).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Getting Started
 
-## React Compiler
+A React Framework for building internal tools, admin panels, dashboards & B2B apps with unmatched flexibility ✨
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Refine's hooks and components simplifies the development process and eliminates the repetitive tasks by providing industry-standard solutions for crucial aspects of a project, including authentication, access control, routing, networking, state management, and i18n.
 
-## Expanding the ESLint configuration
+## Available Scripts
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Running the development server.
+
+```bash
+    npm run dev
+```
+
+### Building for production.
+
+```bash
+    npm run build
+```
+
+### Running the production server.
+
+```bash
+    npm run start
+```
+
+## Learn More
+
+To learn more about **Refine**, please check out the [Documentation](https://refine.dev/docs)
+
+- **NestJS Query Data Provider** [Docs](https://refine.dev/docs/data/packages/nestjs-query/)
+- **Ant Design** [Docs](https://refine.dev/docs/ui-frameworks/antd/tutorial/)
+- **React Router** [Docs](https://refine.dev/docs/core/providers/router-provider/)
+- **Custom Auth Provider** [Docs](https://refine.dev/docs/core/providers/auth-provider/)
+
+## License
+
+MIT
