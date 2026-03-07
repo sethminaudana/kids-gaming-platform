@@ -17,7 +17,7 @@ function formatTime(seconds) {
 }
 
 const MemoryGame = () => {
-    const [cards, setCards] = useState(createDeck()); // Make settable for restart
+    // const [cards, setCards] = useState(createDeck()); // Make settable for restart
     const [startGame, setStartGame] = useState(false);
     const [closeTut, setCloseTut] = useState(true);
     const [flippedIndexes, setFlippedIndexes] = useState([]);
@@ -27,6 +27,10 @@ const MemoryGame = () => {
     const [elapsedTime, setElapsedTime] = useState(0);
     const [winner, setWinner] = useState(false);
     const [gameOver, setGameOver] = useState(false);
+    const [currentLevel, setCurrentLevel] = useState(1); // 1 = 2x2, 2 = 4x2, 3 = 4x4
+    const [levelTransition, setLevelTransition] = useState(false); // For the brief celebration
+    const [cards, setCards] = useState(createDeck(1)); // Start at level 1
+    const [level3Diff, setLevel3Diff] = useState(3); // NEW: 1=Easy(2 fruits), 2=Med(4 fruits), 3=Hard(8 fruits)
 
     // FIX: Force scroll to top when page opens
     useEffect(() => {
@@ -43,9 +47,38 @@ const MemoryGame = () => {
     const [wrongAudio] = useState(new Audio(wrong));
     const [winning] = useState(new Audio(congrats));
 
-    function createDeck() {
-        const symbols = ['🍎', '🍌', '🍉', '🍇', '🥑', '🍓', '🍊', '🍍'];
-        const deck = symbols.concat(symbols);
+    function createDeck(level = 1, l3Diff = 3) {
+        const allSymbols = ['🍎', '🍌', '🍉', '🍇', '🥑', '🍓', '🍊', '🍍'];
+       
+        let uniqueFruitCount = 2; // Level 1 default
+        let totalCards = 4;       // Level 1 grid size (2x2)
+        
+        if (level === 2) {
+            uniqueFruitCount = 3; // Just 3 fruits!
+            totalCards = 8;       // But keep the 4x2 grid size
+        } else if (level === 3) {
+            totalCards = 16;      // Level 3 is always a 4x4 grid
+            // LEVEL 3 ONLY: Look at the Easy/Med/Hard buttons!
+            if (l3Diff === 1) uniqueFruitCount = 3;      // Easy
+            else if (l3Diff === 2) uniqueFruitCount = 5; // Medium
+            else uniqueFruitCount = 8;                   // Hard
+        }
+
+        // 1. Grab ONLY the allowed unique fruits
+        const availableFruits = allSymbols.slice(0, uniqueFruitCount);
+        
+        // 2. Figure out how many pairs we need to fill the board
+        const pairsNeeded = totalCards / 2;
+        let selectedPairs = [];
+        
+        // 3. Loop through and duplicate fruits until we have enough pairs to fill the grid
+        for (let i = 0; i < pairsNeeded; i++) {
+            // The '%' operator gracefully loops back to the start of the fruits array if we run out!
+            selectedPairs.push(availableFruits[i % availableFruits.length]);
+        }
+
+        // 4. Duplicate our selected pairs to make the matching deck, then shuffle
+        const deck = selectedPairs.concat(selectedPairs);
         return shuffle(deck.map((symbol, index) => ({ symbol, index })));
     }
 
@@ -153,11 +186,13 @@ const MemoryGame = () => {
         isProcessing.current = false; // UNLOCK BOARD
     }
 
-    function restartGame(shouldSendData = true) {
-        if (shouldSendData) {
+    function restartGame(shouldSendData = true, level = 1, l3Diff = level3Diff) {
+        if (shouldSendData && level === 1) { // Only send data on full restart/end
             sendDatatoserver();
         }
-        setCards(createDeck()); // Get a new shuffled deck
+        setCurrentLevel(level);
+        setLevel3Diff(l3Diff); // Save the button choice
+        setCards(createDeck(level, l3Diff)); // Deal the new cards // Get deck for specific level
         setFlippedIndexes([]);
         setMatchedIndexes([]);
         setRightMatches([]);
@@ -171,7 +206,7 @@ const MemoryGame = () => {
         lastClickTime.current = Date.now();
         isProcessing.current = false;
 
-        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+        // window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
     }
 
     useEffect(() => {
@@ -187,13 +222,22 @@ const MemoryGame = () => {
     }, [startGame, gameOver]); // Add startGame to dependencies
 
     useEffect(() => {
-        if (rightMatches.length > 0 && rightMatches.length / 2 === 8) {
-            setWinner(true);
-            setGameOver(true); // Set game over state to true
+        // Check if all cards in the CURRENT level are matched
+        if (rightMatches.length > 0 && rightMatches.length === cards.length) {
             winning.play();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            if (currentLevel < 3) {
+                // BRIEF CELEBRATION - Then move to next level
+                setLevelTransition(true);
+               
+            } else {
+                // FINAL WIN (Finished 4x4)
+                setWinner(true);
+                setGameOver(true);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
         }
-    }, [rightMatches, winning]); // removed 'winner' from deps
+    }, [rightMatches, winning, cards.length, currentLevel]);
 
     function sendDatatoserver(){
         // Only send if there's actually data to send
@@ -206,12 +250,14 @@ const MemoryGame = () => {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem("token")}`
                     },
                     body: JSON.stringify({
                         rightMatches: rightMatches.length / 2,
                         wrongMatches: wrongMatches.length / 2,
                         timetaken: elapsedTime,
-                        events: eventLog.current // SEND THE FULL EVENT LOG
+                        events: eventLog.current, // SEND THE FULL EVENT LOG
+                        level: currentLevel
                     }),
                 });
                 const responseData = await response.json();
@@ -256,9 +302,20 @@ const MemoryGame = () => {
                     <button className="btn btn-warning m-2" onClick={handleStart} style={{fontSize: `1.2em`}}>{startGame ? 'RESTART GAME' : 'START GAME'}</button>
                     <button className="btn btn-warning m-2" onClick={handleClose} style={{fontSize: `1.2em`}}>SEE TUTORIAL</button> 
                 </div>
+                 {/* NEW: THESE BUTTONS ONLY APPEAR IN LEVEL 3 */}
+                    {currentLevel === 3 && (
+                        <div className=" mt-5">
+                            <span className="text-white fw-bold me-3" style={{fontSize: '1.2em'}}>Level 3 Difficulty:</span>
+                            <button className={`btn ${level3Diff === 1 ? 'btn-success' : 'btn-outline-success'} m-1 fw-bold`} onClick={() => restartGame(false, 3, 1)}>Easy</button>
+                            <button className={`btn ${level3Diff === 2 ? 'btn-warning' : 'btn-outline-warning'} m-1 fw-bold`} onClick={() => restartGame(false, 3, 2)}>Medium</button>
+                            <button className={`btn ${level3Diff === 3 ? 'btn-danger' : 'btn-outline-danger'} m-1 fw-bold`} onClick={() => restartGame(false, 3, 3)}>Hard</button>
+                        </div>
+                    )}
             </div>
             {!closeTut && <Tutorial  onClose={handleClose}/>}
             { startGame && <div className="memory-game" ref={contentRef}>
+           
+                    
                 <div className="cards-grid">
                     {cards.map((card, index) => (
                         <div
@@ -270,12 +327,35 @@ const MemoryGame = () => {
                             {flippedIndexes.includes(index) || matchedIndexes.includes(index) ? card.symbol : '💡💭'}
                         </div>
                     ))}
-                    <button className='btn btn-warning' style={{fontSize: `1.5em`, transition: 'transform 0.2s'}} onClick={() => restartGame(true)}>Restart Game</button>
+                    <button className='btn btn-warning' style={{fontSize: `1.5em`, transition: 'transform 0.2s'}} onClick={() => restartGame(true, currentLevel)}>Restart Game</button>
                     <button className='btn btn-warning' style={{fontSize: `1.5em`, cursor: `default`, transition: 'transform 0.2s'}}>✅ {rightMatches.length/2}</button>
                     <button className='btn btn-warning' style={{fontSize: `1.5em`, cursor: `default`, transition: 'transform 0.2s'}}>❌ {wrongMatches.length/2}</button>
                     <button className='btn btn-warning' style={{fontSize: `1.5em`, cursor: `default`, transition: 'transform 0.2s'}}>⏰ {formatTime(elapsedTime)}</button>
                 </div>
             </div>}
+
+            {levelTransition && (
+                <div className="overlay" style={{ zIndex: 9999, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
+                    <Confetti />
+                    <h1 style={{ color: 'white', fontSize: '4rem', textShadow: '2px 2px 8px #000' }}>
+                        Level {currentLevel} Complete!
+                    </h1>
+                    <h3 style={{ color: 'yellow' }}>Get ready for the next level...</h3>
+                    {/* NEW NEXT LEVEL BUTTON */}
+                    <button 
+                        className="btn btn-warning btn-lg mt-4" 
+                        style={{ fontSize: '2rem', zIndex: 10000, position: 'relative' }}
+                        onClick={() => {
+                            sendDatatoserver();
+                            setLevelTransition(false); // Hide the overlay
+                            restartGame(false, currentLevel + 1); // Load next level
+                        }}
+                    >
+                        Start Level {currentLevel + 1}
+                    </button>
+                </div>
+            )}
+
             {winner && (
                 <div className="overlay">
                     <Confetti />
