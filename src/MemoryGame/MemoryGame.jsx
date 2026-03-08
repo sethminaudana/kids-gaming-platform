@@ -32,6 +32,10 @@ const MemoryGame = () => {
     const [cards, setCards] = useState(createDeck(1)); // Start at level 1
     const [level3Diff, setLevel3Diff] = useState(3); // NEW: 1=Easy(2 fruits), 2=Med(4 fruits), 3=Hard(8 fruits)
 
+    // FIX: Force scroll to top when page opens
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
     // --- DATA COLLECTION REFS (New) ---
     const eventLog = useRef([]); // Stores the raw timeline of events
     const lastClickTime = useRef(Date.now()); // To calculate Inter-Click Interval

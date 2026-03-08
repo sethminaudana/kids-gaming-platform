@@ -1,5 +1,5 @@
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,18 +7,71 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Dependencies
+node_modules/
+jspm_packages/
+.pnp
+.pnp.js
+__pycache__/
+*.py[cod]
 
-# Editor directories and files
+# Virtual Environments
+venv/
+env/
+.venv/
+.env/
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build Outputs / Compiled Output
+dist/
+dist-ssr/
+build/
+out/
+.expo/
+.next/
+
+# Machine Learning Data & Models
+*.pkl
+*.model
+*.pth
+*.pt
+*.h5
+*.keras
+*.onnx
+ml_model/models/
+.ipynb_checkpoints/
+
+# Temporary files
+*.tmp
+*.temp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Testing
+coverage/
+.nyc_output/
+.pytest_cache/
+
+# IDE & Editor directories and files
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+.idea/
+.vs/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+
+# Misc
+*.local
+.eslintcache
+.stylelintcache
