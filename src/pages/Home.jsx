@@ -128,7 +128,7 @@ export default function Home() {
       </div>
 
       {/* --- Games Grid --- */}
-      <Row className="g-4">
+      {/* <Row className="g-4">
         {filteredGames.map((game, index) => (
           <Col
             key={game.id}
@@ -186,7 +186,7 @@ export default function Home() {
             </Card>
           </Col>
         ))}
-      </Row>
+      </Row> */}
 
       {/* Inline Styles */}
       <style jsx>{`

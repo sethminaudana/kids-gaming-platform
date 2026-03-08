@@ -5,13 +5,13 @@
   height: 100vh;
 }
 
-.cards-grid {
+.memory-game .cards-grid {
   display: grid;
   grid-template-columns: repeat(4, 200px);
   grid-gap: 20px;
 }
 
-.card {
+.memory-game .card {
   width: 200px;
   height: 100px !important;
   background-color: #fff;
@@ -25,17 +25,17 @@
   transform-style: preserve-3d;
 }
 
-.card:hover {
+.memory-game .card:hover {
   transform: scale(1.2);
 }
 
-.card.flipped {
+.memory-game .card.flipped {
   background-color: white;
   border: 1px solid black;
   transform: rotateY(180deg) scale(1.2);
 }
 
-.btn:hover {
+.memory-game .btn:hover {
   transform: scale(1.1);
 }
 

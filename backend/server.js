@@ -6,6 +6,8 @@ const { spawn } = require('child_process');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = process.env.JWT_SECRET || "my_super_secret_development_key"; // Put this in your .env later!
 
 // --- Middleware ---
 app.use(cors()); // Enable CORS
@@ -52,12 +54,22 @@ const GameSession = mongoose.model("GameSession", gameSessionSchema);
 
 // --- Global State for "Session" (Matches your old logic) ---
 // Note: Ideally use tokens (JWT) for this, but keeping it simple as requested.
-let username_logged = "TestKid";
+// let username_logged = "TestKid";
 
 // --- Helper Middleware ---
 function isAuthenticated(req, res, next) {
-  if (username_logged !== "") {
-    next();
+  const authHeader = req.headers.authorization;
+  
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.split(" ")[1]; // Extract the token
+    
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ success: false, message: "Session expired. Please log in again." });
+      }
+      req.user = decoded; // Attach the decoded user data (like username) to the request!
+      next();
+    });
   } else {
     res.status(401).json({ success: false, message: "Unauthorized: Please login first." });
   }
@@ -71,7 +83,7 @@ app.get("/", (req, res) => {
 });
 
 // 2. Register
-app.post("/register", async (req, res) => {
+app.post("/api/register", async (req, res) => {
   const { username, password, age } = req.body;
 
   try {
@@ -91,7 +103,7 @@ app.post("/register", async (req, res) => {
 });
 
 // 3. Login
-app.post("/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
   const { username, password } = req.body;
 
   try {
@@ -104,8 +116,9 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ success: false, message: "Invalid Password" });
     }
 
-    username_logged = username; // Set global session
-    res.json({ success: true, message: "Authentication Successful!" });
+    const token = jwt.sign({ username: user.username }, JWT_SECRET, { expiresIn: '24h' });
+    // username_logged = username; // Set global session
+    res.json({ success: true, message: "Authentication Successful!", token: token });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Server Error" });
@@ -113,23 +126,16 @@ app.post("/login", async (req, res) => {
 });
 
 // 4. Logout
-app.get("/logout", (req, res) => {
-    if (username_logged !== '') {
-         res.json({success: true,  message: "Still Logged In."})
-    } else {
-         res.json({ success: false, message: "Logout Successful!" });
-    }
-});
-
+// With JWT, logout is handled by the frontend deleting the token.
+// We keep this route just to send a friendly confirmation back to React.
 app.post("/logout", (req, res) => {
-  username_logged = "";
-  res.json({ success: true, message: "Logout Successful!" });
+  res.json({ success: true, message: "Logged out successfully!" });
 });
 
 // 5. Get Profile
 app.get("/profile", isAuthenticated, async (req, res) => {
   try {
-    const user = await User.findOne({ username: username_logged });
+   const user = await User.findOne({ username: req.user.username });
     if (!user) return res.status(404).json({ success: false, message: "User not found" });
 
     res.json({
@@ -152,16 +158,19 @@ app.get("/profile", isAuthenticated, async (req, res) => {
 // 6. Save Memory Game Data (Updated for ML)
 app.post("/api/memorygame", isAuthenticated, async (req, res) => {
   // Extract events from the request
-  const { rightMatches, wrongMatches, timetaken, events } = req.body;
+  const { rightMatches, wrongMatches, timetaken, events, level } = req.body;
 
   try {
     // A. Update User Profile (Summary Stats)
     const user = await User.findOneAndUpdate(
-      { username: username_logged },
+      { username: req.user.username },
       {
-        memoryright: rightMatches,
-        memorywrong: wrongMatches,
-        memorytime: timetaken,
+        $inc: { 
+          memoryright: rightMatches,
+          memorywrong: wrongMatches,
+          memorytime: timetaken,
+          score: rightMatches * 10 // Give them 10 points per right match!
+        }
       },
       { new: true }
     );
@@ -173,18 +182,19 @@ app.post("/api/memorygame", isAuthenticated, async (req, res) => {
     // B. Save Raw Game Session (Detailed Logs for ML)
     if (events && events.length > 0) {
         const newSession = new GameSession({
-            username: username_logged,
+            username: req.user.username,
+            gameType: `memory_game_level_${level || 'unknown'}`,
             score: rightMatches, // Assuming score is based on matches
             duration: timetaken,
             events: events // <--- The crucial array for your ADHD analysis
         });
         await newSession.save();
-        console.log(`Detailed session saved for ${username_logged} with ${events.length} events.`);
+        console.log(`Detailed session saved for ${req.user.username} with ${events.length} events.`);
    // --- NEW: TRIGGER PYTHON SCRIPT ---
         
         // spawn('python', ['filename', 'argument'])
         // Note: Use 'python3' instead of 'python' if you are on Mac/Linux
-        const pythonProcess = spawn('python', ['../adhd_ml_project/predict.py', username_logged]);
+        const pythonProcess = spawn('python', ['../adhd_ml_project/predict.py', req.user.username]);
 
         let reportData = "";
 
@@ -213,7 +223,7 @@ app.post("/api/memorygame", isAuthenticated, async (req, res) => {
         res.status(200).send({ score: user.score, report: "No events to analyze." }); 
     }
 
-    console.log(`User profile updated for ${username_logged}`);
+    console.log(`User profile updated for ${req.user.username}`);
     // res.status(200).send({ score: user.score }); 
   } catch (err) {
     console.error("Error saving game data:", err);
