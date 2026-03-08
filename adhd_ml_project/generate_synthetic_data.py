@@ -3,7 +3,7 @@ import numpy as np
 
 # CONFIG
 NUM_SAMPLES = 500  # We will generate 500 "fake" kids
-OUTPUT_FILE = "adhd_sample_data.csv"
+OUTPUT_FILE = "adhd_sample_data_new.csv"
 
 # Set random seed for reproducibility
 np.random.seed(42)
@@ -40,6 +40,13 @@ mouse_distance = (avg_speed * 3) + np.random.normal(0, 500, NUM_SAMPLES)
 # Average of 4-8 errors per game for a normal child
 errors = np.random.poisson(lam=6, size=NUM_SAMPLES)
 
+# 3. Inhibitory Failures (Hyperactivity) replacing invalid_clicks
+inhibitory_fails = np.random.poisson(lam=0.5, size=NUM_SAMPLES)
+
+# 8. Perseverative Errors (Working Memory)
+# Neurotypicals rarely make the exact same mistake twice in a row
+perseverative = np.random.poisson(lam=0.2, size=NUM_SAMPLES)
+
 # 7. Total Score (NEW)
 # Since the game finishes when all 8 pairs are found, the score is 8.
 # We make it an array of 8s.
@@ -49,12 +56,16 @@ scores = np.full(NUM_SAMPLES, 8)
 # --- ASSEMBLE DATAFRAME ---
 df = pd.DataFrame({
     "username": [f"Simulated_User_{i}" for i in range(NUM_SAMPLES)],
+    "level": np.random.choice([1, 2, 3], NUM_SAMPLES),
+    "difficulty": np.random.choice(['easy', 'medium', 'hard', 'standard'], NUM_SAMPLES),
     "avg_click_interval": avg_speed.round(2),
     "click_variability_std": consistency.round(2),
     "total_invalid_clicks": invalid_clicks,
+    "inhibitory_failures": inhibitory_fails,
     "reflexive_fast_clicks": reflexive_clicks,
     "total_mouse_distance": mouse_distance.round(2),
     "total_errors": errors,
+    "perseverative_errors": perseverative,
     "total_score": scores
 })
 

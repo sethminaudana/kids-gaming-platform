@@ -37,6 +37,10 @@ const MemoryGame = () => {
     const lastClickTime = useRef(Date.now()); // To calculate Inter-Click Interval
     const isProcessing = useRef(false); // To track if board is locked (for invalid clicks)
 
+// --- NEW: ADHD SPECIFIC MARKER REFS ---
+    const failedPairs = useRef([]); // Tracks previous wrong pairs for Perseverative Errors
+    const firstFlipTime = useRef(null); // Tracks time between clicks for Latency
+    const inhibitoryFailures = useRef(0);// Counts clicks while board is locked
 
     // Use useState to create audio objects only once
     const [correctAudio] = useState(new Audio(right));
@@ -134,11 +138,22 @@ const MemoryGame = () => {
 
     // 2. CHECK FOR INVALID CLICKS (Impulsivity / Hyperactivity)
     // If board is processing (waiting for timeout) or card already flipped/matched
-    if (isProcessing.current || matchedIndexes.includes(index) || flippedIndexes.includes(index)) {
-        logEvent('invalid_click', {
-            ...clickDetails,
-            reason: isProcessing.current ? 'board_locked' : 'card_already_active'
-        });
+    // if (isProcessing.current || matchedIndexes.includes(index) || flippedIndexes.includes(index)) {
+    //     logEvent('invalid_click', {
+    //         ...clickDetails,
+    //         reason: isProcessing.current ? 'board_locked' : 'card_already_active'
+    //     });
+    //     return;
+    // }
+    // 1. INHIBITORY CONTROL CHECK (Hyperactivity marker)
+    if (isProcessing.current) {
+        inhibitoryFailures.current += 1; 
+        logEvent('inhibitory_failure', { ...clickDetails, totalFailures: inhibitoryFailures.current });
+        return; // Stop them from flipping
+    }
+
+    if (matchedIndexes.includes(index) || flippedIndexes.includes(index)) {
+        logEvent('invalid_click', { ...clickDetails, reason: 'card_already_active' });
         return;
     }
 
@@ -147,33 +162,53 @@ const MemoryGame = () => {
 
     // Standard Logic
     if (flippedIndexes.length === 0) {
+        // FIRST CARD FLIPPED: Start the latency timer
+        firstFlipTime.current = Date.now();
         setFlippedIndexes([index]);
     } else if (flippedIndexes.length === 1) {
         const firstIndex = flippedIndexes[0];
+        const latencyMs = Date.now() - firstFlipTime.current; // Impulsivity/Inattention marker
         setFlippedIndexes([firstIndex, index]); // Show both cards
         
         isProcessing.current = true; // LOCK BOARD
-        setTimeout(() => checkForMatch(firstIndex, index), 1000);
+        setTimeout(() => checkForMatch(firstIndex, index, latencyMs), 1000);
     }
 }
 
-    function checkForMatch(firstIndex, secondIndex) {
+    function checkForMatch(firstIndex, secondIndex, latencyMs) {
         const firstCard = cards[firstIndex];
         const secondCard = cards[secondIndex];
         const isMatch = firstCard.symbol === secondCard.symbol;
 
         // Log the result of the attempt
-        logEvent(isMatch ? 'match_found' : 'mismatch', {
-            cardA: firstIndex,
-            cardB: secondIndex,
-            symbol: firstCard.symbol
-        });
+        // logEvent(isMatch ? 'match_found' : 'mismatch', {
+        //     cardA: firstIndex,
+        //     cardB: secondIndex,
+        //     symbol: firstCard.symbol
+        // });
 
         if (isMatch) {
+            logEvent('match_found', { cardA: firstIndex, cardB: secondIndex, symbol: firstCard.symbol, latencyMs });
             setMatchedIndexes(prev => [...prev, firstIndex, secondIndex]);
             setRightMatches(prev => [...prev, firstIndex, secondIndex]);
             correctAudio.play();
         } else {
+            // PERSEVERATIVE ERROR CHECK (Working Memory marker)
+            // Create a unique string for this pair (e.g., "2-5") to see if they've guessed it before
+            const pairKey = [firstIndex, secondIndex].sort().join('-');
+            const isPerseverative = failedPairs.current.includes(pairKey);
+            
+            if (!isPerseverative) {
+                failedPairs.current.push(pairKey); // Remember this mistake for next time
+            }
+
+            logEvent('mismatch', { 
+                cardA: firstIndex, 
+                cardB: secondIndex, 
+                symbol: firstCard.symbol, 
+                latencyMs,
+                isPerseverative // <--- Sends true/false to your ML model!
+            });
             setWrongMatches(prev => [...prev, firstIndex, secondIndex]);
             wrongAudio.play();
         }
@@ -201,6 +236,11 @@ const MemoryGame = () => {
         eventLog.current = [];
         lastClickTime.current = Date.now();
         isProcessing.current = false;
+
+        // --- ADD THESE ---
+        failedPairs.current = [];
+        firstFlipTime.current = null;
+        inhibitoryFailures.current = 0;
 
         // window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
     }
@@ -241,6 +281,13 @@ const MemoryGame = () => {
 
         const sendData = async () => {
             try {
+                // 1. Figure out the difficulty string based on your states
+                let diffString = "standard"; // Default for levels 1 & 2
+                if (currentLevel === 3) {
+                    if (level3Diff === 1) diffString = "easy";
+                    if (level3Diff === 2) diffString = "medium";
+                    if (level3Diff === 3) diffString = "hard";
+                }
                 // Change fetch path to be relative for the proxy
                 const response = await fetch('/api/memorygame', { 
                     method: 'POST',
@@ -253,14 +300,17 @@ const MemoryGame = () => {
                         wrongMatches: wrongMatches.length / 2,
                         timetaken: elapsedTime,
                         events: eventLog.current, // SEND THE FULL EVENT LOG
-                        level: currentLevel
+                        level: currentLevel,
+                        difficulty: diffString,
+                        inhibitoryFailures: inhibitoryFailures.current // <--- NEW: Send total hyperactivity clicks
                     }),
                 });
                 const responseData = await response.json();
                 // --- NEW: DISPLAY THE ALERT ---
                 if (responseData.report) {
                     // This pops up the browser alert with the Python output
-                    alert(responseData.report);
+                    // alert(responseData.report);
+                    console.log('ML Report Data:', responseData.report);
                 }
                 console.log('Response from server:', responseData.score);
             } catch (error) {
@@ -323,7 +373,8 @@ const MemoryGame = () => {
                             {flippedIndexes.includes(index) || matchedIndexes.includes(index) ? card.symbol : '💡💭'}
                         </div>
                     ))}
-                    <button className='btn btn-warning' style={{fontSize: `1.5em`, transition: 'transform 0.2s'}} onClick={() => restartGame(true, currentLevel)}>Restart Game</button>
+                    {/* <button className='btn btn-warning' style={{fontSize: `1.5em`, transition: 'transform 0.2s'}} onClick={() => restartGame(true, currentLevel)}>Restart Game</button> */}
+                    <button className='btn btn-warning' style={{fontSize: `1.5em`, transition: 'transform 0.2s'}} onClick={() => restartGame(true)}>End Game</button>
                     <button className='btn btn-warning' style={{fontSize: `1.5em`, cursor: `default`, transition: 'transform 0.2s'}}>✅ {rightMatches.length/2}</button>
                     <button className='btn btn-warning' style={{fontSize: `1.5em`, cursor: `default`, transition: 'transform 0.2s'}}>❌ {wrongMatches.length/2}</button>
                     <button className='btn btn-warning' style={{fontSize: `1.5em`, cursor: `default`, transition: 'transform 0.2s'}}>⏰ {formatTime(elapsedTime)}</button>
