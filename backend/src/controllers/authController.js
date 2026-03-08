@@ -1,5 +1,7 @@
 // src/controllers/authController.js
 const User = require('../models/User');
+const ChildProfile = require('../models/ChildProfile');
+const GameSession = require('../models/GameSession');
 const jwt = require('jsonwebtoken');
 
 // Generate JWT Token
@@ -17,12 +19,20 @@ const register = async (req, res) => {
     
     const { email, password, role, childName, childAge, parentName, parentPhone, therapistId } = req.body;
 
+    // Validate required fields
+    if (!email || !password || !childName) {
+      return res.status(400).json({
+        success: false,
+        message: 'Email, password, and child name are required'
+      });
+    }
+
     // Check if user exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({
+      return res.status(409).json({
         success: false,
-        message: 'User already exists'
+        message: 'User with this email already exists'
       });
     }
 
@@ -43,9 +53,37 @@ const register = async (req, res) => {
       userData.therapistId = therapistId;
     }
 
-    // Create user
+    // Create user in MongoDB
     const user = new User(userData);
     await user.save();
+    console.log('✅ User registered successfully:', user.email);
+
+    // Create ChildProfile
+    const childProfile = new ChildProfile({
+      parentId: user._id,
+      childName: childName,
+      childAge: childAge ? parseInt(childAge) : undefined,
+      diagnosis: 'None'
+    });
+    await childProfile.save();
+    console.log('✅ Child profile created successfully:', childName);
+
+    // Create initial GameSession record
+    const initialSession = new GameSession({
+      childId: childProfile._id,
+      parentId: user._id,
+      difficulty: 'easy',
+      pieces: 0,
+      timeCompleted: 0,
+      tryAgainCount: 0,
+      mouseData: {
+        mousePath: [],
+        avgSpeed: 0,
+        totalPathLength: 0
+      }
+    });
+    await initialSession.save();
+    console.log('✅ Initial game session created');
 
     // Generate token
     const token = generateToken(user._id);
@@ -55,6 +93,7 @@ const register = async (req, res) => {
       message: 'Registration successful',
       data: {
         id: user._id,
+        childProfileId: childProfile._id,
         email: user.email,
         role: user.role,
         childName: user.childName,
@@ -79,9 +118,10 @@ const register = async (req, res) => {
     
     // Handle duplicate key error
     if (error.code === 11000) {
-      return res.status(400).json({
+      const field = Object.keys(error.keyValue)[0];
+      return res.status(409).json({
         success: false,
-        message: 'Email already exists'
+        message: `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`
       });
     }
 
@@ -120,7 +160,7 @@ const login = async (req, res) => {
       });
     }
 
-    // Check if user is active (if isActive field exists)
+    // Check if user is active
     if (user.isActive === false) {
       return res.status(401).json({
         success: false,

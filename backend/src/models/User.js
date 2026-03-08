@@ -8,35 +8,52 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Email is required'],
     unique: true,
     lowercase: true,
-    trim: true
+    trim: true,
+    sparse: true,
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      'Please provide a valid email'
+    ]
   },
   password: {
     type: String,
     required: [true, 'Password is required'],
-    minlength: 6
+    minlength: [6, 'Password must be at least 6 characters'],
+    select: false // Don't return password by default
   },
   role: {
     type: String,
-    enum: ['parent', 'therapist', 'admin'],
+    enum: {
+      values: ['parent', 'therapist', 'admin'],
+      message: 'Role must be parent, therapist, or admin'
+    },
     default: 'parent'
   },
   childName: {
     type: String,
-    required: [true, 'Child name is required']
+    required: [true, 'Child name is required'],
+    trim: true
   },
   childAge: {
     type: Number,
-    min: 2,
-    max: 18
+    min: [2, 'Child age must be at least 2'],
+    max: [18, 'Child age must not exceed 18']
   },
   parentName: {
-    type: String
+    type: String,
+    trim: true
   },
   parentPhone: {
-    type: String
+    type: String,
+    trim: true
   },
   therapistId: {
-    type: String
+    type: String,
+    trim: true
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   },
   lastLogin: {
     type: Date
@@ -44,40 +61,30 @@ const userSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
   }
-});
+}, { timestamps: true });
 
-// ⚠️ CRITICAL FIX - This is the correct middleware
-userSchema.pre('save', function(next) {
-  // Get the user document
-  const user = this;
-  
-  // If password is not modified, skip hashing
-  if (!user.isModified('password')) {
-    return next();
+// ✅ Pre-save middleware using async/await for password hashing
+userSchema.pre('save', async function() {
+  // Only hash password if it's modified
+  if (!this.isModified('password')) {
+    return;
   }
 
-  // Generate salt and hash password
-  bcrypt.genSalt(10, function(err, salt) {
-    if (err) {
-      console.error('Salt error:', err);
-      return next(err);
-    }
-    
-    bcrypt.hash(user.password, salt, function(err, hash) {
-      if (err) {
-        console.error('Hash error:', err);
-        return next(err);
-      }
-      
-      // Replace plain password with hash
-      user.password = hash;
-      console.log('✅ Password hashed successfully for:', user.email);
-      
-      // MUST call next() to continue
-      next();
-    });
-  });
+  try {
+    // Hash password using bcryptjs
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(this.password, salt);
+    this.password = hashedPassword;
+    console.log('✅ Password hashed successfully for:', this.email);
+  } catch (error) {
+    console.error('❌ Error hashing password:', error);
+    throw error;
+  }
 });
 
 // Password comparison method

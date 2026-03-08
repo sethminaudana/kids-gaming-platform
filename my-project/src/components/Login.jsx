@@ -9,6 +9,8 @@ import {
   LogIn, Baby, Users, Stethoscope
 } from 'lucide-react';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
 const Login = () => {
   // Auth context
   const { login, register } = useContext(AuthContext);
@@ -21,7 +23,6 @@ const Login = () => {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [showLoginPassword, setShowLoginPassword] = useState(false);
-  const [loginRole, setLoginRole] = useState('parent');
   const [loginError, setLoginError] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
@@ -55,7 +56,7 @@ const Login = () => {
     }
 
     try {
-      const success = await login(loginEmail, loginPassword, loginRole);
+      const success = await login(loginEmail, loginPassword);
       if (success) {
         navigate('/dashboard');
       } else {
@@ -63,154 +64,92 @@ const Login = () => {
       }
     } catch (error) {
       setLoginError('Login failed. Please check your connection.');
+      console.error('Login error:', error);
     } finally {
       setIsLoggingIn(false);
     }
   };
 
-  // In Login.jsx - Replace the handleRegisterSubmit function
+  // Handle registration submit
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    setRegError('');
+    setRegSuccess('');
 
-const handleRegisterSubmit = async (e) => {
-  e.preventDefault();
-  setRegError('');
-  setRegSuccess('');
-
-  // Validation
-  if (!regEmail || !regPassword || !confirmPassword || !childName) {
-    setRegError('Please fill in all required fields');
-    return;
-  }
-
-  if (regPassword.length < 6) {
-    setRegError('Password must be at least 6 characters long');
-    return;
-  }
-
-  if (regPassword !== confirmPassword) {
-    setRegError('Passwords do not match');
-    return;
-  }
-
-  if (!agreeTerms) {
-    setRegError('Please agree to the Terms of Service');
-    return;
-  }
-
-  setIsRegistering(true);
-
-  try {
-    // Prepare registration data matching backend schema EXACTLY
-    const registrationData = {
-      email: regEmail,
-      password: regPassword,
-      childName: childName,                    // Must match schema field name
-      childAge: childAge ? parseInt(childAge) : null,  // Convert to number
-      role: regRole,                            // 'parent' or 'therapist'
-    };
-
-    // Add parent-specific fields
-    if (regRole === 'parent') {
-      registrationData.parentName = parentName || null;
-      registrationData.parentPhone = parentPhone || null;
+    // Validation
+    if (!regEmail || !regPassword || !confirmPassword || !childName) {
+      setRegError('Please fill in all required fields');
+      return;
     }
 
-    // Add therapist-specific fields
-    if (regRole === 'therapist') {
-      registrationData.therapistId = therapistId || null;
+    if (regPassword.length < 6) {
+      setRegError('Password must be at least 6 characters long');
+      return;
     }
 
-    console.log('📤 Sending registration data:', JSON.stringify(registrationData, null, 2));
+    if (regPassword !== confirmPassword) {
+      setRegError('Passwords do not match');
+      return;
+    }
 
-    const response = await fetch('http://localhost:5000/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(registrationData)
-    });
+    if (!agreeTerms) {
+      setRegError('Please agree to the Terms of Service');
+      return;
+    }
 
-    const data = await response.json();
-    console.log('📥 Registration response:', data);
+    setIsRegistering(true);
 
-    if (response.ok && data.success) {
-      setRegSuccess('Registration successful! You can now login.');
-      
-      // Auto-fill login form with registered email
-      setLoginEmail(regEmail);
-      
-      // Clear registration form
-      setTimeout(() => {
-        setActiveTab('login');
-        setRegEmail('');
-        setRegPassword('');
-        setConfirmPassword('');
-        setChildName('');
-        setChildAge('');
-        setParentName('');
-        setParentPhone('');
-        setTherapistId('');
-      }, 2000);
-    } else {
-      // Show validation errors if any
-      if (data.errors && data.errors.length > 0) {
-        setRegError(data.errors.join(', '));
-      } else {
-        setRegError(data.message || 'Registration failed. Please try again.');
+    try {
+      // Prepare registration data matching backend schema
+      const registrationData = {
+        email: regEmail,
+        password: regPassword,
+        childName: childName,
+        childAge: childAge ? parseInt(childAge) : undefined,
+        role: regRole,
+      };
+
+      // Add parent-specific fields
+      if (regRole === 'parent') {
+        if (parentName) registrationData.parentName = parentName;
+        if (parentPhone) registrationData.parentPhone = parentPhone;
       }
-    }
-  } catch (error) {
-    console.error('❌ Registration error:', error);
-    setRegError('Cannot connect to server. Please make sure the backend is running.');
-  } finally {
-    setIsRegistering(false);
-  }
 
-  const handleLoginSubmit = async (e) => {
-  e.preventDefault();
-  setLoginError('');
-  setIsLoggingIn(true);
+      // Add therapist-specific fields
+      if (regRole === 'therapist') {
+        if (therapistId) registrationData.therapistId = therapistId;
+      }
 
-  if (!loginEmail || !loginPassword) {
-    setLoginError('Please fill in all fields');
-    setIsLoggingIn(false);
-    return;
-  }
+      console.log('📤 Sending registration data:', registrationData);
 
-  try {
-    // ✅ FIXED: Changed from /api/users/login to /api/auth/login
-    const response = await fetch('http://localhost:5000/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: loginEmail,
-        password: loginPassword
-      })
-    });
-
-    const data = await response.json();
-    console.log('📥 Login response:', data);
-
-    if (response.ok && data.success) {
-      // Save token to localStorage
-      localStorage.setItem('token', data.data.token);
-      localStorage.setItem('user', JSON.stringify(data.data));
+      const success = await register(registrationData);
       
-      // Navigate to dashboard
-      navigate('/dashboard');
-    } else {
-      setLoginError(data.message || 'Invalid credentials. Please try again.');
+      if (success && success.success) {
+        setRegSuccess('Registration successful! Redirecting to dashboard...');
+        
+        // Clear registration form
+        setTimeout(() => {
+          setRegEmail('');
+          setRegPassword('');
+          setConfirmPassword('');
+          setChildName('');
+          setChildAge('');
+          setParentName('');
+          setParentPhone('');
+          setTherapistId('');
+          setAgreeTerms(false);
+          navigate('/dashboard');
+        }, 1500);
+      } else {
+        setRegError(success?.message || 'Registration failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('❌ Registration error:', error);
+      setRegError('Cannot connect to server. Please make sure the backend is running.');
+    } finally {
+      setIsRegistering(false);
     }
-  } catch (error) {
-    console.error('❌ Login error:', error);
-    setLoginError('Login failed. Please check your connection.');
-  } finally {
-    setIsLoggingIn(false);
-  }
-};
-};
-
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-purple-50 to-blue-50">
@@ -228,7 +167,7 @@ const handleRegisterSubmit = async (e) => {
               </div>
             </div>
             
-            <p className="text-purple-200 mb-8">Supporting children ages 5-8 with ADHD</p>
+            <p className="text-purple-200 mb-8">Supporting children ages 2-18 with ADHD</p>
 
             <div className="space-y-6">
               <div className="flex items-start">
@@ -312,36 +251,6 @@ const handleRegisterSubmit = async (e) => {
               )}
 
               <form onSubmit={handleLoginSubmit} className="space-y-5">
-                <div>
-                  <label className="block text-gray-700 font-medium mb-2">Login As</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setLoginRole('parent')}
-                      className={`py-3 rounded-xl border transition-all flex items-center justify-center ${
-                        loginRole === 'parent'
-                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-transparent shadow-md'
-                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      <Users className="w-4 h-4 mr-2" />
-                      Parent
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setLoginRole('therapist')}
-                      className={`py-3 rounded-xl border transition-all flex items-center justify-center ${
-                        loginRole === 'therapist'
-                          ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-transparent shadow-md'
-                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      <Stethoscope className="w-4 h-4 mr-2" />
-                      Therapist
-                    </button>
-                  </div>
-                </div>
-
                 <div>
                   <label className="block text-gray-700 font-medium mb-2">Email Address</label>
                   <div className="relative">
@@ -669,7 +578,7 @@ const handleRegisterSubmit = async (e) => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .fade-in {
           animation: fadeIn 0.5s ease-in-out;
         }
