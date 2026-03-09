@@ -1,8 +1,12 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  /* Ensure root takes full width so Bootstrap works */
+  width: 100%; 
+  /* Remove specific max-width if you want the navbar to stretch fully, 
+     or keep it if you want a boxed layout. */
+  max-width: 100%; 
+  margin: 0;
+  padding: 0;
+  text-align: left; /* Reset text align so everything isn't centered by default */
 }
 
 .logo {

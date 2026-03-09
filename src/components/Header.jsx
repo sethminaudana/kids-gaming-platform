@@ -9,18 +9,21 @@ export default function Header() {
         <Navbar.Brand
           as={Link}
           to="/"
-          className="font-fredoka text-warning-dark"
+          className="font-fredoka text-warning-dark fw-bold fs-3"
         >
-          FunZone Arcade
+          🎯 FunZone Arcade
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ms-auto">
-            <Nav.Link as={Link} to="/" className="fw-bold">
-              Home
+            <Nav.Link as={Link} to="/" className="fw-bold fs-5">
+              🏠 Home
             </Nav.Link>
-            <Nav.Link as={Link} to="/about" className="fw-bold">
-              About Us
+            <Nav.Link as={Link} to="/nogo-game" className="fw-bold fs-5">
+              🚦 NO GO Game
+            </Nav.Link>
+            <Nav.Link as={Link} to="/about" className="fw-bold fs-5">
+              ℹ️ About Us
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>
