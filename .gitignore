@@ -22,3 +22,20 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables
+.env
+*.pyd
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
+.node_repl_history
+*.tgz
+# python
+__pycache__/
+*.pyc
+*.pyo   
+adhd_env/Lib/
+adhd_env/Scripts/
