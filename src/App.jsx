@@ -16,7 +16,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './template/Home'; // A landing page combining these sections
 
-// import React, { useRef } from "react";
+// import React from "react";
 // import { Routes, Route, Outlet } from "react-router-dom";
 // import { Container } from "react-bootstrap";
 // import Header from "./components/Header";
@@ -24,14 +24,8 @@ import Home from './template/Home'; // A landing page combining these sections
 // import Home from "./pages/Home";
 // import About from "./pages/About";
 import NOGOGame from './pages/NOGOGame'
-import Game from "./components/Game";
-import GemMatchGame from "./components/GemMatchGame";
-import BlueprintGame from "./components/BlueprintGame";
-import MemoryGame from "./MemoryGame/MemoryGame";
 
-
-
-function App() {
+function Layout() {
   return (
     <Router>
       {/* Header stays consistent across all routes */}
@@ -103,3 +97,7 @@ export default App;
 //     </Routes>
 //   );
 // }
+      </Route>
+    </Routes>
+  );
+}
