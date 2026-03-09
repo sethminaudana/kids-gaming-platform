@@ -22,7 +22,7 @@ target_user = sys.argv[1]
 # Get the folder where this script (predict.py) is located
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # Combine it with the model filename
-model_path = os.path.join(script_dir, 'adhd_model.pkl')
+model_path = os.path.join(script_dir, 'adhd_model_new.pkl')
 
 
 # 1. LOAD THE MODEL
@@ -55,10 +55,16 @@ valid_flips = [e for e in events if e.get('eventType') == 'card_flip']
 invalid_clicks = [e for e in events if e.get('eventType') == 'invalid_click']
 mismatches = [e for e in events if e.get('eventType') == 'mismatch']
 
+# intervals = [
+#     e.get('timeSinceLastAction', 0) 
+#     for e in valid_flips 
+#     if 0 < e.get('timeSinceLastAction', 0) < 10000
+# ]
+
 intervals = [
-    e.get('timeSinceLastAction', 0) 
-    for e in valid_flips 
-    if 0 < e.get('timeSinceLastAction', 0) < 10000
+    e.get('latencyMs') 
+    for e in events 
+    if 'latencyMs' in e and 0 < e.get('latencyMs') < 10000
 ]
 
 if len(intervals) < 2:
@@ -68,9 +74,11 @@ if len(intervals) < 2:
 # --- CALCULATE THE 6 NUMBERS ---
 avg_speed = np.mean(intervals)
 variability = np.std(intervals)
+inhibitory_failures = session.get('inhibitoryFailures', 0)
 total_invalid = len(invalid_clicks)
 reflexive_clicks = len([t for t in intervals if t < 200])
 total_errors = len(mismatches)
+perseverative_errors = len([e for e in mismatches if e.get('isPerseverative') == True])
 
 total_distance = 0
 for i in range(1, len(valid_flips)):
@@ -84,10 +92,12 @@ for i in range(1, len(valid_flips)):
 features_df = pd.DataFrame([{
     "avg_click_interval": avg_speed,
     "click_variability_std": variability,
+    "inhibitory_failures": inhibitory_failures,
     "total_invalid_clicks": total_invalid,
     "reflexive_fast_clicks": reflexive_clicks,
     "total_mouse_distance": total_distance,
-    "total_errors": total_errors
+    "total_errors": total_errors,
+    "perseverative_errors": perseverative_errors
 }])
 
 # 4. PREDICT
@@ -101,16 +111,17 @@ print("="*40)
 print(f" Consistency (Std Dev):  {variability:.2f} ms  (Key Indicator)")
 print(f" Impulsive Clicks:       {total_invalid}")
 print(f" Reflexive Clicks:       {reflexive_clicks}")
+print(f" Perseverative Errors:   {perseverative_errors}")
 print("-" * 40)
 
 if prediction[0] == 1:
     print("RESULT: Neurotypical Pattern")
     print("   The gameplay behavior aligns with the baseline.")
 else:
-    print("RESULT: ANOMALY DETECTED")
+    print("RESULT: ANOMALY DETECTED (Potential ADHD)")
     print("   Significant deviation from baseline observed.")
     if variability > 500:
-        print("    -> High inconsistency in Memory detected.")
+        print("    -> High inconsistency in attention detected.")
     if total_invalid > 3:
         print("    -> High impulsivity detected.")
 

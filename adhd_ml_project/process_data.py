@@ -26,10 +26,17 @@ def extract_features(session):
 
     # --- A. TIME & CONSISTENCY (The most important ADHD indicators) ---
     # We filter out times > 10 seconds (10000ms) as "distractions" rather than processing speed
+    # intervals = [
+    #     e.get('timeSinceLastAction', 0) 
+    #     for e in valid_flips 
+    #     if 0 < e.get('timeSinceLastAction', 0) < 10000
+    # ]
+    # --- A. TIME & CONSISTENCY (Using direct latencyMs!) ---
+    # Grab the exact time it took between the 1st and 2nd click of a pair
     intervals = [
-        e.get('timeSinceLastAction', 0) 
-        for e in valid_flips 
-        if 0 < e.get('timeSinceLastAction', 0) < 10000
+        e.get('latencyMs') 
+        for e in events 
+        if 'latencyMs' in e and 0 < e.get('latencyMs') < 10000
     ]
 
     if len(intervals) < 2:
@@ -41,10 +48,15 @@ def extract_features(session):
     # --- B. IMPULSIVITY (Inhibition Control) ---
     # 1. Count explicitly invalid clicks (clicking locked board)
     total_invalid = len(invalid_clicks)
+    # Read the new hyperactivity tracker straight from the session root
+    inhibitory_failures = session.get('inhibitoryFailures', 0)
     
     # 2. Count "Reflexive" clicks (clicking faster than humanly possible, < 200ms)
     reflexive_clicks = len([t for t in intervals if t < 200])
 
+# --- C. WORKING MEMORY (Perseverative Errors) ---
+    # Count how many times they repeated the exact same wrong guess
+    perseverative_errors = len([e for e in mismatches if e.get('isPerseverative') == True])
     # --- C. MOTOR CONTROL / SPATIAL (Using your X/Y data) ---
     total_distance = 0
     mouse_efficiency_score = 0
@@ -66,12 +78,16 @@ def extract_features(session):
     # RETURN THE ROW OF NUMBERS
     return {
         "username": session.get('username', 'unknown'),
+        "level": session.get('level', 1),               # Save the context!
+        "difficulty": session.get('difficulty', 'standard'),
         "avg_click_interval": round(avg_speed, 2),
         "click_variability_std": round(variability, 2), # Key ADHD Metric
         "total_invalid_clicks": total_invalid,          # Key ADHD Metric
+        "inhibitory_failures": inhibitory_failures,
         "reflexive_fast_clicks": reflexive_clicks,
         "total_mouse_distance": round(total_distance, 2),
         "total_errors": total_errors,
+        "perseverative_errors": perseverative_errors,
         "total_score": session.get('score', 0)
     }
 
@@ -105,7 +121,7 @@ def main():
         df = pd.DataFrame(processed_data)
 
         # Save to CSV
-        output_file = "adhd_training_data.csv"
+        output_file = "adhd_training_data_new.csv"
         df.to_csv(output_file, index=False)
         
         print(f"\nSUCCESS! Processed {len(df)} sessions.")
