@@ -52,3 +52,63 @@ export default function App() {
     </Routes>
   );
 }
+
+// This is where we define our routes (no change here)
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path="about" element={<About />} />
+        <Route path="game" element={<Game />} />
+        {/* <Route path="gem-match" element={<GemMatchGame />} /> */}
+        {/* <Route path="blueprint-builder" element={<BlueprintGame />} /> */}
+        <Route path='memorygame' element = {
+          <ProtectedRoute>
+              <MemoryGame />
+            </ProtectedRoute>} />
+            
+        <Route path="login" element={<Login />} />
+        <Route path="register" element={<Register />} />
+      </Route>
+      {/* <Route path="/magic-gems" element={<Game />} /> */}
+    </Routes>
+  );
+}
+export default App;
+
+
+
+
+
+
+
+
+// function Layout() {
+//   return (
+//     <div className="d-flex flex-column min-vh-100">
+//       <Header />
+//       <Container as="main" className="flex-grow-1 py-4">
+//         <Outlet />
+//       </Container>
+//       <Footer />
+//     </div>
+//   );
+// }
+
+// export default function App() {
+//   return (
+//     <Routes>
+//       <Route path="/" element={<Layout />}>
+//         <Route index element={<Home />} />
+//         <Route path="about" element={<About />} />
+//         <Route path="nogo-game" element={<NOGOGame />} />
+//         <Route path="game" element={<Game />} />
+//         <Route path="gem-match" element={<GemMatchGame />} />
+//         <Route path="blueprint-builder" element={<BlueprintGame />} />
+//         <Route path='memorygame' element = {<MemoryGame/>} />
+//       </Route>
+//       {/* <Route path="/magic-gems" element={<Game />} /> */}
+//     </Routes>
+//   );
+// }
