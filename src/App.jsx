@@ -5,15 +5,12 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import About from "./pages/About";
-<<<<<<< HEAD
 import Game from "./components/Game";
 import GemMatchGame from "./components/GemMatchGame";
 import BlueprintGame from "./components/BlueprintGame";
 import MemoryGame from "./MemoryGame/MemoryGame";
 
-=======
 import NOGOGame from './pages/NOGOGame'
->>>>>>> origin/impulse-control-detection
 
 // This is our main layout component
 function Layout() {
