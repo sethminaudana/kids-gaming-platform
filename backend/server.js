@@ -42,6 +42,9 @@ const User = mongoose.model("User", userSchema);
 const gameSessionSchema = new mongoose.Schema({
   username: { type: String, required: true }, // Links to the user
   gameType: { type: String, default: "memory_game" },
+  level: { type: Number }, // <--- NEW: Stores 1, 2, or 3
+  difficulty: { type: String }, // <--- NEW: Stores 'easy', 'medium', 'hard', or 'standard'
+  inhibitoryFailures: { type: Number, default: 0 },
   playedAt: { type: Date, default: Date.now },
   score: Number,
   duration: Number,
@@ -152,7 +155,11 @@ app.get("/profile", isAuthenticated, async (req, res) => {
 // 6. Save Memory Game Data (Updated for ML)
 app.post("/api/memorygame", isAuthenticated, async (req, res) => {
   // Extract events from the request
+<<<<<<< HEAD
   const { rightMatches, wrongMatches, timetaken, events } = req.body;
+=======
+  const { rightMatches, wrongMatches, timetaken, events, level, difficulty, inhibitoryFailures } = req.body;
+>>>>>>> sethmina-game-improvements
 
   try {
     // A. Update User Profile (Summary Stats)
@@ -173,7 +180,15 @@ app.post("/api/memorygame", isAuthenticated, async (req, res) => {
     // B. Save Raw Game Session (Detailed Logs for ML)
     if (events && events.length > 0) {
         const newSession = new GameSession({
+<<<<<<< HEAD
             username: username_logged,
+=======
+            username: req.user.username,
+            gameType: `memory_game_level_${level || 'unknown'}`,
+            level: level,            // <--- NEW
+            difficulty: difficulty,
+            inhibitoryFailures: inhibitoryFailures,
+>>>>>>> sethmina-game-improvements
             score: rightMatches, // Assuming score is based on matches
             duration: timetaken,
             events: events // <--- The crucial array for your ADHD analysis
