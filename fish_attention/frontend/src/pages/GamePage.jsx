@@ -498,7 +498,7 @@ export default function GamePage() {
         const iframe = document.createElement("iframe");
         iframe.src = "/fish-ball-collector/index.html";
         iframe.style.width = "100%";
-        iframe.style.height = "1300px";
+        iframe.style.height = "1600px";
         iframe.style.border = "none";
         iframe.style.background = "transparent";
         iframe.style.overflow = "hidden";
