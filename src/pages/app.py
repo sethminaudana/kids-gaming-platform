@@ -84,7 +84,7 @@ def predict_adhd():
         
         # Handle gender encoding (if needed)
         if 'gender' in df.columns:
-            df['gender'] = df['gender'].map({'M': 0, 'F': 1})
+            df['gender'] = df['gender'].map({'girl': 0, 'boy': 1})
         
         # Select only the features used by your model
         X = df[feature_names]
