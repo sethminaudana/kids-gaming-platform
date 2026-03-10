@@ -24,7 +24,7 @@ warnings.filterwarnings('ignore')
 
 # MongoDB connection
 MONGO_URI = "mongodb+srv://dimaVidu:dima2001@cluster0.frhujxo.mongodb.net/Attention-Detection?retryWrites=true&w=majority"
-DB_NAME = "Attention-Detection"  # Adjust if different
+DB_NAME = "Attention-Detection"  
 
 def fetch_data_from_mongodb():
     """Fetch gaze samples and game events from MongoDB"""
