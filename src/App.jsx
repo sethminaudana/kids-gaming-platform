@@ -1,54 +1,289 @@
-import React, { useRef } from "react";
-import { Routes, Route, Outlet } from "react-router-dom";
-import { Container } from "react-bootstrap"; // Import Container
+// import React, { useRef } from "react";
+// import { Routes, Route, Outlet } from "react-router-dom";
+// import { Container } from "react-bootstrap"; // Import Container
+// import Header from "./components/Header";
+// import Footer from "./components/Footer";
+// import Home from "./pages/Home";
+// import About from "./pages/About";
+// import Game from "./components/Game";
+// import GemMatchGame from "./components/GemMatchGame";
+// import BlueprintGame from "./components/BlueprintGame";
+// import MemoryGame from "./MemoryGame/MemoryGame";
+// import Login from "./pages/Login";
+// import Register from "./pages/Register";
+// import ProtectedRoute from "./components/ProtectedRoute";
+
+
+// // This is our main layout component
+// function Layout() {
+//   return (
+//     <div className="d-flex flex-column min-vh-100">
+//       <Header />
+
+//       {/* Container centers our content and makes it responsive */}
+//       <Container as="main" className="flex-grow-1 py-4">
+//         <Outlet /> {/* Pages (Home, About) will be rendered here */}
+//       </Container>
+
+//       <Footer />
+//     </div>
+//   );
+// }
+
+// // This is where we define our routes (no change here)
+// export default function App() {
+//   return (
+//     <Routes>
+//       <Route path="/" element={<Layout />}>
+//         <Route index element={<Home />} />
+//         <Route path="about" element={<About />} />
+//         <Route path="game" element={<Game />} />
+//         {/* <Route path="gem-match" element={<GemMatchGame />} /> */}
+//         {/* <Route path="blueprint-builder" element={<BlueprintGame />} /> */}
+//         <Route path='memorygame' element = {
+//           <ProtectedRoute>
+//               <MemoryGame />
+//             </ProtectedRoute>} />
+            
+//         <Route path="login" element={<Login />} />
+//         <Route path="register" element={<Register />} />
+//       </Route>
+//       {/* <Route path="/magic-gems" element={<Game />} /> */}
+//     </Routes>
+//   );
+// }
+
+
+import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, Link, Outlet } from "react-router-dom";
+import { Container } from "react-bootstrap";
+
+// --- Layout & UI Components ---
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Navigation from "./components/Navigation";
+
+// --- Public Pages ---
 import Home from "./pages/Home";
 import About from "./pages/About";
-import Game from "./components/Game";
-import GemMatchGame from "./components/GemMatchGame";
-import BlueprintGame from "./components/BlueprintGame";
-import MemoryGame from "./MemoryGame/MemoryGame";
-import Login from "./pages/Login";
+import Login from "./components/Login"; // Ensure you only have one Login component in your merged folder
 import Register from "./pages/Register";
-import ProtectedRoute from "./components/ProtectedRoute";
 
+// --- Protected Dashboards & Features ---
+import Patient from "./components/Patient";
+import Dashboard from "./components/Dashboard";
+import Activity from "./components/Activity";
+import Progress from "./components/Progress";
+import Schedule from "./components/Schedule";
+import ResultsDashboard from "./components/ResultsDashboard";
+import AdminDashboard from "./components/AdminDashboard";
 
-// This is our main layout component
+// --- Games ---
+import Game from "./components/Game";
+import Games from "./components/Games";
+import MemoryGame from "./MemoryGame/MemoryGame";
+import JigsawPuzzle from "./components/games/JigsawPuzzle";
+import PuzzleReport from "./components/games/PuzzleReport";
+// import GemMatchGame from "./components/GemMatchGame";
+// import BlueprintGame from "./components/BlueprintGame";
+
+// 1. Create Auth Context
+export const AuthContext = React.createContext();
+
+// 2. Main Layout Component for Public/General Pages
 function Layout() {
   return (
-    <div className="d-flex flex-column min-vh-100">
+    <div className="d-flex flex-column min-vh-100 w-100">
       <Header />
-
       {/* Container centers our content and makes it responsive */}
       <Container as="main" className="flex-grow-1 py-4">
-        <Outlet /> {/* Pages (Home, About) will be rendered here */}
+        <Outlet /> {/* Nested routes will render here */}
       </Container>
-
       <Footer />
     </div>
   );
 }
 
-// This is where we define our routes (no change here)
+// 3. Main App Component
 export default function App() {
+  // --- Global Authentication State ---
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState("parent"); // 'parent', 'therapist', 'child'
+  const [users, setUsers] = useState([]); // Mock user database
+
+  // Auth Functions
+  const login = (email, password, role) => {
+    if (email && password) {
+      setIsAuthenticated(true);
+      setUserRole(role);
+      return true;
+    }
+    return false;
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
+    setUserRole(null);
+  };
+
+  const register = async (userData) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/users/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      const data = await response.json();
+      if (data.success) {
+        return { success: true, message: 'Registration successful' };
+      } else {
+        return { success: false, message: data.message };
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      return { success: false, message: 'Registration failed' };
+    }
+  };
+
+  // --- Protected Route Wrapper ---
+  const ProtectedRoute = ({ children, allowedRoles }) => {
+    if (!isAuthenticated) {
+      return <Navigate to="/login" replace />;
+    }
+    if (allowedRoles && !allowedRoles.includes(userRole)) {
+      return <Navigate to="/unauthorized" replace />;
+    }
+    return children;
+  };
+
   return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path="about" element={<About />} />
-        <Route path="game" element={<Game />} />
-        {/* <Route path="gem-match" element={<GemMatchGame />} /> */}
-        {/* <Route path="blueprint-builder" element={<BlueprintGame />} /> */}
-        <Route path='memorygame' element = {
-          <ProtectedRoute>
-              <MemoryGame />
-            </ProtectedRoute>} />
+    <AuthContext.Provider value={{ isAuthenticated, userRole, login, logout, register }}>
+      <Router>
+        {/* Unified App Wrapper: Combines Tailwind gradient with full height */}
+        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 d-flex flex-column">
+          
+          {/* Show secondary navigation only when logged in */}
+          {isAuthenticated && <Navigation />}
+
+          <Routes>
+            {/* --- SECTION 1: Standard Layout Routes --- */}
+            <Route path="/" element={<Layout />}>
+              <Route index element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Home />} />
+              <Route path="about" element={<About />} />
+              
+              <Route 
+                path="login" 
+                element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} 
+              />
+              <Route path="register" element={<Register />} />
+
+              {/* General Game Access */}
+              <Route path="game" element={<Game />} />
+            </Route>
+
+            {/* --- SECTION 2: Protected Dashboard & Feature Routes --- */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist", "child"]}>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/patient" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist"]}>
+                <Patient />
+              </ProtectedRoute>
+            } />
             
-        <Route path="login" element={<Login />} />
-        <Route path="register" element={<Register />} />
-      </Route>
-      {/* <Route path="/magic-gems" element={<Game />} /> */}
-    </Routes>
+            <Route path="/patient/:patientId" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist"]}>
+                <Patient />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/activities" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist", "child"]}>
+                <Activity />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/progress" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist"]}>
+                <Progress />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/schedule" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist"]}>
+                <Schedule />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/results" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist"]}>
+                <ResultsDashboard />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/admin" element={
+              <ProtectedRoute allowedRoles={["therapist"]}>
+                <AdminDashboard />
+              </ProtectedRoute>
+            } />
+
+            {/* --- SECTION 3: Protected Game Routes --- */}
+            <Route path="/games" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist", "child"]}>
+                <Games />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/memorygame" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist", "child"]}>
+                <MemoryGame />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/games/puzzle" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist", "child"]}>
+                <JigsawPuzzle />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/games/puzzle/report" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist"]}>
+                <PuzzleReport childName="Jamie" />
+              </ProtectedRoute>
+            } />
+
+            {/* --- SECTION 4: Error Handling Routes --- */}
+            <Route path="/unauthorized" element={
+              <div className="flex items-center justify-center flex-grow p-4">
+                <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-xl">
+                  <div className="text-6xl mb-4">🚫</div>
+                  <h1 className="text-2xl font-bold text-gray-800 mb-2">Access Denied</h1>
+                  <p className="text-gray-600 mb-6">You don't have permission to view this page.</p>
+                  <Link to="/dashboard" className="inline-block px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600">
+                    Go to Dashboard
+                  </Link>
+                </div>
+              </div>
+            } />
+
+            <Route path="*" element={
+              <div className="flex items-center justify-center flex-grow p-4">
+                <div className="bg-white rounded-2xl p-8 max-w-md w-full text-center shadow-xl">
+                  <div className="text-6xl mb-4">404</div>
+                  <h1 className="text-2xl font-bold text-gray-800 mb-2">Page Not Found</h1>
+                  <p className="text-gray-600 mb-6">The page you're looking for doesn't exist.</p>
+                  <Link to="/dashboard" className="inline-block px-6 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:from-purple-600 hover:to-pink-600">
+                    Go to Dashboard
+                  </Link>
+                </div>
+              </div>
+            } />
+          </Routes>
+        </div>
+      </Router>
+    </AuthContext.Provider>
   );
 }
