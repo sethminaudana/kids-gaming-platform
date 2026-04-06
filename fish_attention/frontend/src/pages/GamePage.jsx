@@ -930,7 +930,7 @@ export default function GamePage() {
                             <div style={{ display: "flex", alignItems: "center", marginBottom: "20px", paddingBottom: "12px", borderBottom: "2px solid #e2e8f0" }}>
                                 <div style={{ background: "#10b981", width: "12px", height: "12px", borderRadius: "50%", marginRight: "12px", animation: "pulse-dot 2s infinite" }}></div>
                                 <h3 style={{ margin: 0, fontSize: "18px", color: "#1e293b", fontWeight: 800, letterSpacing: "-0.5px" }}>
-                                    Live Eye Tracking Features (Last 5s)
+                                    Live Eye Tracking Features 
                                 </h3>
                             </div>
 
@@ -966,7 +966,7 @@ export default function GamePage() {
                                         <div className="feature-value" style={{ color: "#f59e0b" }}>{liveFeatures.gazeVelocity.toFixed(3)}</div>
                                     </div>
                                     <div className="feature-card" style={{ background: liveFeatures.facePresentRatio > 0.5 ? "#f0fdf4" : "#fef2f2", borderColor: liveFeatures.facePresentRatio > 0.5 ? "#bbf7d0" : "#fecaca" }}>
-                                        <div className="feature-label">Face Present (Last 5s)</div>
+                                        <div className="feature-label">Face Present </div>
                                         <div className="feature-value" style={{ color: liveFeatures.facePresentRatio > 0.5 ? "#16a34a" : "#ef4444" }}>
                                             {(liveFeatures.facePresentRatio * 100).toFixed(0)}%
                                         </div>
