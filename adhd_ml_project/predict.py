@@ -22,7 +22,7 @@ target_user = sys.argv[1]
 # Get the folder where this script (predict.py) is located
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # Combine it with the model filename
-model_path = os.path.join(script_dir, 'adhd_model_new.pkl')
+model_path = os.path.join(script_dir, 'adhd_model_model.pkl')
 
 
 # 1. LOAD THE MODEL
@@ -75,7 +75,7 @@ if len(intervals) < 2:
 avg_speed = np.mean(intervals)
 variability = np.std(intervals)
 inhibitory_failures = session.get('inhibitoryFailures', 0)
-total_invalid = len(invalid_clicks)
+# total_invalid = len(invalid_clicks)
 reflexive_clicks = len([t for t in intervals if t < 200])
 total_errors = len(mismatches)
 perseverative_errors = len([e for e in mismatches if e.get('isPerseverative') == True])
@@ -93,7 +93,7 @@ features_df = pd.DataFrame([{
     "avg_click_interval": avg_speed,
     "click_variability_std": variability,
     "inhibitory_failures": inhibitory_failures,
-    "total_invalid_clicks": total_invalid,
+    # "total_invalid_clicks": total_invalid,
     "reflexive_fast_clicks": reflexive_clicks,
     "total_mouse_distance": total_distance,
     "total_errors": total_errors,
@@ -106,10 +106,10 @@ score = model.decision_function(features_df) # Lower score = More abnormal
 
 # 5. OUTPUT REPORT
 print("\n" + "="*40)
-print(f" ADHD SCREENING REPORT: {target_user}")
+print(f"  SCREENING REPORT: {target_user}")
 print("="*40)
 print(f" Consistency (Std Dev):  {variability:.2f} ms  (Key Indicator)")
-print(f" Impulsive Clicks:       {total_invalid}")
+# print(f" Impulsive Clicks:       {total_invalid}")
 print(f" Reflexive Clicks:       {reflexive_clicks}")
 print(f" Perseverative Errors:   {perseverative_errors}")
 print("-" * 40)
@@ -118,12 +118,12 @@ if prediction[0] == 1:
     print("RESULT: Neurotypical Pattern")
     print("   The gameplay behavior aligns with the baseline.")
 else:
-    print("RESULT: ANOMALY DETECTED (Potential ADHD)")
+    print("RESULT: ANOMALY DETECTED")
     print("   Significant deviation from baseline observed.")
     if variability > 500:
         print("    -> High inconsistency in attention detected.")
-    if total_invalid > 3:
-        print("    -> High impulsivity detected.")
+    # if total_invalid > 3:
+    #     print("    -> High impulsivity detected.")
 
 print(f"\n (Model Confidence Score: {score[0]:.4f})")
 print("="*40 + "\n")

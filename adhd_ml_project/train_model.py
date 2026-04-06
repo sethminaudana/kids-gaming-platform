@@ -5,7 +5,7 @@ import joblib
 # 1. LOAD THE DATA
 # This is the CSV created by process_data.py
 try:
-    df = pd.read_csv('adhd_sample_data_new.csv')
+    df = pd.read_csv('adhd_sample_data_model.csv')
     print(f"✅ Loaded {len(df)} sessions for training.")
 except FileNotFoundError:
     print("❌ Error: 'adhd_sample_data.csv' not found. Run process_data.py first!")
@@ -19,7 +19,7 @@ features = [
     "avg_click_interval", 
     "click_variability_std", 
     "inhibitory_failures",
-    "total_invalid_clicks", 
+    # "total_invalid_clicks", 
     "reflexive_fast_clicks",
     "total_mouse_distance",
     "total_errors",
@@ -37,5 +37,5 @@ model.fit(X)
 
 # 4. SAVE THE MODEL
 # This .pkl file is the "Brain" we will use later for predictions
-joblib.dump(model, 'adhd_model_new.pkl')
+joblib.dump(model, 'adhd_model_model.pkl')
 print("✅ Model trained and saved to 'adhd_model.pkl'")
