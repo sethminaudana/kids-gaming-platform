@@ -51,7 +51,13 @@ export default function Header() {
           <Nav className="ms-auto align-items-center">
             <Nav.Link as={Link} to="/" className="fw-bold">Home</Nav.Link>
             <Nav.Link as={Link} to="/about" className="fw-bold me-3">About Us</Nav.Link>
-            
+            <Nav.Link as={Link} to="/nogo-game" className="fw-bold fs-5">
+                          🚦 NO GO Game
+                        </Nav.Link>
+                        <Nav.Link as={Link} to="/about" className="fw-bold fs-5">
+                          ℹ️ About Us
+                        </Nav.Link>
+                        
             {/* 4. CONDITIONAL RENDERING: Show different buttons based on auth state */}
             {username ? (
               <>

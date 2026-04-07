@@ -297,6 +297,14 @@ const gameSessionSchema = new mongoose.Schema({
   events: [], // Stores the big array of click events for ML
 });
 
+// 3. Trial Data Schema (Flexible for NOGO/Fish game)
+const trialSchema = new mongoose.Schema({}, { strict: false });
+const Trial = mongoose.model("Trial", trialSchema, "trial_by_trial_performance");
+
+// 4. Session Summary Schema (Flexible for NOGO/Fish game)
+const sessionSummarySchema = new mongoose.Schema({}, { strict: false });
+const SessionSummary = mongoose.model("SessionSummary", sessionSummarySchema, "session_performance");
+
 const GameSession = mongoose.model("GameSession", gameSessionSchema);
 
 // --- Helper Middleware ---
@@ -393,6 +401,15 @@ app.get("/profile", isAuthenticated, async (req, res) => {
   }
 });
 
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  res.json({ 
+    status: "ok", 
+    dbConnected: mongoose.connection.readyState === 1,
+    timestamp: new Date().toISOString()
+  });
+});
+
 // 6. Save Memory Game Data & Trigger ML
 app.post("/api/memorygame", isAuthenticated, async (req, res) => {
   const { rightMatches, wrongMatches, timetaken, events, level, difficulty, inhibitoryFailures } = req.body;
@@ -463,6 +480,32 @@ app.post("/api/memorygame", isAuthenticated, async (req, res) => {
   } catch (err) {
     console.error("Error saving game data:", err);
     res.status(500).send({ error: "Internal server error" });
+  }
+});
+
+// Insert a single trial
+app.post("/api/trials", async (req, res) => {
+  try {
+    const trial = new Trial(req.body);
+    const result = await trial.save();
+    console.log("Trial inserted with ID:", result._id);
+    res.json({ success: true, insertedId: result._id });
+  } catch (err) {
+    console.error("Error inserting trial:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Insert session summary
+app.post("/api/gameplay_summaries", async (req, res) => {
+  try {
+    const summary = new SessionSummary(req.body);
+    const result = await summary.save();
+    console.log("Summary inserted with ID:", result._id);
+    res.json({ success: true, insertedId: result._id });
+  } catch (err) {
+    console.error("Error inserting summary:", err);
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

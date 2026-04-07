@@ -84,6 +84,8 @@ import Games from "./components/Games";
 import MemoryGame from "./MemoryGame/MemoryGame";
 import JigsawPuzzle from "./components/games/JigsawPuzzle";
 import PuzzleReport from "./components/games/PuzzleReport";
+import GamePage from "./pages/GamePage";
+import NOGOGame from './pages/NOGOGame';
 // import GemMatchGame from "./components/GemMatchGame";
 // import BlueprintGame from "./components/BlueprintGame";
 
@@ -236,6 +238,13 @@ export default function App() {
                 <Games />
               </ProtectedRoute>
             } />
+            {/* Add the new Fish Game Route here */}
+            <Route path="/games/fish-attention" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist", "child"]}>
+                <GamePage />
+              </ProtectedRoute>
+            } />
+            <Route path="/nogo-game" element={<NOGOGame />} />
 
             <Route path="/memorygame" element={
               <ProtectedRoute allowedRoles={["parent", "therapist", "child"]}>
