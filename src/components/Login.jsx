@@ -55,13 +55,33 @@ const Login = () => {
     }
 
     try {
-      const success = await login(loginEmail, loginPassword, loginRole);
-      if (success) {
+      // 1. Actually talk to the backend to get the data
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: loginEmail,
+          password: loginPassword
+        })
+      });
+
+      const data = await response.json();
+
+      // 2. Check if the backend said "Success!"
+      if (response.ok && data.success) {
+        // Grab the token and user data from the backend's response
+        const actualToken = data.data.token;
+        const actualUserData = data.data;
+
+        // 3. Pass the REAL token to App.jsx
+        login(actualToken, actualUserData);
+        
         navigate('/dashboard');
       } else {
-        setLoginError('Invalid credentials. Please try again.');
+        setLoginError(data.message || 'Invalid credentials. Please try again.');
       }
     } catch (error) {
+      console.error("Login Error:", error);
       setLoginError('Login failed. Please check your connection.');
     } finally {
       setIsLoggingIn(false);
@@ -121,7 +141,7 @@ const handleRegisterSubmit = async (e) => {
 
     console.log('📤 Sending registration data:', JSON.stringify(registrationData, null, 2));
 
-    const response = await fetch('http://localhost:5000/api/auth/register', {
+    const response = await fetch('http://localhost:5000/api/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -178,7 +198,7 @@ const handleRegisterSubmit = async (e) => {
 
   try {
     // ✅ FIXED: Changed from /api/users/login to /api/auth/login
-    const response = await fetch('http://localhost:5000/api/auth/login', {
+    const response = await fetch('http://localhost:5000/api/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -193,9 +213,14 @@ const handleRegisterSubmit = async (e) => {
     console.log('📥 Login response:', data);
 
     if (response.ok && data.success) {
-      // Save token to localStorage
-      localStorage.setItem('token', data.data.token);
-      localStorage.setItem('user', JSON.stringify(data.data));
+     // Safely grab the token whether it is directly on 'data' or nested inside 'data.data'
+      const actualToken = data.token || (data.data && data.data.token);
+      
+      // Safely grab the user info
+      const actualUserData = data.data || data;
+
+      // Send the real token to App.jsx
+      login(actualToken, actualUserData);
       
       // Navigate to dashboard
       navigate('/dashboard');
@@ -669,7 +694,7 @@ const handleRegisterSubmit = async (e) => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .fade-in {
           animation: fadeIn 0.5s ease-in-out;
         }

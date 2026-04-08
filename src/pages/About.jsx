@@ -1,6 +1,6 @@
 import React from "react";
 import { Card } from "react-bootstrap";
-
+import { Container, Row, Col } from "react-bootstrap";
 // A simple star icon for decoration
 const StarIcon = ({ className }) => (
   <svg

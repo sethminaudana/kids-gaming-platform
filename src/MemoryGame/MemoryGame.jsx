@@ -288,6 +288,7 @@ const MemoryGame = () => {
                     if (level3Diff === 2) diffString = "medium";
                     if (level3Diff === 3) diffString = "hard";
                 }
+                console.log("🧐 WHAT TOKEN AM I SENDING?:", localStorage.getItem("token"));
                 // Change fetch path to be relative for the proxy
                 const response = await fetch('/api/memorygame', { 
                     method: 'POST',

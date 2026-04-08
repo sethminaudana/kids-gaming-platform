@@ -109,23 +109,34 @@ function Layout() {
 // 3. Main App Component
 export default function App() {
   // --- Global Authentication State ---
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState("parent"); // 'parent', 'therapist', 'child'
-  const [users, setUsers] = useState([]); // Mock user database
-
-  // Auth Functions
-  const login = (email, password, role) => {
-    if (email && password) {
-      setIsAuthenticated(true);
-      setUserRole(role);
-      return true;
+const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('token'));
+  
+  // Safely parse the user role from storage, defaulting to "parent" if anything is missing or broken
+  const [userRole, setUserRole] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem('user');
+      return savedUser ? (JSON.parse(savedUser).role || "parent") : "parent";
+    } catch (e) {
+      return "parent";
     }
-    return false;
+  });
+  
+  const [users, setUsers] = useState([]);// Mock user database
+
+  // 2. Updated Auth Functions to handle the real token
+  const login = (token, userData) => {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(userData));
+    setIsAuthenticated(true);
+    setUserRole(userData?.role || 'parent');
+    return true;
   };
 
   const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setIsAuthenticated(false);
-    setUserRole(null);
+    setUserRole("parent");
   };
 
   const register = async (userData) => {
@@ -227,7 +238,7 @@ export default function App() {
             } />
 
             <Route path="/admin" element={
-              <ProtectedRoute allowedRoles={["therapist"]}>
+              <ProtectedRoute allowedRoles={["parent","therapist"]}>
                 <AdminDashboard />
               </ProtectedRoute>
             } />

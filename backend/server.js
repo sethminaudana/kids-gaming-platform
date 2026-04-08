@@ -276,6 +276,10 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true }, // In production, you should hash this!
   age: { type: Number },
   score: { type: Number, default: 0 },
+  childName: { type: String },   // <-- NEW
+  role: { type: String },        // <-- NEW
+  parentName: { type: String },  // <-- NEW
+  parentPhone: { type: String }, // <-- NEW
   // Memory Game Specific Stats
   memoryright: { type: Number, default: 0 },
   memorywrong: { type: Number, default: 0 },
@@ -308,20 +312,27 @@ const SessionSummary = mongoose.model("SessionSummary", sessionSummarySchema, "s
 const GameSession = mongoose.model("GameSession", gameSessionSchema);
 
 // --- Helper Middleware ---
+// --- Helper Middleware ---
 function isAuthenticated(req, res, next) {
   const authHeader = req.headers.authorization;
   
+  // 1. Log exactly what the frontend sent
+  console.log("🛡️ Auth Header Received:", authHeader); 
+
   if (authHeader && authHeader.startsWith("Bearer ")) {
-    const token = authHeader.split(" ")[1]; // Extract the token
+    const token = authHeader.split(" ")[1]; 
     
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
       if (err) {
-        return res.status(401).json({ success: false, message: "Session expired. Please log in again." });
+        // 2. Log exactly WHY the token failed
+        console.error("❌ JWT Verification Failed:", err.message); 
+        return res.status(401).json({ success: false, message: `Token error: ${err.message}` });
       }
-      req.user = decoded; // Attach the decoded user data (like username) to the request!
+      req.user = decoded; 
       next();
     });
   } else {
+    console.log("❌ No valid Bearer token found in header.");
     res.status(401).json({ success: false, message: "Unauthorized: Please login first." });
   }
 }
@@ -335,17 +346,31 @@ app.get("/", (req, res) => {
 
 // 2. Register
 app.post("/api/register", async (req, res) => {
-  const { username, password, age } = req.body;
+  // Grab the exact fields the React frontend sends
+  const { email, password, childAge, childName, role, parentName, parentPhone } = req.body;
+  
+  // Map email to username to keep your Python scripts and older games happy
+  const username = email; 
 
   try {
+    if (!username) return res.status(400).json({ success: false, message: "Email is required" });
+
     const existingUser = await User.findOne({ username });
     if (existingUser) {
-      return res.status(400).json({ success: false, message: "Username Already Exists" });
+      return res.status(400).json({ success: false, message: "Email Already Exists" });
     }
 
-    const newUser = new User({ username, password, age });
+    const newUser = new User({ 
+      username, 
+      password, 
+      age: childAge, 
+      childName, 
+      role, 
+      parentName, 
+      parentPhone 
+    });
+    
     await newUser.save();
-
     res.json({ success: true, message: "User Registered Successfully!" });
   } catch (err) {
     console.error(err);
@@ -355,20 +380,31 @@ app.post("/api/register", async (req, res) => {
 
 // 3. Login
 app.post("/api/login", async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
+  const username = email; // Map frontend email to backend username
 
   try {
     const user = await User.findOne({ username });
     
     if (!user) {
-      return res.status(401).json({ success: false, message: "Invalid Username" });
+      return res.status(401).json({ success: false, message: "Invalid Email Address" });
     }
     if (user.password !== password) {
       return res.status(401).json({ success: false, message: "Invalid Password" });
     }
 
-    const token = jwt.sign({ username: user.username }, JWT_SECRET, { expiresIn: '24h' });
-    res.json({ success: true, message: "Authentication Successful!", token: token });
+    const token = jwt.sign({ username: user.username, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
+    
+    // React expects the token inside a 'data' object
+    res.json({ 
+      success: true, 
+      message: "Authentication Successful!", 
+      data: { 
+        token: token,
+        username: user.username,
+        role: user.role
+      } 
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Server Error" });

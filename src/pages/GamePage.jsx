@@ -3,11 +3,11 @@ import axios from "axios";
 import { jsPDF } from "jspdf";
 import { eventBus } from "../tracking/eventBus";
 import { GazeTracker } from "../tracking/gazeTracker";
-import './pages/GamePage.css';
+import './GamePage.css';
 
 
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:4000";
-
+// const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:4000";
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000";
 // ─────────────────────────────────────────────
 // Download helper
 // ─────────────────────────────────────────────
