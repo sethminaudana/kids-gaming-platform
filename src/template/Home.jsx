@@ -5,8 +5,13 @@ export default function Home() {
   
   // Initialize Animations
   useEffect(() => {
-    const wow = new WOW({ live: false });
-    wow.init();
+   const timer = setTimeout(() => {
+      const wow = new WOW({ live: false });
+      wow.init();
+    }, 100); // 100ms delay ensures the DOM is fully ready
+
+    // Cleanup the timer if you navigate away
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -71,7 +76,7 @@ export default function Home() {
                     <div className="modal-body">
                         {/* 16:9 aspect ratio */}
                         <div className="ratio ratio-16x9">
-                            <iframe className="embed-responsive-item" src="" id="video" allowFullScreen allow="autoplay"></iframe>
+                            <iframe className="embed-responsive-item" src="about:blank" id="video" allowFullScreen allow="autoplay"></iframe>
                         </div>
                     </div>
                 </div>

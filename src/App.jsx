@@ -63,9 +63,21 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Navigation from "./components/Navigation";
 
+import Home from "./template/Home";
+import About from "./template/About";
+import Blog from "./template/Blog";
+import Contact from "./template/Contact";
+import Event from "./template/Event";
+import Program from "./template/Program";
+import Service from "./template/Service";
+import Testimonial from "./template/Testimonial";
+// --- Template UI Components ---
+import TemplateHeader from "./template/Header"; // <-- Change to your actual file name
+import TemplateFooter from "./template/Footer"; // <-- Change to your actual file name
+
 // --- Public Pages ---
-import Home from "./pages/Home";
-import About from "./pages/About";
+// import Home from "./pages/Home";
+// import About from "./pages/About";
 import Login from "./components/Login"; // Ensure you only have one Login component in your merged folder
 import Register from "./pages/Register";
 
@@ -102,6 +114,20 @@ function Layout() {
         <Outlet /> {/* Nested routes will render here */}
       </Container>
       <Footer />
+    </div>
+  );
+}
+
+// 2B. NEW Layout for the Public Template Pages
+function TemplateLayout() {
+  return (
+    <div className="template-wrapper">
+      <TemplateHeader />
+      {/* The template pages (Home, About, etc.) will load inside this Outlet */}
+      <main>
+        <Outlet /> 
+      </main>
+      <TemplateFooter />
     </div>
   );
 }
@@ -170,6 +196,7 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
   };
 
   return (
+    
     <AuthContext.Provider value={{ isAuthenticated, userRole, login, logout, register }}>
       <Router>
         {/* Unified App Wrapper: Combines Tailwind gradient with full height */}
@@ -179,10 +206,21 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
           {isAuthenticated && <Navigation />}
 
           <Routes>
-            {/* --- SECTION 1: Standard Layout Routes --- */}
-            <Route path="/" element={<Layout />}>
-              <Route index element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Home />} />
+          <Route element={<TemplateLayout />}>
+              <Route path="/" element={<Home />} />
               <Route path="about" element={<About />} />
+              <Route path="blog" element={<Blog />} />
+              <Route path="contact" element={<Contact />} />
+              <Route path="event" element={<Event />} />
+              <Route path="program" element={<Program />} />
+              <Route path="service" element={<Service />} />
+              <Route path="testimonial" element={<Testimonial />} />
+            </Route>
+
+            {/* --- SECTION 1: Standard Layout Routes --- */}
+            {/* <Route path="/" element={<Layout />}>
+              <Route index element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Home />} />
+              <Route path="about" element={<About />} /> */}
               
               <Route 
                 path="login" 
@@ -192,7 +230,7 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
 
               {/* General Game Access */}
               <Route path="game" element={<Game />} />
-            </Route>
+            {/* </Route> */}
 
             {/* --- SECTION 2: Protected Dashboard & Feature Routes --- */}
             <Route path="/dashboard" element={
