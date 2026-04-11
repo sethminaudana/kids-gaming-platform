@@ -59,7 +59,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate, Link, Outlet } from "
 import { Container } from "react-bootstrap";
 
 // --- Layout & UI Components ---
-import Header from "./components/Header";
+
 import Footer from "./components/Footer";
 import Navigation from "./components/Navigation";
 
@@ -98,6 +98,7 @@ import JigsawPuzzle from "./components/games/JigsawPuzzle";
 import PuzzleReport from "./components/games/PuzzleReport";
 import GamePage from "./pages/GamePage";
 import NOGOGame from './pages/NOGOGame';
+import Header from "./components/Header";
 // import GemMatchGame from "./components/GemMatchGame";
 // import BlueprintGame from "./components/BlueprintGame";
 
@@ -106,12 +107,18 @@ export const AuthContext = React.createContext();
 
 // 2. Main Layout Component for Public/General Pages
 function Layout() {
+  // Grab the auth state so we know whether to show the secondary navigation
+  const { isAuthenticated } = React.useContext(AuthContext);
+
   return (
-    <div className="d-flex flex-column min-vh-100 w-100">
+    // We moved the Tailwind background classes here!
+    <div className="d-flex flex-column min-vh-100 w-100 bg-gradient-to-br from-purple-50 to-blue-50">
+      {/* Navigation only shows on Dashboard pages when logged in */}
+      {isAuthenticated && <Navigation />}
+      
       <Header />
-      {/* Container centers our content and makes it responsive */}
       <Container as="main" className="flex-grow-1 py-4">
-        <Outlet /> {/* Nested routes will render here */}
+        <Outlet /> {/* Login, Register, and Dashboard load here */}
       </Container>
       <Footer />
     </div>
@@ -199,11 +206,8 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
     
     <AuthContext.Provider value={{ isAuthenticated, userRole, login, logout, register }}>
       <Router>
-        {/* Unified App Wrapper: Combines Tailwind gradient with full height */}
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 d-flex flex-column">
-          
-          {/* Show secondary navigation only when logged in */}
-          {isAuthenticated && <Navigation />}
+       
+        
 
           <Routes>
           <Route element={<TemplateLayout />}>
@@ -221,7 +225,7 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
             {/* <Route path="/" element={<Layout />}>
               <Route index element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Home />} />
               <Route path="about" element={<About />} /> */}
-              
+              <Route element={<Layout />}>
               <Route 
                 path="login" 
                 element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} 
@@ -339,8 +343,9 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
                 </div>
               </div>
             } />
+            </Route>
           </Routes>
-        </div>
+       
       </Router>
     </AuthContext.Provider>
   );
