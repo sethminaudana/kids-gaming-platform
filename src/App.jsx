@@ -141,7 +141,7 @@ function Layout() {
       {/* Navigation only shows on Dashboard pages when logged in */}
       {isAuthenticated && <Navigation />}
       
-      <Header />
+      {/* <Header /> */}
       <Container as="main" className="flex-grow-1 py-4">
         <Outlet /> {/* Login, Register, and Dashboard load here */}
       </Container>
@@ -246,6 +246,11 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
               <Route path="testimonial" element={<Testimonial />} />
               <Route path="games" element={<Games />} />
 
+<Route path="/memorygame" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist", "child"]}>
+                <MemoryGame />
+              </ProtectedRoute>
+            } />
             </Route>
 
             {/* --- SECTION 1: Standard Layout Routes --- */}
@@ -257,7 +262,7 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
                 path="login" 
                 element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} 
               />
-              <Route path="register" element={<Register />} />
+              {/* <Route path="register" element={<Register />} /> */}
 
               {/* General Game Access */}
               <Route path="game" element={<Game />} />
@@ -326,11 +331,7 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
             } />
             <Route path="/nogo-game" element={<NOGOGame />} />
 
-            <Route path="/memorygame" element={
-              <ProtectedRoute allowedRoles={["parent", "therapist", "child"]}>
-                <MemoryGame />
-              </ProtectedRoute>
-            } />
+            
 
             <Route path="/games/puzzle" element={
               <ProtectedRoute allowedRoles={["parent", "therapist", "child"]}>
