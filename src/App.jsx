@@ -54,7 +54,7 @@
 // }
 
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, Link, Outlet } from "react-router-dom";
 import { Container } from "react-bootstrap";
 
@@ -101,6 +101,7 @@ import PuzzleReport from "./components/games/PuzzleReport";
 import GamePage from "./pages/GamePage";
 import NOGOGame from './pages/NOGOGame';
 import Header from "./components/Header";
+import npmBootstrap from 'bootstrap/dist/css/bootstrap.min.css?inline';
 // import GemMatchGame from "./components/GemMatchGame";
 // import BlueprintGame from "./components/BlueprintGame";
 
@@ -109,6 +110,28 @@ export const AuthContext = React.createContext();
 
 // 2. Main Layout Component for Public/General Pages
 function Layout() {
+
+  useEffect(() => {
+    // 1. Create a <style> tag when the layout loads
+    const styleTag = document.createElement("style");
+    styleTag.id = "npm-bootstrap-override";
+    
+    // 2. Pour the NPM Bootstrap CSS inside it
+    styleTag.innerHTML = npmBootstrap;
+
+    // 3. Append it to the document head. 
+    // Because it is added last, it gets PRIORITY over your other CSS!
+    document.head.appendChild(styleTag);
+
+    // 4. CLEANUP: Delete the styles the second the user leaves the template
+    return () => {
+      const tagToRemove = document.getElementById("npm-bootstrap-override");
+      if (tagToRemove) {
+        document.head.removeChild(tagToRemove);
+      }
+    };
+  }, []);
+
   // Grab the auth state so we know whether to show the secondary navigation
   const { isAuthenticated } = React.useContext(AuthContext);
 
