@@ -477,7 +477,7 @@ h6,
 .events .events-item {
     width: 100%;
     height: 100%;
-    border-radius: 30%;
+    /* border-radius: 30%; */
     position: relative;
 }
 
@@ -680,3 +680,30 @@ h6,
     color: var(--bs-secondary) !important;
 }
 /*** Footer End ***/
+
+/* Force navbar links to be visible on ALL screen sizes */
+.navbar-light .navbar-nav .nav-link {
+    color: var(--bs-dark) !important; /* Uses Bootstrap's dark color so it looks natural */
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* Add a nice hover effect so you know when you are pointing at it */
+.navbar-light .navbar-nav .nav-link:hover,
+.navbar-light .navbar-nav .nav-link.active {
+    color: var(--bs-primary) !important; /* Turns blue (or your primary color) when hovered */
+}
+
+/* Global Fix: Force readable text inside light/white containers */
+.bg-white p,
+.bg-light p,
+.service-item p,
+.blog-item p {
+    color: #747d88 !important; /* A nice, soft dark gray that most templates use */
+}
+
+/* If you want headings to be pure black inside those same containers: */
+.bg-white h1, .bg-white h2, .bg-white h3, .bg-white h4, .bg-white h5, .bg-white h6,
+.bg-light h1, .bg-light h2, .bg-light h3, .bg-light h4, .bg-light h5, .bg-light h6 {
+    color: #000000 !important;
+}

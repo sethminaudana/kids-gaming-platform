@@ -71,6 +71,8 @@ import Event from "./template/Event";
 import Program from "./template/Program";
 import Service from "./template/Service";
 import Testimonial from "./template/Testimonial";
+import Games from "./template/Games";
+
 // --- Template UI Components ---
 import TemplateHeader from "./template/Header"; // <-- Change to your actual file name
 import TemplateFooter from "./template/Footer"; // <-- Change to your actual file name
@@ -92,7 +94,7 @@ import AdminDashboard from "./components/AdminDashboard";
 
 // --- Games ---
 import Game from "./components/Game";
-import Games from "./components/Games";
+// import Games from "./components/Games";
 import MemoryGame from "./MemoryGame/MemoryGame";
 import JigsawPuzzle from "./components/games/JigsawPuzzle";
 import PuzzleReport from "./components/games/PuzzleReport";
@@ -219,6 +221,8 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
               <Route path="program" element={<Program />} />
               <Route path="service" element={<Service />} />
               <Route path="testimonial" element={<Testimonial />} />
+              <Route path="games" element={<Games />} />
+
             </Route>
 
             {/* --- SECTION 1: Standard Layout Routes --- */}

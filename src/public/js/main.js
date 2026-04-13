@@ -1,3 +1,5 @@
+
+console.log('reached');
 (function ($) {
     "use strict";
 

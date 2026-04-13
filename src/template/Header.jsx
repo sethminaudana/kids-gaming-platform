@@ -41,7 +41,7 @@ export default function Header() {
 
 
         {/* Removed 'wow fadeIn' class so content is visible */}
-        <div className="container-fluid border-bottom bg-light wow fadeIn" data-wow-delay="0.1s">
+        <div className="container-fluid border-bottom bg-light " >
             <div className="container topbar bg-primary d-none d-lg-block py-2" style={{ borderRadius: "0 40px" }}>
                 <div className="d-flex justify-content-between">
                     <div className="top-info ps-2">
@@ -57,33 +57,34 @@ export default function Header() {
                 </div>
             </div>
             <div className="container px-0">
-                <nav className="navbar navbar-light navbar-expand-xl py-3">
-                    <a href="index.html" className="navbar-brand"><h1 className="text-primary display-6">Baby<span className="text-secondary">Care</span></h1></a>
+                <nav className="navbar navbar-light navbar-expand-lg py-3">
+                    <a href="/" className="navbar-brand"><h1 className="text-primary display-6">Baby<span className="text-secondary">Care</span></h1></a>
                     <button className="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                         <span className="fa fa-bars text-primary"></span>
                     </button>
-                    <div className="collapse navbar-collapse" id="navbarCollapse">
+                    <div className="collapse navbar-collapse " id="navbarCollapse">
                         <div className="navbar-nav mx-auto">
-                            <a href="index.html" className="nav-item nav-link active">Home</a>
-                            <a href="about.html" className="nav-item nav-link">About</a>
-                            <a href="service.html" className="nav-item nav-link">Services</a>
-                            <a href="program.html" className="nav-item nav-link">Programs</a>
-                            <a href="event.html" className="nav-item nav-link">Events</a>
+                            <a href="/" className="nav-item nav-link active">Home</a>
+                            <a href="/about" className="nav-item nav-link">About</a>
+                            <a href="/service" className="nav-item nav-link">Services</a>
+                            {/* <a href="/program" className="nav-item nav-link">Programs</a> */}
+                            <a href="/games" className="nav-item nav-link">Games</a>
+                            <a href="/event" className="nav-item nav-link">Events</a>
                             <div className="nav-item dropdown">
                                 <a href="#" className="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
                                 <div className="dropdown-menu m-0 bg-secondary rounded-0">
-                                    <a href="blog.html" className="dropdown-item">Our Blog</a>
-                                    <a href="team.html" className="dropdown-item">Our Team</a>
-                                    <a href="testimonial.html" className="dropdown-item">Testimonial</a>
-                                    <a href="404.html" className="dropdown-item">404 Page</a>
+                                    <a href="/blog" className="dropdown-item">Our Blog</a>
+                                    {/* <a href="team.html" className="dropdown-item">Our Team</a> */}
+                                    <a href="/testimonial" className="dropdown-item">Testimonial</a>
+                                    {/* <a href="404.html" className="dropdown-item">404 Page</a> */}
                                 </div>
                             </div>
-                            <a href="contact.html" className="nav-item nav-link">Contact</a>
+                            <a href="/contact" className="nav-item nav-link">Contact</a>
                         </div>
-                        <div className="d-flex me-4">
+                        <div className="d-flex flex-column flex-lg-row align-items-center me-4">
                             <div id="phone-tada" className="d-flex align-items-center justify-content-center">
                                 {/* Removed 'wow tada' class */}
-                                <a href="" className="position-relative" data-wow-delay=".9s" >
+                                <a href="#" className="position-relative"  >
                                     <i className="fa fa-phone-alt text-primary fa-2x me-4"></i>
                                     <div className="position-absolute" style={{ top: "-7px", left: "20px" }}>
                                         <span><i className="fa fa-comment-dots text-secondary"></i></span>

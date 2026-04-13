@@ -23,8 +23,9 @@ import App from './App.jsx';
 // import 'bootstrap/dist/css/bootstrap.min.css';
 // Import your custom CSS (which should contain your @tailwind directives)
 // import './index.css'; 
+
 import "./public/css/style.css";
-import "./public/css/bootstrap.min.css";
+// import "./public/css/bootstrap.min.css";
 import "./public/lib/animate/animate.min.css";
 import "./public/lib/lightbox/css/lightbox.min.css";
 import "./public/lib/owlcarousel/assets/owl.carousel.min.css";
