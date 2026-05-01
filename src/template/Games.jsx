@@ -11,7 +11,7 @@ export default function Games() {
                 <h1 className="display-2 text-white mb-4"> Game Hub</h1>
                 <nav aria-label="breadcrumb">
                     <ol className="breadcrumb justify-content-center mb-0">
-                        <li className="breadcrumb-item"><Link to="/dashboard" className="text-white">Dashboard</Link></li>
+                        <li className="breadcrumb-item"><Link to="/dashboard" className="text-white">Home</Link></li>
                         <li className="breadcrumb-item text-white" aria-current="page">Games</li>
                     </ol>
                 </nav>

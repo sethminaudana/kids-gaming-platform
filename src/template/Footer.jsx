@@ -11,8 +11,8 @@ export default function Footer() {
                 <div className="row g-5">
                     <div className="col-md-6 col-lg-4 col-xl-3">
                         <div className="footer-item">
-                            <h2 className="fw-bold mb-3"><span className="text-primary mb-0">Baby</span><span className="text-secondary">Care</span></h2>
-                            <p className="mb-4">There cursus massa at urnaaculis estieSed aliquamellus vitae ultrs condmentum leo massamollis its estiegittis miristum.</p>
+                            <h2 className="fw-bold mb-3"><span className="text-primary mb-0">Child</span><span className="text-secondary">Care</span></h2>
+                            <p className="mb-4 text-secondary">Empowering early development through interactive assessments and data-driven insights. We bridge the gap between engaging play and cognitive growth, providing caregivers with the tools they need for proactive support.</p>
                             <div className="border border-primary p-3 rounded bg-light">
                                 <h5 className="mb-3">Newsletter</h5>
                                 <div className="position-relative mx-auto border border-primary rounded" style={{ maxWidth: "400px" }}>
@@ -104,11 +104,7 @@ export default function Footer() {
                         <span className="text-light"><a href="#"><i className="fas fa-copyright text-light me-2"></i>Your Site Name</a>, All right reserved.</span>
                     </div>
                     <div className="col-md-6 my-auto text-center text-md-end text-white">
-                        {/* This template is free as long as you keep the below author’s credit link/attribution link/backlink. */}
-                        {/* If you'd like to use the template without the below author’s credit link/attribution link/backlink, */}
-                        {/* you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". */}
-                        Designed By <a className="border-bottom" href="https://htmlcodex.com">HTML Codex</a> Distributed By <a className="border-bottom" href="https://themewagon.com">ThemeWagon</a>
-                    </div>
+                        </div>
                 </div>
             </div>
         </div>

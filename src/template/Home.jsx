@@ -22,7 +22,7 @@ export default function Home() {
             <div className="container py-5">
                 <div className="row g-5">
                     <div className="col-lg-7 col-md-12">
-                        <h1 className="mb-3 text-primary">We Care Your Baby</h1>
+                        <h1 className="mb-3 text-primary">We Care Your Child</h1>
                         <h1 className="mb-5 display-1 text-white">The Best Play Area For Your Kids</h1>
                         <a href="" className="btn btn-primary px-4 py-3 px-md-5  me-4 btn-border-radius">Get Started</a>
                         <a href="" className="btn btn-primary px-4 py-3 px-md-5 btn-border-radius">Learn More</a>
@@ -47,7 +47,7 @@ export default function Home() {
                     <div className="col-lg-7 wow fadeIn" data-wow-delay="0.3s">
                         <h4 className="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">About Us</h4>
                         <h1 className="text-dark mb-4 display-5">We Learn Smart Way To Build Bright Futute For Your Children</h1>
-                        <p className="text-dark mb-4">Lorem Ipsum is simply dummy text of the printing and typesetting industry. the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+                        <p className="text-dark mb-4">At ChildCare, we believe every child deserves a loving and stimulating environment to grow. Our interactive programs are designed to spark curiosity, build confidence, and foster a lifelong love of learning. Join us in laying a strong foundation for your child's success
                         </p>
                         <div className="row mb-4">
                             <div className="col-lg-6">
@@ -100,8 +100,7 @@ export default function Home() {
                                 <div className="service-content-inner">
                                     <div className="p-4"><i className="fas fa-gamepad fa-6x text-primary"></i></div>
                                     <a href="#" className="h4">Study & Game</a>
-                                    <p className="my-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, culpa qui officiis animi Lorem ipsum dolor sit amet, 
-                                        consectetur adipisicing elit.</p>
+                                    <p className="my-3">We seamlessly integrate interactive gamified tasks with foundational learning. By replacing traditional methods with engaging gameplay, we keep children motivated while quietly capturing authentic progress and behavioral insights.</p>
                                     <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>
                                 </div>
                             </div>
@@ -113,8 +112,7 @@ export default function Home() {
                                 <div className="service-content-inner">
                                     <div className="p-4"><i className="fas fa-sort-alpha-down fa-6x text-primary"></i></div>
                                     <a href="#" className="h4">A to Z Programs</a>
-                                    <p className="my-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, culpa qui officiis animi Lorem ipsum dolor sit amet, 
-                                        consectetur adipisicing elit.</p>
+                                    <p className="my-3">Our multi-module system offers a comprehensive suite of learning and screening tools. Each interactive program is meticulously designed to support different developmental metrics from start to finish.</p>
                                     <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>
                                 </div>
                             </div>
@@ -126,8 +124,7 @@ export default function Home() {
                                 <div className="service-content-inner">
                                     <div className="p-4"><i className="fas fa-users fa-6x text-primary"></i></div>
                                     <a href="#" className="h4">Expert Teacher</a>
-                                    <p className="my-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, culpa qui officiis animi Lorem ipsum dolor sit amet, 
-                                        consectetur adipisicing elit.</p>
+                                    <p className="my-3">Behind our advanced platform are dedicated professionals focused on actionable results. We equip educators and caregivers with intuitive, data-driven dashboards to better understand and support each child's unique needs.</p>
                                     <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>
                                 </div>
                             </div>
@@ -139,8 +136,7 @@ export default function Home() {
                                 <div className="service-content-inner">
                                     <div className="p-4"><i className="fas fa-user-nurse fa-6x text-primary"></i></div>
                                     <a href="#" className="h4">Mental Health</a>
-                                    <p className="my-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, culpa qui officiis animi Lorem ipsum dolor sit amet, 
-                                        consectetur adipisicing elit.</p>
+                                    <p className="my-3">Emotional well-being is the cornerstone of growth. Our platform monitors behavioral patterns to help identify early cognitive trends, ensuring children receive the proactive support and interventions they deserve.</p>
                                     <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>
                                 </div>
                             </div>
@@ -178,7 +174,7 @@ export default function Home() {
                                 <img src="/src/public/img/program-teacher.jpg" className="img-fluid rounded-circle p-2 border border-primary bg-white" alt="Image" style={{ width: "70px", height: "70px" }} />
                                 <div className="ms-3">
                                     <h6 className="mb-0 text-primary">Mary Mordern</h6>
-                                    <small>Arts Designer</small>
+                                    <small className="text-primary">Arts Designer</small>
                                 </div>
                             </div>
                             <div className="d-flex justify-content-between px-4 py-2 bg-primary rounded-bottom">
@@ -206,7 +202,7 @@ export default function Home() {
                                 <img src="/img/program-teacher.jpg" className="img-fluid rounded-circle p-2 border border-primary bg-white" alt="" style={{ width: "70px", height: "70px" }} />
                                 <div className="ms-3">
                                     <h6 className="mb-0 text-primary">Mary Mordern</h6>
-                                    <small>Arts Designer</small>
+                                    <small className="text-primary">Arts Designer</small>
                                 </div>
                             </div>
                             <div className="d-flex justify-content-between px-4 py-2 bg-primary rounded-bottom">
@@ -234,7 +230,7 @@ export default function Home() {
                                 <img src="/img/program-teacher.jpg" className="img-fluid rounded-circle p-2 border border-primary bg-white" alt="" style={{ width: "70px", height: "70px" }} />
                                 <div className="ms-3">
                                     <h6 className="mb-0 text-primary">Mary Mordern</h6>
-                                    <small>Arts Designer</small>
+                                    <small className="text-primary">Arts Designer</small>
                                 </div>
                             </div>
                             <div className="d-flex justify-content-between px-4 py-2 bg-primary rounded-bottom">

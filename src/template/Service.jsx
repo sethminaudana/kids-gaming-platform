@@ -34,7 +34,7 @@ const Service = () => {
                   <div className="service-content-inner">
                     <div className="p-4"><i className="fas fa-gamepad fa-6x text-primary"></i></div>
                     <a href="#" className="h4">Study & Game</a>
-                    <p className="my-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, culpa qui officiis animi Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                    <p className="my-3">We blend traditional classroom learning with interactive play to keep children engaged. Our game-based approach ensures that mastering new skills is always an exciting and joyful adventure.</p>
                     <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>
                   </div>
                 </div>
@@ -48,7 +48,7 @@ const Service = () => {
                   <div className="service-content-inner">
                     <div className="p-4"><i className="fas fa-sort-alpha-down fa-6x text-primary"></i></div>
                     <a href="#" className="h4">A to Z Programs</a>
-                    <p className="my-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, culpa qui officiis animi Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                    <p className="my-3">From early alphabet recognition to advanced problem-solving, our comprehensive curriculum covers every milestone. We provide structured, step-by-step learning paths tailored to each child's pace.</p>
                     <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>
                   </div>
                 </div>
@@ -62,7 +62,7 @@ const Service = () => {
                   <div className="service-content-inner">
                     <div className="p-4"><i className="fas fa-users fa-6x text-primary"></i></div>
                     <a href="#" className="h4">Expert Teacher</a>
-                    <p className="my-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, culpa qui officiis animi Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                    <p className="my-3">Our passionate, highly-trained educators are dedicated to your child's success. They provide personalized guidance, fostering a supportive and inspiring environment for every single student.</p>
                     <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>
                   </div>
                 </div>
@@ -76,7 +76,7 @@ const Service = () => {
                   <div className="service-content-inner">
                     <div className="p-4"><i className="fas fa-user-nurse fa-6x text-primary"></i></div>
                     <a href="#" className="h4">Mental Health</a>
-                    <p className="my-3">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Natus, culpa qui officiis animi Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                    <p className="my-3">We prioritize a child's happiness just as much as their academic growth. Our nurturing atmosphere helps children build resilience, manage their feelings, and develop strong, positive social skills.</p>
                     <a href="#" className="btn btn-primary text-white px-4 py-2 my-2 btn-border-radius">Read More</a>
                   </div>
                 </div>

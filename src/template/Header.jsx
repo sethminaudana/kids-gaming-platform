@@ -1,10 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Navbar, Nav, Container } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import "animate.css"; // Import the animation styles
 import { WOW } from "wowjs"; // Import the animation logic
-
+import logoImg from '../assets/logochild.png';
 
 export default function Header() {
 
@@ -42,7 +43,7 @@ export default function Header() {
 
         {/* Removed 'wow fadeIn' class so content is visible */}
         <div className="container-fluid border-bottom bg-light " >
-            <div className="container topbar bg-primary d-none d-lg-block py-2" style={{ borderRadius: "0 40px" }}>
+            {/* <div className="container topbar bg-primary d-none d-lg-block py-2" style={{ borderRadius: "0 40px" }}>
                 <div className="d-flex justify-content-between">
                     <div className="top-info ps-2">
                         <small className="me-3"><i className="fas fa-map-marker-alt me-2 text-secondary"></i> <a href="#" className="text-white">123 Street, New York</a></small>
@@ -55,50 +56,64 @@ export default function Header() {
                         <a href="" className="btn btn-light btn-sm-square rounded-circle me-0"><i className="fab fa-linkedin-in text-secondary"></i></a>
                     </div>
                 </div>
-            </div>
+            </div> */}
             <div className="container px-0">
-                <nav className="navbar navbar-light navbar-expand-lg py-3">
-                    <a href="/" className="navbar-brand"><h1 className="text-primary display-6">Baby<span className="text-secondary">Care</span></h1></a>
-                    <button className="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                        <span className="fa fa-bars text-primary"></span>
-                    </button>
-                    <div className="collapse navbar-collapse " id="navbarCollapse">
-                        <div className="navbar-nav mx-auto">
-                            <a href="/" className="nav-item nav-link active">Home</a>
-                            <a href="/about" className="nav-item nav-link">About</a>
-                            <a href="/service" className="nav-item nav-link">Services</a>
-                            {/* <a href="/program" className="nav-item nav-link">Programs</a> */}
-                            <a href="/games" className="nav-item nav-link">Games</a>
-                            <a href="/event" className="nav-item nav-link">Events</a>
-                            <div className="nav-item dropdown">
-                                <a href="#" className="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                                <div className="dropdown-menu m-0 bg-secondary rounded-0">
-                                    <a href="/blog" className="dropdown-item">Our Blog</a>
-                                    {/* <a href="team.html" className="dropdown-item">Our Team</a> */}
-                                    <a href="/testimonial" className="dropdown-item">Testimonial</a>
-                                    {/* <a href="404.html" className="dropdown-item">404 Page</a> */}
-                                </div>
-                            </div>
-                            <a href="/contact" className="nav-item nav-link">Contact</a>
-                        </div>
-                        <div className="d-flex flex-column flex-lg-row align-items-center me-4">
-                            <div id="phone-tada" className="d-flex align-items-center justify-content-center">
-                                {/* Removed 'wow tada' class */}
-                                <a href="#" className="position-relative"  >
-                                    <i className="fa fa-phone-alt text-primary fa-2x me-4"></i>
-                                    <div className="position-absolute" style={{ top: "-7px", left: "20px" }}>
-                                        <span><i className="fa fa-comment-dots text-secondary"></i></span>
-                                    </div>
-                                </a>
-                            </div>
-                            <div className="d-flex flex-column pe-3 border-end border-primary">
-                                <span className="text-primary">Have any questions?</span>
-                                <a href="#"><span className="text-secondary">Free: + 0123 456 7890</span></a>
-                            </div>
-                        </div>
-                        <button className="btn-search btn btn-primary btn-md-square rounded-circle" data-bs-toggle="modal" data-bs-target="#searchModal"><i className="fas fa-search text-white"></i></button>
+                <nav className="navbar navbar-light navbar-expand-lg pt-4">
+    {/* 1. Logo (Always First) */}
+    <a href="/" className="navbar-brand d-flex align-items-center order-1">
+        <img src={logoImg} alt="ChildCare Logo" style={{ height: '50px', width: 'auto' }} className="me-2" />
+        <h1 className="text-primary display-6 mb-0">Child<span className="text-secondary">Care</span></h1>
+    </a>
+
+    {/* 2. Login & Hamburger Menu (Always Right on Mobile, Far Right on Desktop) */}
+    <div className="d-flex align-items-center order-2 order-lg-3">
+        <NavLink to="/login" className="btn btn-primary rounded-pill px-3 me-2 d-flex align-items-center">
+            <i className="fas fa-sign-in-alt me-2"></i> Log In
+        </NavLink>
+        <button className="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+            <span className="fa fa-bars text-primary"></span>
+        </button>
+    </div>
+
+    {/* 3. The Collapsed Content (Drops to bottom on Mobile, Middle on Desktop) */}
+    <div className="collapse navbar-collapse order-3 order-lg-2" id="navbarCollapse">
+        {/* Navigation Links */}
+        <div className="navbar-nav mx-auto">
+            <NavLink to="/" className="nav-item nav-link">Home</NavLink>
+            <NavLink to="/about" className="nav-item nav-link">About</NavLink>
+            <NavLink to="/service" className="nav-item nav-link">Services</NavLink>
+            <NavLink to="/games" className="nav-item nav-link">Games</NavLink>
+            <NavLink to="/event" className="nav-item nav-link">Events</NavLink>
+            <div className="nav-item dropdown">
+                <a href="#" className="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
+                <div className="dropdown-menu m-0 bg-secondary rounded-0">
+                    <NavLink to="/blog" className="dropdown-item">Our Blog</NavLink>
+                    <NavLink to="/testimonial" className="dropdown-item">Testimonial</NavLink>
+                </div>
+            </div>
+            <NavLink to="/contact" className="nav-item nav-link">Contact</NavLink>
+        </div>
+        
+        {/* Phone Number & Search Button */}
+        {/* <div className="d-flex flex-column flex-lg-row align-items-center me-lg-4 mt-3 mt-lg-0">
+            <div id="phone-tada" className="d-flex align-items-center justify-content-center">
+                <a href="#" className="position-relative">
+                    <i className="fa fa-phone-alt text-primary fa-2x me-4"></i>
+                    <div className="position-absolute" style={{ top: "-7px", left: "20px" }}>
+                        <span><i className="fa fa-comment-dots text-secondary"></i></span>
                     </div>
-                </nav>
+                </a>
+            </div>
+            <div className="d-flex flex-column pe-3 border-end border-primary me-3">
+                <span className="text-primary">Have any questions?</span>
+                <a href="#"><span className="text-secondary">Free: + 0123 456 7890</span></a>
+            </div>
+            <button className="btn-search btn btn-primary btn-md-square rounded-circle mt-3 mt-lg-0" data-bs-toggle="modal" data-bs-target="#searchModal">
+                <i className="fas fa-search text-white"></i>
+            </button>
+        </div> */}
+    </div>
+</nav>
             </div>
         </div>
         

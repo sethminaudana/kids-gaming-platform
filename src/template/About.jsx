@@ -32,7 +32,7 @@ export default function About() {
                 <div className="row g-5 align-items-center">
                     <div className="col-lg-5 wow fadeIn" data-wow-delay="0.1s">
                         <div className="video border">
-                            <button type="button" className="btn btn-play" data-bs-toggle="modal" data-src="https://www.youtube.com/embed/DWRcNpR6Kdc" data-bs-target="#videoModal">
+                            <button type="button" className="btn btn-play" data-bs-toggle="modal" data-src="https://www.youtube.com" data-bs-target="#videoModal">
                                 <span></span>
                             </button>
                         </div>
@@ -40,7 +40,7 @@ export default function About() {
                     <div className="col-lg-7 wow fadeIn" data-wow-delay="0.3s">
                         <h4 className="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">About Us</h4>
                         <h1 className="text-dark mb-4 display-5">We Learn Smart Way To Build Bright Futute For Your Children</h1>
-                        <p className="text-dark mb-4">Lorem Ipsum is simply dummy text of the printing and typesetting industry. the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+                        <p className="text-dark mb-4">At ChildCare, we believe every child deserves a loving and stimulating environment to grow. Our interactive programs are designed to spark curiosity, build confidence, and foster a lifelong love of learning. Join us in laying a strong foundation for your child's success
                         </p>
                         <div className="row mb-4">
                             <div className="col-lg-6">
