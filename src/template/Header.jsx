@@ -1,16 +1,25 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { Navbar, Nav, Container } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import "animate.css"; // Import the animation styles
 import { WOW } from "wowjs"; // Import the animation logic
 import logoImg from '../assets/logochild.png';
+import { AuthContext } from "../App";
 
 export default function Header() {
 
   // 1. STATE: Control whether the spinner is visible
   const [isLoading, setIsLoading] = useState(true);
+// Grab authentication state and logout function from Context
+    const { isAuthenticated, logout } = useContext(AuthContext);
+const navigate = useNavigate();
+
+    const handleLogout = () => {
+        logout();
+        navigate('/'); // Send them back to the public home page after logging out
+    };
 
   useEffect(() => {
     // 2. SPINNER LOGIC: Wait 2 seconds, then hide spinner
@@ -62,14 +71,29 @@ export default function Header() {
     {/* 1. Logo (Always First) */}
     <a href="/" className="navbar-brand d-flex align-items-center order-1">
         <img src={logoImg} alt="ChildCare Logo" style={{ height: '50px', width: 'auto' }} className="me-2" />
-        <h1 className="text-primary display-6 mb-0">Child<span className="text-secondary">Care</span></h1>
+        <h1 className="text-primary display-6 mb-0">Child<span className="text-primary">Care</span></h1>
     </a>
 
     {/* 2. Login & Hamburger Menu (Always Right on Mobile, Far Right on Desktop) */}
     <div className="d-flex align-items-center order-2 order-lg-3">
-        <NavLink to="/login" className="btn btn-primary rounded-pill px-3 me-2 d-flex align-items-center">
-            <i className="fas fa-sign-in-alt me-2"></i> Log In
-        </NavLink>
+        {isAuthenticated ? (
+            // WHAT SHOWS WHEN LOGGED IN
+            <>
+                <NavLink to="/dashboard" className="btn btn-outline-primary rounded-pill px-3 me-2 d-flex align-items-center">
+                    <i className="fas fa-chart-line me-2"></i> Dashboard
+                </NavLink>
+                <button onClick={handleLogout} className="btn btn-danger rounded-pill px-3 me-2 d-flex align-items-center">
+                    <i className="fas fa-sign-out-alt me-2"></i> Logout
+                </button>
+            </>
+        ) : (
+            // WHAT SHOWS WHEN LOGGED OUT
+            <NavLink to="/login" className="btn btn-primary rounded-pill px-3 me-2 d-flex align-items-center">
+                <i className="fas fa-sign-in-alt me-2"></i> Log In
+            </NavLink>
+        )}
+
+        {/* Your Hamburger Menu Toggler */}
         <button className="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
             <span className="fa fa-bars text-primary"></span>
         </button>

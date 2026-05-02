@@ -195,6 +195,7 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
     localStorage.removeItem('user');
     setIsAuthenticated(false);
     setUserRole("parent");
+    window.location.href = "/";
   };
 
   const register = async (userData) => {
@@ -260,7 +261,7 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
               <Route element={<Layout />}>
               <Route 
                 path="login" 
-                element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />} 
+                element={isAuthenticated ? <Navigate to="/games" replace /> : <Login />} 
               />
               {/* <Route path="register" element={<Register />} /> */}
 
@@ -329,9 +330,13 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
                 <GamePage />
               </ProtectedRoute>
             } />
-            <Route path="/nogo-game" element={<NOGOGame />} />
+            {/* <Route path="/nogo-game" element={<NOGOGame />} /> */}
 
-            
+            <Route path="/nogo-game" element={
+              <ProtectedRoute allowedRoles={["parent", "therapist", "child"]}>
+                <NOGOGame />
+              </ProtectedRoute>
+            } />
 
             <Route path="/games/puzzle" element={
               <ProtectedRoute allowedRoles={["parent", "therapist", "child"]}>
