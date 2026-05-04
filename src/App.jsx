@@ -98,6 +98,7 @@ import Game from "./components/Game";
 import MemoryGame from "./MemoryGame/MemoryGame";
 import JigsawPuzzle from "./components/games/JigsawPuzzle";
 import PuzzleReport from "./components/games/PuzzleReport";
+import ScrollToTop from './components/ScrollToTop';
 import GamePage from "./pages/GamePage";
 import NOGOGame from './pages/NOGOGame';
 import Header from "./components/Header";
@@ -232,7 +233,7 @@ const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('t
     
     <AuthContext.Provider value={{ isAuthenticated, userRole, login, logout, register }}>
       <Router>
-       
+       <ScrollToTop />
         
 
           <Routes>

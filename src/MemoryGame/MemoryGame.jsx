@@ -41,6 +41,7 @@ const MemoryGame = () => {
     const failedPairs = useRef([]); // Tracks previous wrong pairs for Perseverative Errors
     const firstFlipTime = useRef(null); // Tracks time between clicks for Latency
     const inhibitoryFailures = useRef(0);// Counts clicks while board is locked
+    const boardUnlockedTime = useRef(Date.now());
 
     // Use useState to create audio objects only once
     const [correctAudio] = useState(new Audio(right));
@@ -132,8 +133,9 @@ const MemoryGame = () => {
     const clickDetails = {
         cardIndex: index,
         cardSymbol: cards[index].symbol,
-        x: e ? e.clientX : 0,
-        y: e ? e.clientY : 0
+        // Normalizes the coordinates to percentages!
+    x: e ? parseFloat((e.clientX / window.innerWidth).toFixed(3)) : 0,
+    y: e ? parseFloat((e.clientY / window.innerHeight).toFixed(3)) : 0
     };
 
     // 2. CHECK FOR INVALID CLICKS (Impulsivity / Hyperactivity)
@@ -157,6 +159,16 @@ const MemoryGame = () => {
         return;
     }
 
+    if (matchedIndexes.includes(index)) {
+    // METRIC 2: Clicking a card that is already solved and visible!
+    logEvent('revisit_error', clickDetails); 
+    return;
+}
+if (flippedIndexes.includes(index)) {
+    logEvent('invalid_click', { ...clickDetails, reason: 'double_click' });
+    return;
+}
+
     // 3. LOG VALID CLICK
     logEvent('card_flip', clickDetails);
 
@@ -164,6 +176,10 @@ const MemoryGame = () => {
     if (flippedIndexes.length === 0) {
         // FIRST CARD FLIPPED: Start the latency timer
         firstFlipTime.current = Date.now();
+        // METRIC 1: How long did they pause before starting this new pair?
+    const pauseMs = Date.now() - boardUnlockedTime.current;
+    logEvent('post_match_pause', { pauseTimeMs: pauseMs });
+
         setFlippedIndexes([index]);
     } else if (flippedIndexes.length === 1) {
         const firstIndex = flippedIndexes[0];
@@ -214,6 +230,7 @@ const MemoryGame = () => {
         }
 
         setFlippedIndexes([]); // Flip both back
+        boardUnlockedTime.current = Date.now();
         isProcessing.current = false; // UNLOCK BOARD
     }
 
