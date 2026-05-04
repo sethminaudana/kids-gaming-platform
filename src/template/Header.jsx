@@ -16,6 +16,12 @@ export default function Header() {
     const { isAuthenticated, logout } = useContext(AuthContext);
 const navigate = useNavigate();
 
+// --- NEW: State for the Password Prompt ---
+    const [showPrompt, setShowPrompt] = useState(false);
+    const [verifyPassword, setVerifyPassword] = useState("");
+    const [verifyError, setVerifyError] = useState("");
+    const [isVerifying, setIsVerifying] = useState(false);
+
     const handleLogout = () => {
         logout();
         navigate('/'); // Send them back to the public home page after logging out
@@ -34,6 +40,40 @@ const navigate = useNavigate();
     return () => clearTimeout(timer); // Cleanup timer if component unmounts
   }, []);
 
+
+  const handleVerifyPassword = async (e) => {
+        e.preventDefault();
+        setVerifyError("");
+        setIsVerifying(true);
+
+        try {
+            // Grab the currently logged-in user's email from storage
+            const savedUser = JSON.parse(localStorage.getItem('user'));
+            const email = savedUser?.username; // Your backend maps email to username
+
+            // Re-use your existing login route to verify the password!
+            const response = await fetch('http://localhost:5000/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: verifyPassword })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Success! Close modal, clear input, and go to Dashboard
+                setShowPrompt(false);
+                setVerifyPassword("");
+                navigate('/dashboard');
+            } else {
+                setVerifyError("Incorrect password. Please try again.");
+            }
+        } catch (error) {
+            setVerifyError("Server error. Please try again later.");
+        } finally {
+            setIsVerifying(false);
+        }
+    };
 
   return (
    <>
@@ -79,12 +119,26 @@ const navigate = useNavigate();
         {isAuthenticated ? (
             // WHAT SHOWS WHEN LOGGED IN
             <>
-                <NavLink to="/dashboard" className="btn btn-outline-primary rounded-pill px-3 me-2 d-flex align-items-center">
-                    <i className="fas fa-chart-line me-2"></i> Dashboard
+               {isAuthenticated ? (
+                <>
+                    <button 
+                        onClick={() => setShowPrompt(true)} 
+                        className="btn btn-outline-primary rounded-pill px-3 me-2 d-flex align-items-center"
+                    >
+                        <i className="fas fa-chart-line me-2"></i> Dashboard
+                    </button>
+                    <button onClick={handleLogout} className="btn btn-danger rounded-pill px-3 me-2 d-flex align-items-center">
+                        <i className="fas fa-sign-out-alt me-2"></i> Logout
+                    </button>
+                </>
+            ) : (
+                <NavLink to="/login" className="btn btn-primary rounded-pill px-3 me-2 d-flex align-items-center">
+                    <i className="fas fa-sign-in-alt me-2"></i> Log In
                 </NavLink>
-                <button onClick={handleLogout} className="btn btn-danger rounded-pill px-3 me-2 d-flex align-items-center">
+            )}
+                {/* <button onClick={handleLogout} className="btn btn-danger rounded-pill px-3 me-2 d-flex align-items-center">
                     <i className="fas fa-sign-out-alt me-2"></i> Logout
-                </button>
+                </button> */}
             </>
         ) : (
             // WHAT SHOWS WHEN LOGGED OUT
@@ -157,6 +211,60 @@ const navigate = useNavigate();
                 </div>
             </div>
         </div>
+        {/* --- NEW: THE PASSWORD PROMPT MODAL --- */}
+            {showPrompt && (
+                <div className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style={{ backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 1050 }}>
+                    <div className="bg-white rounded p-4 shadow-lg" style={{ maxWidth: '400px', width: '90%' }}>
+                        <div className="d-flex justify-content-between align-items-center mb-3">
+                            <h5 className="mb-0 text-primary fw-bold">Security Check</h5>
+                            <button 
+                                type="button" 
+                                className="btn-close" 
+                                onClick={() => {
+                                    setShowPrompt(false);
+                                    setVerifyError("");
+                                    setVerifyPassword("");
+                                }}
+                            ></button>
+                        </div>
+                        
+                        <p className="text-muted small mb-4">Please re-enter your password to access the dashboard.</p>
+                        
+                        <form onSubmit={handleVerifyPassword}>
+                            <div className="mb-3">
+                                <input 
+                                    type="password" 
+                                    className="form-control" 
+                                    placeholder="Enter password"
+                                    value={verifyPassword}
+                                    onChange={(e) => setVerifyPassword(e.target.value)}
+                                    required
+                                    autoFocus
+                                />
+                            </div>
+                            
+                            {verifyError && <div className="alert alert-danger py-2 small">{verifyError}</div>}
+                            
+                            <div className="d-flex justify-content-end gap-2 mt-4">
+                                <button 
+                                    type="button" 
+                                    className="btn btn-light" 
+                                    onClick={() => setShowPrompt(false)}
+                                >
+                                    Cancel
+                                </button>
+                                <button 
+                                    type="submit" 
+                                    className="btn btn-primary"
+                                    disabled={isVerifying}
+                                >
+                                    {isVerifying ? 'Verifying...' : 'Access Dashboard'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
     </>
     // <Navbar bg="light" expand="lg" className="shadow-sm">
     //   <Container>

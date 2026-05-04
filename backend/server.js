@@ -284,6 +284,11 @@ const userSchema = new mongoose.Schema({
   memoryright: { type: Number, default: 0 },
   memorywrong: { type: Number, default: 0 },
   memorytime: { type: Number, default: 0 },
+  mlReports: [{
+        date: { type: Date, default: Date.now },
+        reportText: String,
+        level: Number
+    }]
 });
 
 const User = mongoose.model("User", userSchema);
@@ -299,6 +304,7 @@ const gameSessionSchema = new mongoose.Schema({
   score: Number,
   duration: Number,
   events: [], // Stores the big array of click events for ML
+  mlReport: { type: String }
 });
 
 // 3. Trial Data Schema (Flexible for NOGO/Fish game)
@@ -500,8 +506,32 @@ app.post("/api/memorygame", isAuthenticated, async (req, res) => {
         });
 
         // When script finishes, send response to React
-        pythonProcess.on('close', (code) => {
+        pythonProcess.on('close', async (code) => {
             console.log(`Analysis complete with code ${code}`);
+            if (code === 0 && reportData) {
+                try {
+                    // 1. Attach the report to the specific Game Session we just created
+                    await GameSession.findByIdAndUpdate(newSession._id, { 
+                        mlReport: reportData 
+                    });
+
+                    // 2. Add the report to the User's permanent profile history
+                    await User.findOneAndUpdate(
+                        { username: req.user.username },
+                        { 
+                            $push: { 
+                                mlReports: { 
+                                    reportText: reportData, 
+                                    level: level 
+                                } 
+                            } 
+                        }
+                    );
+                    console.log(`✅ ML Report saved to database for ${req.user.username}`);
+                } catch (dbError) {
+                    console.error("❌ Error saving ML report to database:", dbError);
+                }
+            }
             res.status(200).send({ 
                 score: user.score, 
                 report: reportData 
